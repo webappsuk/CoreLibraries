@@ -412,6 +412,42 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are no connections common to all programs added to the batch..
+        /// </summary>
+        internal static string SqlBatch_AddCommand_NoCommonConnections {
+            get {
+                return ResourceManager.GetString("SqlBatch_AddCommand_NoCommonConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot add to a batch is completed..
+        /// </summary>
+        internal static string SqlBatch_CheckState_Completed {
+            get {
+                return ResourceManager.GetString("SqlBatch_CheckState_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot add to the batch whilst it is executing..
+        /// </summary>
+        internal static string SqlBatch_CheckState_Executing {
+            get {
+                return ResourceManager.GetString("SqlBatch_CheckState_Executing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot execute an empty batch..
+        /// </summary>
+        internal static string SqlBatch_ExecuteAsync_Empty {
+            get {
+                return ResourceManager.GetString("SqlBatch_ExecuteAsync_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsupported SqlDbType &apos;{0}&apos;..
         /// </summary>
         internal static string SqlMetaType_GetMetaTypeFromSqlDbType_UnsupportedType {

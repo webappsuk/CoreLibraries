@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Database
     public class SqlProgramMapping
     {
         /// <summary>
-        ///   The underlying <see cref="SqlProgramDefinition">program definition</see>.
+        ///   The connection that this mapping belongs to.
         /// </summary>
         [NotNull]
         public readonly Connection Connection;
@@ -54,7 +54,8 @@ namespace WebApplications.Utilities.Database
         ///   Holds the <see cref="SqlProgramParameter">parameter definitions</see> that are used by this <see cref="SqlProgram"/>
         /// </summary>
         [NotNull]
-        public readonly IEnumerable<SqlProgramParameter> Parameters;
+        [ItemNotNull]
+        public readonly IReadOnlyList<SqlProgramParameter> Parameters;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlProgramMapping" /> class.
@@ -65,15 +66,11 @@ namespace WebApplications.Utilities.Database
         internal SqlProgramMapping(
             [NotNull] Connection connection,
             [NotNull] SqlProgramDefinition definition,
-            [NotNull] IEnumerable<SqlProgramParameter> parameters)
+            [NotNull] IReadOnlyList<SqlProgramParameter> parameters)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (definition == null) throw new ArgumentNullException(nameof(definition));
-            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
-
-            Connection = connection;
-            Definition = definition;
-            Parameters = parameters;
+            Connection = connection ?? throw new ArgumentNullException(nameof(connection));
+            Definition = definition ?? throw new ArgumentNullException(nameof(definition));
+            Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
         }
     }
 }

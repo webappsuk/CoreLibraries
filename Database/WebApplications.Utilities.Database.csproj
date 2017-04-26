@@ -144,6 +144,7 @@
     <Compile Include="Generated\SqlProgramGeneric9.Generated.cs">
       <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
+    <Compile Include="Input.cs" />
     <Compile Include="IOut.cs" />
     <Compile Include="MultiOut.cs" />
     <Compile Include="Out.cs" />
@@ -170,6 +171,11 @@
     <Compile Include="Schema\SqlObjectType.cs" />
     <Compile Include="Schema\SqlProgramDefinition.cs" />
     <Compile Include="Schema\SqlProgramParameter.cs" />
+    <Compile Include="SqlBatch.cs" />
+    <Compile Include="SqlBatchCommand.cs" />
+    <Compile Include="SqlBatchParameter.cs" />
+    <Compile Include="SqlBatchParametersCollection.cs" />
+    <Compile Include="SqlBatchResult.cs" />
     <Compile Include="SqlProgramCommand.cs" />
     <Compile Include="Generated\SqlProgramGeneric2.Generated.cs">
       <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
@@ -200,6 +206,7 @@
       <DependentUpon>SqlProgramGeneric.Generated.tt</DependentUpon>
     </None>
     <None Include="Generated\SqlProgramGeneric.Generated.txt4" />
+    <None Include="Manager.ttinclude" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

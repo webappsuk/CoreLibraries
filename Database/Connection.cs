@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -94,10 +94,8 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="System.ArgumentNullException"><paramref name="connectionString"/> was null.</exception>
         private Connection(double weight, [NotNull] string connectionString, [CanBeNull] AsyncSemaphore semaphore)
         {
-            if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
-
             Weight = weight;
-            ConnectionString = connectionString;
+            ConnectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
             Semaphore = semaphore;
         }
 
@@ -122,22 +120,22 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Initializes a new instance of the <see cref="Connection"/> class.
         /// </summary>
-        /// <param name="databseId">The databse identifier.</param>
+        /// <param name="databaseId">The database identifier.</param>
         /// <param name="lbConnectionId">The lb connection identifier.</param>
         /// <param name="connectionString">The connection string.</param>
         /// <param name="weight">The weight.</param>
         /// <exception cref="System.ArgumentNullException">
         /// </exception>
         internal Connection(
-            [NotNull] string databseId,
+            [NotNull] string databaseId,
             [NotNull] string lbConnectionId,
             [NotNull] string connectionString,
             double weight)
             : this(connectionString, weight)
         {
-            if (databseId == null) throw new ArgumentNullException(nameof(databseId));
+            if (databaseId == null) throw new ArgumentNullException(nameof(databaseId));
             if (lbConnectionId == null) throw new ArgumentNullException(nameof(lbConnectionId));
-            Semaphore = ConcurrencyController.GetConnectionSemaphore(databseId, lbConnectionId, this);
+            Semaphore = ConcurrencyController.GetConnectionSemaphore(databaseId, lbConnectionId, this);
         }
 
         /// <summary>
@@ -191,17 +189,23 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// Returns a new connection with the <see cref="Weight"/> set to <paramref name="weight"/>.
+        /// </summary>
+        /// <param name="weight">The weight.</param>
+        /// <returns>A new connection.</returns>
+        [NotNull]
+        internal Connection WithWeight(double weight)
+        {
+            return weight.Equals(Weight) ? this : new Connection(weight, ConnectionString, Semaphore);
+        }
+
+        /// <summary>
         /// Performs an explicit conversion from <see cref="Connection"/> to <see cref="System.String"/>.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <returns>The result of the conversion.</returns>
         [ContractAnnotation("connection:null =>null;connection:notnull =>notnull")]
-        public static implicit operator string([CanBeNull] Connection connection)
-        {
-            return connection != null
-                ? connection.ConnectionString
-                : null;
-        }
+        public static implicit operator string([CanBeNull] Connection connection) => connection?.ConnectionString;
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="Connection" /> to <see cref="System.String" />.
@@ -231,10 +235,7 @@ namespace WebApplications.Utilities.Database
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public override string ToString()
-        {
-            return ConnectionString;
-        }
+        public override string ToString() => ConnectionString;
 
         /// <summary>
         /// Gets the schema.
@@ -274,7 +275,7 @@ namespace WebApplications.Utilities.Database
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Weight.Equals(other.Weight) &&
-                   string.Equals(ConnectionString, other.ConnectionString, StringComparison.InvariantCulture) &&
+                   string.Equals(ConnectionString, other.ConnectionString, StringComparison.Ordinal) &&
                    Equals(Semaphore, other.Semaphore);
         }
 

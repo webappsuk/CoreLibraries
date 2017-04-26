@@ -53,7 +53,7 @@ Schema code file generation
 Started			: <#= started #>
 <#
 try {
-    for (int count = 1; count < 33; count++)
+    for (int count = 1; count <= 32; count++)
     {
         manager.StartNewFile(
             string.Format("SqlProgramGeneric{0}.Generated.cs", count),
@@ -94,6 +94,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
@@ -124,17 +125,16 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<SqlParameter> SetParameters<<#= Strings.TypeParams#>>(<#= Strings.ParametersTyped #>, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            SqlProgramParameter[] parameters = _mapping.Parameters.ToArray();
-            int pCount = parameters.GetLength(0);
-            if (pCount < <#= Strings.GenericCount #>)
+            IReadOnlyList<SqlProgramParameter> parameters = _mapping.Parameters;<# /* TODO With ~20+ params, .ToArray becomes more efficient */ #>
+            if (parameters.Count < <#= Strings.GenericCount #>)
                 throw new LoggingException(
-                        LoggingLevel.Critical,
-                        () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
-                        _program.Name,
-                        pCount,
-                        <#= Strings.GenericCount #>);
+                    LoggingLevel.Critical,
+                    () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
+                    _program.Name,
+                    parameters.Count,
+                    <#= Strings.GenericCount #>);
 
-            List<SqlParameter> sqlParameters = new List<SqlParameter>(<#= Strings.GenericCount #>);
+            SqlParameter[] sqlParameters = new SqlParameter[<#= Strings.GenericCount #>];
             SqlParameter parameter;
             SqlProgramParameter programParameter;
             int index;
@@ -143,11 +143,11 @@ namespace WebApplications.Utilities.Database
 <# for (int i = 0; i < Strings.GenericCount; i++) { #>
                 // Find or create SQL Parameter <#= i+1 #>.
                 programParameter = parameters[<#= i #>];
-                index = _parameters.IndexOf(programParameter.FullName);
+                index = _parameters.IndexOf(programParameter.FullName, _mapping.Definition.ParameterNameComparer);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 programParameter.SetSqlParameterValue(parameter, p<#= i+1 #>Value, mode);
                 AddOutParameter(programParameter, parameter, p<#= i+1 #>Value as IOut);
-                sqlParameters.Add(parameter);
+                sqlParameters[<#= i #>] = parameter;
 <# } #>
             }
 
@@ -156,7 +156,7 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        /// Sets the parameters in ordinal order.
+        /// Sets the parameters by name.
         /// </summary>
         <#= Strings.TypeComments #>
         /// <param name="names">The enumeration of parameters names.</param>
@@ -166,38 +166,28 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public IEnumerable<SqlParameter> SetParameters<<#= Strings.TypeParams#>>(IEnumerable<string> names, <#= Strings.ParametersTyped #>, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
-            if ((names == null) || (names.Count() != <#= Strings.GenericCount #>))
+            string[] namesArr = names as string[] ?? names?.ToArray();
+
+            if ((namesArr == null) || (namesArr.Length != <#= Strings.GenericCount #>))
                 throw new LoggingException(
+                    LoggingLevel.Critical,
+                    () => Resources.SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters,
+                    _program.Name,
+                    <#= Strings.GenericCount #>,
+                    namesArr == null ? 0 : namesArr.Length);
+
+            SqlProgramParameter[] parameters = new SqlProgramParameter[<#= Strings.GenericCount #>];
+            for (int i = 0; i < <#= Strings.GenericCount #>; i++)
+            {
+                if (!_mapping.Definition.TryGetParameter(namesArr[i], out parameters[i]))
+                    throw new LoggingException(
                         LoggingLevel.Critical,
-                        () => Resources.SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters,
+                        () => Resources.SqlProgramCommand_SetParameters_Unknown_Parameter,
                         _program.Name,
-                        <#= Strings.GenericCount #>,
-                        names == null ? 0 : names.Count());
+                        namesArr[i]);
+            }
 
-            SqlProgramParameter[] parameters = names.Select(
-                    n =>
-                        {
-                            n = n.ToLower(); // Find parameter definition
-                            SqlProgramParameter parameterDefinition;
-                            if (!_mapping.Definition.TryGetParameter(n, out parameterDefinition))
-                                throw new LoggingException(
-                                        LoggingLevel.Critical,
-                                        () => Resources.SqlProgramCommand_SetParameters_Unknown_Parameter,
-                                        _program.Name,
-                                        n);
-                            return parameterDefinition;
-                        }).ToArray();
-
-            int pCount = parameters.GetLength(0);
-            if (pCount < <#= Strings.GenericCount #>)
-                throw new LoggingException(
-                        LoggingLevel.Critical,
-                        () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
-                        _program.Name,
-                        pCount,
-                        <#= Strings.GenericCount #>);
-
-            List<SqlParameter> sqlParameters = new List<SqlParameter>(2);
+            SqlParameter[] sqlParameters = new SqlParameter[<#= Strings.GenericCount #>];
             SqlParameter parameter;
             SqlProgramParameter programParameter;
             int index;
@@ -206,11 +196,11 @@ namespace WebApplications.Utilities.Database
 <# for (int i = 0; i < Strings.GenericCount; i++) { #>
                 // Find or create SQL Parameter <#= i+1 #>.
                 programParameter = parameters[<#= i #>];
-                index = _parameters.IndexOf(programParameter.FullName);
+                index = _parameters.IndexOf(programParameter.FullName, _mapping.Definition.ParameterNameComparer);
                 parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
                 programParameter.SetSqlParameterValue(parameter, p<#= i+1 #>Value, mode);
                 AddOutParameter(programParameter, parameter, p<#= i+1 #>Value as IOut);
-                sqlParameters.Add(parameter);
+                sqlParameters[<#= i #>] = parameter;
 <# } #>
             }
 
@@ -1122,6 +1112,187 @@ namespace WebApplications.Utilities.Database
         }
     }
     #endregion
+
+    #region Extensions to SqlBatch
+    partial class SqlBatch
+    {
+        /// <summary>
+        /// Adds the specified program to the batch. 
+        /// The first column of the first row in the result set returned by the query will be returned from the <see cref="SqlBatchResult{T}"/>.
+        /// Additional columns or rows are ignored.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <typeparam name="TOut">The output type expected.</typeparam>
+        /// <param name="program">The program to add to the batch.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
+        /// <returns>A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</returns>
+        public SqlBatchResult<TOut> AddExecuteScalar<<#= Strings.TypeParams#>, TOut>(
+            [NotNull] SqlProgram program,
+            <#= Strings.InputParametersTypedDefault #>,
+            TypeConstraintMode? constraintMode = null)
+        {
+            return this.AddExecuteScalar<TOut>(program, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch. The number of rows affected will be returned by the <see cref="SqlBatchResult{T}"/>.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <param name="program">The program to add to the batch.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
+        /// <returns>A <see cref="SqlBatchResult{T}"/> which can be used to get the number of rows affected.</returns>
+        public SqlBatchResult<int> AddExecuteNonQuery<<#= Strings.TypeParams#>>(
+            [NotNull] SqlProgram program,
+            <#= Strings.InputParametersTypedDefault #>,
+            TypeConstraintMode? constraintMode = null)
+        {
+            return this.AddExecuteNonQuery(program, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
+        /// <returns>
+        /// A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.
+        /// </returns>
+        public SqlBatchResult AddExecuteReader<<#= Strings.TypeParams#>>(
+            [NotNull] SqlProgram program,
+            [NotNull] ResultDelegateAsync resultAction,
+            <#= Strings.InputParametersTypedDefault #>,
+            CommandBehavior behavior = CommandBehavior.Default,
+            TypeConstraintMode? constraintMode = null)
+        {
+            return this.AddExecuteReader(program, resultAction, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch. 
+        /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <typeparam name="TOut">The type of the result.</typeparam>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
+        /// <returns>
+        /// A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.
+        /// </returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public SqlBatchResult<TOut> AddExecuteReader<<#= Strings.TypeParams#>, TOut>(
+            [NotNull] SqlProgram program,
+            [NotNull] ResultDelegateAsync<TOut> resultFunc,
+            <#= Strings.InputParametersTypedDefault #>,
+            CommandBehavior behavior = CommandBehavior.Default,
+            TypeConstraintMode? constraintMode = null)
+        {
+            return this.AddExecuteReader<TOut>(program, resultFunc, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+        }
+    }
+    #endregion
+    
+    #region Extensions to SqlBatchParametersCollection
+    partial class SqlBatchParametersCollection
+    {
+        /// <summary>
+        /// Sets the parameters in ordinal order.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        <#= Strings.ParameterComments #>
+        /// <param name="mode">The constraint mode.</param>
+        /// <returns>The parameters that were set</returns>
+        [NotNull]
+        public IEnumerable<DbParameter> SetParameters<<#= Strings.TypeParams#>>(<#= Strings.InputParametersTyped #>, TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            IReadOnlyList<SqlProgramParameter> parameters = _mapping.Parameters;
+            if (parameters.Count < <#= Strings.GenericCount #>)
+                throw new LoggingException(
+                    LoggingLevel.Critical,
+                    () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
+                    _command.Program.Name,
+                    parameters.Count,
+                    <#= Strings.GenericCount #>);
+
+            DbParameter[] batchParameters = new DbParameter[<#= Strings.GenericCount #>];
+            DbBatchParameter parameter;
+            SqlProgramParameter programParameter;
+            lock (_parameters)
+            {
+<# for (int i = 0; i < Strings.GenericCount; i++) { #>
+                // Find or create SQL Parameter <#= i+1 #>.
+                programParameter = parameters[<#= i #>];
+                parameter = GetOrAddParameter(programParameter);
+                parameter.SetParameterValue(programParameter, p<#= i+1 #>Value, mode);
+                AddOutParameter(parameter, p<#= i+1 #>Value as IOut);
+                batchParameters[<#= i #>] = parameter;
+<# } #>
+            }
+
+            // Return parameters that were set
+            return batchParameters;
+        }
+
+        /// <summary>
+        /// Sets the parameters by name.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <param name="names">The enumeration of parameters names.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="mode">The constraint mode.</param>
+        /// <returns>The parameters that were set</returns>
+        [NotNull]
+        public IEnumerable<DbParameter> SetParameters<<#= Strings.TypeParams#>>(IEnumerable<string> names, <#= Strings.InputParametersTyped #>, TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            string[] namesArr = names as string[] ?? names?.ToArray();
+
+            if ((namesArr == null) || (namesArr.Length != <#= Strings.GenericCount #>))
+                throw new LoggingException(
+                    LoggingLevel.Critical,
+                    () => Resources.SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters,
+                    _command.Program.Name,
+                    <#= Strings.GenericCount #>,
+                    namesArr == null ? 0 : namesArr.Length);
+
+            SqlProgramParameter[] parameters = new SqlProgramParameter[<#= Strings.GenericCount #>];
+            for (int i = 0; i < <#= Strings.GenericCount #>; i++)
+            {
+                if (!_mapping.Definition.TryGetParameter(namesArr[i], out parameters[i]))
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
+                        () => Resources.SqlProgramCommand_SetParameters_Unknown_Parameter,
+                        _command.Program.Name,
+                        namesArr[i]);
+            }
+
+            DbParameter[] batchParameters = new DbParameter[<#= Strings.GenericCount #>];
+            DbBatchParameter parameter;
+            SqlProgramParameter programParameter;
+            lock (_parameters)
+            {
+<# for (int i = 0; i < Strings.GenericCount; i++) { #>
+                // Find or create SQL Parameter <#= i+1 #>.
+                programParameter = parameters[<#= i #>];
+                parameter = GetOrAddParameter(programParameter);
+                parameter.SetParameterValue(programParameter, p<#= i+1 #>Value, mode);
+                AddOutParameter(parameter, p<#= i+1 #>Value as IOut);
+                batchParameters[<#= i #>] = parameter;
+<# } #>
+            }
+
+            // Return parameters that were set
+            return batchParameters;
+        }
+    }
+    #endregion
 }
 
 namespace WebApplications.Utilities.Database.Configuration
@@ -1341,6 +1512,8 @@ public class Strings
     public readonly string ParametersTyped = string.Empty;
     public readonly string ParametersTypedDefault = string.Empty;
     public readonly string ParameterComments = string.Empty;
+    public readonly string InputParametersTyped = string.Empty;
+    public readonly string InputParametersTypedDefault = string.Empty;
     public readonly string FuncParameters = string.Empty;
     public readonly string FuncParametersComments = string.Empty;
     public readonly string FuncParametersList = string.Empty;
@@ -1367,6 +1540,8 @@ public class Strings
                 Parameters += ", ";
                 ParametersTyped += ", ";
                 ParametersTypedDefault += ", ";
+                InputParametersTyped += ", ";
+                InputParametersTypedDefault += ", ";
                 ParameterComments += Environment.NewLine + new string(' ', 8);
                 FuncParameters += ", ";
                 FuncParametersComments += Environment.NewLine + new string(' ', 8);
@@ -1388,6 +1563,8 @@ public class Strings
             ParametersTyped += string.Format("T{0} p{0}Value", i);
             ParametersTypedDefault += string.Format("T{0} p{0}Value = default(T{0})", i);
             ParameterComments += string.Format("/// <param name=\"p{0}Value\">Value of SQL Parameter {0}.</param>", i);
+            InputParametersTyped += string.Format("Input<T{0}> p{0}Value", i);
+            InputParametersTypedDefault += string.Format("Input<T{0}> p{0}Value = default(Input<T{0}>)", i);
             FuncParameters += string.Format("[NotNull]Func<TItem, T{0}> getParam{0}", i);
             FuncParametersComments += string.Format("/// <param name=\"getParam{0}\">The function to retrieve column {0}.</param>", i);
             FuncParametersList += string.Format("getParam{0}", i);

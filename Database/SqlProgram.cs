@@ -798,7 +798,7 @@ namespace WebApplications.Utilities.Database
                     Debug.Assert(programDefinition != null);
 
                     // Validate parameters
-                    IEnumerable<SqlProgramParameter> parameters = programDefinition.ValidateParameters(
+                    IReadOnlyList<SqlProgramParameter> parameters = programDefinition.ValidateParameters(
                         Parameters,
                         checkOrder);
 

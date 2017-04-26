@@ -98,7 +98,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </summary>
         [NotNull]
         private static readonly Dictionary<string, SqlDbType> _systemTypes =
-            new Dictionary<string, SqlDbType>
+            new Dictionary<string, SqlDbType>(StringComparer.InvariantCultureIgnoreCase)
             {
                 { "bigint", SqlDbType.BigInt },
                 { "binary", SqlDbType.Binary },

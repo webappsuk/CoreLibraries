@@ -550,6 +550,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 throw new DatabaseSchemaException(
                                     () => "Unexpected server and database collation returned from database.");
 
+                            // TODO the names of built in types should be case insensitive
                             typesByName = new Dictionary<string, SqlType>(databaseCollation);
                             programDefinitions = new Dictionary<string, SqlProgramDefinition>(databaseCollation);
                             tables = new Dictionary<string, SqlTableDefinition>(databaseCollation);
@@ -570,7 +571,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         () => Resources.DatabaseSchema_Load_CouldNotFindSchema,
                                         schemaId);
                                 int id = reader.GetInt32(1);
-                                string name = reader.GetString(2).ToLower();
+                                string name = reader.GetString(2);
                                 SqlType baseType;
                                 if (reader.IsDBNull(3))
                                     baseType = null;
@@ -647,7 +648,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 }
 
                                 int ordinal = reader.GetInt32(3);
-                                string parameterName = reader.GetString(4).ToLower();
+                                string parameterName = reader.GetString(4);
                                 int typeId = reader.GetInt32(5);
                                 if (!typesByID.TryGetValue(typeId, out SqlType parameterType))
                                     throw new DatabaseSchemaException(
@@ -719,6 +720,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             first.Type,
                                             sqlSchema,
                                             first.Name,
+                                            databaseCollation,
                                             parameters);
                                     }))
                             {
@@ -746,9 +748,9 @@ namespace WebApplications.Utilities.Database.Schema
                                         () => Resources.DatabaseSchema_Load_CouldNotFindObjectType,
                                         typeString);
                                 int schemaId = reader.GetInt32(1);
-                                string name = reader.GetString(2).ToLower();
+                                string name = reader.GetString(2);
                                 int ordinal = reader.GetInt32(3);
-                                string columnName = reader.GetString(4).ToLower();
+                                string columnName = reader.GetString(4);
                                 int typeId = reader.GetInt32(5);
                                 if (!typesByID.TryGetValue(typeId, out SqlType sqlType))
                                     throw new DatabaseSchemaException(
@@ -844,7 +846,8 @@ namespace WebApplications.Utilities.Database.Schema
                                             sqlSchema,
                                             first.Name,
                                             columns,
-                                            tableType);
+                                            tableType,
+                                            databaseCollation);
                                     }))
                             {
                                 Debug.Assert(table != null);

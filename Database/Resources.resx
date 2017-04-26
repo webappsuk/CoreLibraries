@@ -357,4 +357,16 @@
   <data name="Out_SetParameter_AlreadyInUse" xml:space="preserve">
     <value>This value is already being used by a parameter.</value>
   </data>
+  <data name="SqlBatch_CheckState_Executing" xml:space="preserve">
+    <value>Cannot add to the batch whilst it is executing.</value>
+  </data>
+  <data name="SqlBatch_CheckState_Completed" xml:space="preserve">
+    <value>Cannot add to a batch is completed.</value>
+  </data>
+  <data name="SqlBatch_AddCommand_NoCommonConnections" xml:space="preserve">
+    <value>There are no connections common to all programs added to the batch.</value>
+  </data>
+  <data name="SqlBatch_ExecuteAsync_Empty" xml:space="preserve">
+    <value>Cannot execute an empty batch.</value>
+  </data>
 </root>

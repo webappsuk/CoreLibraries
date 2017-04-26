@@ -91,8 +91,7 @@ namespace WebApplications.Utilities.Database
             /// <summary>
             /// The registration for cancellation.
             /// </summary>
-            [CanBeNull]
-            private IDisposable _registration;
+            private CancellationTokenRegistration _registration;
 
             private bool _cancelled;
 
@@ -101,7 +100,7 @@ namespace WebApplications.Utilities.Database
             /// </summary>
             public void Dispose()
             {
-                Interlocked.Exchange(ref _registration, null)?.Dispose();
+                _registration.Dispose();
                 Interlocked.Exchange(ref Reader, null)?.Dispose();
                 Interlocked.Exchange(ref Command, null)?.Dispose();
                 Interlocked.Exchange(ref Connection, null)?.Dispose();
@@ -407,6 +406,7 @@ namespace WebApplications.Utilities.Database
                     CommandType = CommandType.StoredProcedure,
                     CommandTimeout = (int)CommandTimeout.TotalSeconds
                 };
+                disposer.CommandTimeout = CommandTimeout;
                 _setSqlParameterCollection(disposer.Command, _parameters);
                 disposer.OutputParameters = _outputParameters;
                 return disposer;
@@ -458,12 +458,8 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgramMapping mapping,
             TimeSpan commandTimeout)
         {
-            if (program == null) throw new ArgumentNullException(nameof(program));
-            if (mapping == null) throw new ArgumentNullException(nameof(mapping));
-            if (commandTimeout < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(commandTimeout));
-
-            _program = program;
-            _mapping = mapping;
+            _program = program ?? throw new ArgumentNullException(nameof(program));
+            _mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
             CommandTimeout = commandTimeout;
             // ReSharper disable once AssignNullToNotNullAttribute
             _parameters = _createSqlParameterCollection();
@@ -473,19 +469,26 @@ namespace WebApplications.Utilities.Database
         ///   Gets or sets the command timeout.
         ///   This is the time to wait for the program to execute.
         /// </summary>
+        /// <remarks>
+        /// Set to <see cref="TimeSpan.Zero"/> or <see cref="Timeout.InfiniteTimeSpan"/> to indicate no limit.
+        /// Set to a negative time to reset back to the default timeout for the program.
+        /// </remarks>
         /// <value>
-        ///   The time to wait (in seconds) for the command to execute.
+        ///   The time to wait for the command to execute.
         /// </value>
         public TimeSpan CommandTimeout
         {
-            get { return _commandTimeout; }
+            get => _commandTimeout;
             set
             {
                 if (_commandTimeout == value)
                     return;
-                _commandTimeout = value < TimeSpan.Zero
-                    ? TimeSpan.FromSeconds(30)
-                    : value;
+                if (value == Timeout.InfiniteTimeSpan)
+                    _commandTimeout = TimeSpan.Zero;
+                else if (value < TimeSpan.Zero)
+                    _commandTimeout = _program.DefaultCommandTimeout;
+                else
+                    _commandTimeout = value;
             }
         }
 
@@ -514,9 +517,7 @@ namespace WebApplications.Utilities.Database
 
             lock (_parameters)
             {
-                parameterName = parameterName.ToLower();
-
-                int index = _parameters.IndexOf(parameterName);
+                int index = _parameters.IndexOf(parameterName, _mapping.Definition.ParameterNameComparer);
                 SqlParameter parameter;
                 if (index < 0)
                 {
@@ -577,8 +578,6 @@ namespace WebApplications.Utilities.Database
 
             lock (_parameters)
             {
-                parameterName = parameterName.ToLower();
-
                 // Find parameter definition
                 SqlProgramParameter parameterDefinition;
                 if (!_mapping.Definition.TryGetParameter(parameterName, out parameterDefinition))
@@ -590,7 +589,7 @@ namespace WebApplications.Utilities.Database
                 Debug.Assert(parameterDefinition != null);
 
                 // Find or create SQL Parameter.
-                int index = _parameters.IndexOf(parameterName);
+                int index = _parameters.IndexOf(parameterName, _mapping.Definition.ParameterNameComparer);
                 SqlParameter parameter = index < 0
                     ? _parameters.Add(parameterDefinition.CreateSqlParameter())
                     : _parameters[index];
@@ -627,12 +626,13 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         private Task<IDisposable> WaitSemaphoresAsync(CancellationToken token = default(CancellationToken))
         {
+            // NOTE! Do NOT reorder these without also reordering the semaphores in SqlBatch.ExecuteInternal
             return AsyncSemaphore.WaitAllAsync(
                 token,
-                _program.Semaphore,
-                _mapping.Connection.Semaphore,
-                _program.Connection.ConnectionSemaphore,
-                _program.Connection.DatabaseSemaphore);
+                _mapping.Connection.Semaphore /* Connection */,
+                _program.Connection.ConnectionSemaphore /* Load Balanced Connection */,
+                _program.Connection.DatabaseSemaphore /* Database */,
+                _program.Semaphore /* Program */);
         }
 
         /// <summary>

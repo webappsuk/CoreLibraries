@@ -43,6 +43,15 @@ namespace WebApplications.Utilities.Database.Schema
     public sealed class SqlProgramDefinition : DatabaseSchemaEntity<SqlProgramDefinition>
     {
         /// <summary>
+        /// Gets the parameter name comparer.
+        /// </summary>
+        /// <value>
+        /// The parameter name comparer.
+        /// </value>
+        [NotNull]
+        public IEqualityComparer<string> ParameterNameComparer { get; }
+
+        /// <summary>
         /// The properties used for calculating differences.
         /// </summary>
         [UsedImplicitly]
@@ -76,21 +85,23 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="type">The type of program.</param>
         /// <param name="sqlSchema">The schema.</param>
         /// <param name="name">The <see cref="SqlProgramDefinition.Name">program name</see>.</param>
+        /// <param name="databaseCollation">The database collation.</param>
         /// <param name="parameters">The parameters.</param>
+        /// <exception cref="System.ArgumentNullException">parameters</exception>
         internal SqlProgramDefinition(
             SqlObjectType type,
             [NotNull] SqlSchema sqlSchema,
             [NotNull] string name,
+            [NotNull] SqlCollation databaseCollation,
             [NotNull] params SqlProgramParameter[] parameters)
             : base(sqlSchema, name)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
-
+            Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+            ParameterNameComparer = databaseCollation ?? throw new ArgumentNullException(nameof(databaseCollation));
             Type = type;
             Name = name;
-            Parameters = parameters;
             // ReSharper disable once PossibleNullReferenceException
-            _parametersByName = parameters.ToDictionary(p => p.FullName, StringComparer.InvariantCultureIgnoreCase);
+            _parametersByName = parameters.ToDictionary(p => p.FullName, databaseCollation);
         }
 
         /// <summary>
@@ -110,7 +121,7 @@ namespace WebApplications.Utilities.Database.Schema
         [CanBeNull]
         public SqlProgramParameter GetParameter([NotNull] string parameterName)
         {
-            if (parameterName == null) throw new ArgumentNullException("parameterName");
+            if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
 
             SqlProgramParameter parameter;
             return _parametersByName.TryGetValue(parameterName, out parameter)
@@ -130,7 +141,7 @@ namespace WebApplications.Utilities.Database.Schema
         [ContractAnnotation("=>true, parameter:notnull;=>false, parameter:null")]
         public bool TryGetParameter([NotNull] string parameterName, out SqlProgramParameter parameter)
         {
-            if (parameterName == null) throw new ArgumentNullException("parameterName");
+            if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
 
             return _parametersByName.TryGetValue(parameterName, out parameter);
         }
@@ -148,11 +159,11 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         /// <exception cref="LoggingException">Parameter counts not equal.</exception>
         [NotNull]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(
+        public IReadOnlyList<SqlProgramParameter> ValidateParameters(
             bool validateOrder,
             [NotNull] params string[] parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             return ValidateParameters(parameters.Select(p => new KeyValuePair<string, Type>(p, null)), validateOrder);
         }
@@ -170,7 +181,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         /// <exception cref="LoggingException">Parameter counts not equal.</exception>
         [NotNull]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(
+        public IReadOnlyList<SqlProgramParameter> ValidateParameters(
             [NotNull] IEnumerable<string> parameters,
             bool validateOrder = false)
         {
@@ -189,8 +200,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The supplied parameters count did not match the parameters of the SQL program.
         /// </exception>
         [NotNull]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(
-            [NotNull] params Type[] parameters)
+        public IReadOnlyList<SqlProgramParameter> ValidateParameters([NotNull] params Type[] parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, Type>(null, t)), true);
         }
@@ -207,8 +217,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The supplied <paramref name="parameters"/> count did not match the parameters of the SQL program.
         /// </exception>
         [NotNull]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(
-            [NotNull] IEnumerable<Type> parameters)
+        public IReadOnlyList<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<Type> parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, Type>(null, t)), true);
         }
@@ -226,43 +235,26 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] IEnumerable<string> names,
             [NotNull] params Type[] types)
         {
-            if (names == null) throw new ArgumentNullException("names");
-            if (types == null) throw new ArgumentNullException("types");
+            if (names == null) throw new ArgumentNullException(nameof(names));
+            if (types == null) throw new ArgumentNullException(nameof(types));
 
-            List<Type> t = types.ToList();
+            string[] namesArr = names as string[] ?? names.ToArray();
+            types = types.ToArray();
 
-            names = names.Enumerate();
-            int nCount = names.Count();
-            int tCount = t.Count();
-            if (nCount != tCount)
+            if (namesArr.Length != types.Length)
                 throw new LoggingException(
                     LoggingLevel.Critical,
                     () => Resources.SqlProgramDefinition_ToKVP_TypeAndNameCountNotEqual,
-                    nCount,
-                    tCount);
+                    namesArr.Length,
+                    types.Length);
 
-            // Build a parameters collection for validation.
-            List<KeyValuePair<string, Type>> parameters = new List<KeyValuePair<string, Type>>();
-            using (IEnumerator<string> ne = names.GetEnumerator())
-            using (List<Type>.Enumerator te = t.GetEnumerator())
-                do
-                {
-                    if (!te.MoveNext())
-                    {
-                        // Sanity check
-                        if (ne.MoveNext())
-                            throw new LoggingException(
-                                LoggingLevel.Critical,
-                                () => Resources.SqlProgramDefinition_ToKVP_TypeAndNameCountNotEqual,
-                                nCount,
-                                tCount);
-                        break;
-                    }
-                    Type type = te.Current;
-                    string name = (ne.MoveNext()) ? ne.Current : null;
+            KeyValuePair<string, Type>[] parameters = new KeyValuePair<string, Type>[namesArr.Length];
 
-                    parameters.Add(new KeyValuePair<string, Type>(name, type));
-                } while (true);
+            for (int i = 0; i < namesArr.Length; i++)
+            {
+                parameters[i] = new KeyValuePair<string, Type>(namesArr[i], types[i]);
+            }
+
             return parameters;
         }
 
@@ -276,7 +268,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The supplied parameters count did not match the parameters of the SQL program.
         /// </exception>
         [NotNull]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(
+        public IReadOnlyList<SqlProgramParameter> ValidateParameters(
             [NotNull] IEnumerable<string> names,
             [NotNull] params Type[] types)
         {
@@ -307,18 +299,18 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>The parameter type does not accept the CLR type specified.</para>
         /// </exception>
         [NotNull]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(
+        public IReadOnlyList<SqlProgramParameter> ValidateParameters(
             [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters,
             bool validateOrder = false)
         {
             if (parameters == null)
-                return Enumerable.Empty<SqlProgramParameter>();
+                return Array<SqlProgramParameter>.Empty;
 
             parameters = parameters.Enumerate();
 
             int sCount = parameters.Count();
             if (sCount < 1)
-                return Enumerable.Empty<SqlProgramParameter>();
+                return Array<SqlProgramParameter>.Empty;
 
             int dCount = Parameters.Count();
             if (dCount < sCount)
@@ -365,7 +357,7 @@ namespace WebApplications.Utilities.Database.Schema
                         string name = p2.Current.Key;
                         // Only check name if not null.
                         if ((name != null) &&
-                            (parameter.FullName != (name = name.ToLower())))
+                            !ParameterNameComparer.Equals(parameter.FullName, name))
                             throw new LoggingException(
                                 LoggingLevel.Critical,
                                 () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
@@ -399,7 +391,7 @@ namespace WebApplications.Utilities.Database.Schema
                         FullName);
 
                 SqlProgramParameter parameter;
-                string name = kvp.Key.ToLower();
+                string name = kvp.Key;
                 if (!_parametersByName.TryGetValue(name, out parameter))
                     throw new LoggingException(
                         LoggingLevel.Critical,
@@ -435,8 +427,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The parameters that were validated (in the order specified).
         /// </returns>
         [NotNull]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(
-            [NotNull] params SqlDbType[] parameters)
+        public IReadOnlyList<SqlProgramParameter> ValidateParameters([NotNull] params SqlDbType[] parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, SqlDbType>(null, t)), true);
         }
@@ -449,8 +440,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </param>
         /// <returns>The parameters that were validated (in the order specified).</returns>
         [NotNull]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(
-            [NotNull] IEnumerable<SqlDbType> parameters)
+        public IReadOnlyList<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<SqlDbType> parameters)
         {
             return ValidateParameters(parameters.Select(t => new KeyValuePair<string, SqlDbType>(null, t)), true);
         }
@@ -479,18 +469,18 @@ namespace WebApplications.Utilities.Database.Schema
         ///   <para>Must specify parameter names when <paramref name="validateOrder"/> is <see langword="false"/>.</para>
         /// </exception>
         [NotNull]
-        public IEnumerable<SqlProgramParameter> ValidateParameters(
+        public IReadOnlyList<SqlProgramParameter> ValidateParameters(
             [CanBeNull] IEnumerable<KeyValuePair<string, SqlDbType>> parameters,
             bool validateOrder = false)
         {
             if (parameters == null)
-                return Enumerable.Empty<SqlProgramParameter>();
+                return Array<SqlProgramParameter>.Empty;
 
             parameters = parameters.Enumerate();
 
             int sCount = parameters.Count();
             if (sCount < 1)
-                return Enumerable.Empty<SqlProgramParameter>();
+                return Array<SqlProgramParameter>.Empty;
             // ReSharper restore ConditionIsAlwaysTrueOrFalse
 
             int dCount = Parameters.Count();
@@ -538,7 +528,7 @@ namespace WebApplications.Utilities.Database.Schema
                         string name = p2.Current.Key;
                         // Only check name if not null.
                         if ((name != null) &&
-                            (parameter.FullName != (name = name.ToLower())))
+                            !ParameterNameComparer.Equals(parameter.FullName, name))
                             throw new LoggingException(
                                 LoggingLevel.Critical,
                                 () => Resources.SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist,
@@ -568,7 +558,7 @@ namespace WebApplications.Utilities.Database.Schema
                         FullName);
 
                 SqlProgramParameter parameter;
-                string name = kvp.Key.ToLower();
+                string name = kvp.Key;
                 if (!_parametersByName.TryGetValue(name, out parameter))
                     throw new LoggingException(
                         LoggingLevel.Critical,

@@ -59,7 +59,7 @@ namespace WebApplications.Utilities.Database
         internal readonly string DatabaseId;
 
         /// <summary>
-        /// The semaphore for controlling the maximum number of concurrent program executions for the databse this connection is in.
+        /// The semaphore for controlling the maximum number of concurrent program executions for the database this connection is in.
         /// </summary>
         [CanBeNull]
         internal readonly AsyncSemaphore DatabaseSemaphore;

@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Diagnostics;
@@ -74,6 +75,32 @@ namespace WebApplications.Utilities.Database
                 Debug.Assert(serializationStream != null);
                 return Serialize.GetFormatter(context, contextState).Deserialize(serializationStream);
             }
+        }
+
+        /// <summary>
+        /// Gets the index of the parameter with the name given, using the string comparer for name equality.
+        /// </summary>
+        /// <param name="collection">The collection to search.</param>
+        /// <param name="parameterName">Name of the parameter to get the index of.</param>
+        /// <param name="comparer">The comparer to use.</param>
+        /// <returns></returns>
+        public static int IndexOf(
+            [NotNull] [ItemNotNull] this SqlParameterCollection collection,
+            [NotNull] string parameterName,
+            [NotNull] IEqualityComparer<string> comparer)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+            if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
+            if (comparer == null) throw new ArgumentNullException(nameof(comparer));
+
+            int index = 0;
+            foreach (SqlParameter parameter in collection)
+            {
+                if (comparer.Equals(parameter.ParameterName, parameterName))
+                    return index;
+                index++;
+            }
+            return -1;
         }
     }
 }

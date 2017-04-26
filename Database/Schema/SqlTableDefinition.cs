@@ -109,24 +109,23 @@ namespace WebApplications.Utilities.Database.Schema
         /// <param name="name">The table/view name.</param>
         /// <param name="columns">The columns.</param>
         /// <param name="tableType">Type of the table.</param>
+        /// <param name="databaseCollation">The database collation.</param>
         internal SqlTableDefinition(
             SqlObjectType type,
             [NotNull] SqlSchema sqlSchema,
             [NotNull] string name,
             [NotNull] SqlColumn[] columns,
-            [CanBeNull] SqlTableType tableType)
+            [CanBeNull] SqlTableType tableType,
+            [NotNull] SqlCollation databaseCollation)
             : base(sqlSchema, name)
             // ReSharper restore PossibleNullReferenceException
         {
-            if (columns == null) throw new ArgumentNullException("columns");
-
+            Columns = columns ?? throw new ArgumentNullException(nameof(columns));
             Type = type;
             Name = name;
             TableType = tableType;
-            Columns = columns;
-            Dictionary<string, SqlColumn> columnsByName = new Dictionary<string, SqlColumn>(
-                columns.Length,
-                StringComparer.InvariantCultureIgnoreCase);
+            Dictionary<string, SqlColumn> columnsByName =
+                new Dictionary<string, SqlColumn>(columns.Length, databaseCollation);
             _columnsByName = columnsByName;
             SqlMetaData = new SqlMetaData[columns.Length];
             if (tableType != null)
@@ -149,10 +148,9 @@ namespace WebApplications.Utilities.Database.Schema
         [CanBeNull]
         public SqlColumn GetColumn([NotNull] string columnName)
         {
-            if (columnName == null) throw new ArgumentNullException("columnName");
+            if (columnName == null) throw new ArgumentNullException(nameof(columnName));
 
-            SqlColumn column;
-            return _columnsByName.TryGetValue(columnName.ToLower(), out column)
+            return _columnsByName.TryGetValue(columnName, out SqlColumn column)
                 ? column
                 : null;
         }
@@ -168,9 +166,9 @@ namespace WebApplications.Utilities.Database.Schema
         [ContractAnnotation("=>true, column:notnull;=>false, column:null")]
         public bool TryGetColumn([NotNull] string columnName, out SqlColumn column)
         {
-            if (columnName == null) throw new ArgumentNullException("columnName");
+            if (columnName == null) throw new ArgumentNullException(nameof(columnName));
 
-            return _columnsByName.TryGetValue(columnName.ToLower(), out column);
+            return _columnsByName.TryGetValue(columnName, out column);
         }
     }
 }
