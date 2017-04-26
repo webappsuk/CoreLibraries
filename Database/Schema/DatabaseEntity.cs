@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -57,6 +57,20 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         protected static readonly MethodInfo DifferenceAddMethod =
             InfoHelper.GetMethodInfo<List<Difference>>(l => l.Add(default(Difference)), true);
+
+        /// <summary>
+        /// The <see cref="MethodInfo"/> for <see cref="StringComparer.GetHashCode(string)"/>.
+        /// </summary>
+        [NotNull]
+        protected static readonly MethodInfo StrCompGetHashCodeMethod =
+            InfoHelper.GetMethodInfo<StringComparer>(sc => sc.GetHashCode(default(string)), true);
+
+        /// <summary>
+        /// The <see cref="MethodInfo"/> for <see cref="StringComparer.GetHashCode(string)"/>.
+        /// </summary>
+        [NotNull]
+        protected static readonly MethodInfo StrCompEqualsMethod =
+            InfoHelper.GetMethodInfo<StringComparer>(sc => sc.Equals(default(string), default(string)), true);
 
         /// <summary>
         /// A hash code.
@@ -275,12 +289,11 @@ namespace WebApplications.Utilities.Database.Schema
                 else
                     eq = le.Type == typeof(string)
                         ? (Expression)
-                            Expression.Call(
-                                Expression.Constant(StringComparer.InvariantCultureIgnoreCase),
-                                "Equals",
-                                null,
-                                le,
-                                re)
+                        Expression.Call(
+                            Expression.Constant(StringComparer.InvariantCultureIgnoreCase),
+                            StrCompEqualsMethod,
+                            le,
+                            re)
                         : Expression.Equal(le, re);
 
                 adExpressions.Add(
@@ -334,10 +347,9 @@ namespace WebApplications.Utilities.Database.Schema
                     propertyExpression.Type == typeof(string)
                         ? Expression.Call(
                             Expression.Constant(StringComparer.InvariantCultureIgnoreCase),
-                            "GetHashCode",
-                            null,
+                            StrCompGetHashCodeMethod,
                             propertyExpression)
-                        : Expression.Call(propertyExpression, "GetHashCode", Array<Type>.Empty),
+                        : Expression.Call(propertyExpression, "GetHashCode", null, Array<Expression>.Empty),
                     typeof(long));
 
             // Wrap with null check if necessary

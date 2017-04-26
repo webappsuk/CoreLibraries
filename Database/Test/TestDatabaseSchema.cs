@@ -66,13 +66,13 @@ namespace WebApplications.Utilities.Database.Test
                 await DatabaseSchema.GetOrAdd((Connection) LocalDatabaseCopyConnectionString);
 
             // Asserting that Get or Add returns the same one (it should)
-            Assert.AreEqual(databaseSchema, databaseSchema2);
+            Assert.AreSame(databaseSchema, databaseSchema2);
 
             // Asserting that 2 seperate connection strings returns 2 different Database Schemas
-            Assert.AreNotEqual(databaseSchema,databaseSchema3);
+            Assert.AreNotSame(databaseSchema, databaseSchema3);
 
             // Asserting that despite the 2 schemas being different, their inner Schema is identical
-            Assert.AreEqual(databaseSchema.Current, databaseSchema3.Current);
+            Assert.AreSame(databaseSchema.Current, databaseSchema3.Current);
         }
 
         [TestMethod]

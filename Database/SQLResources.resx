@@ -118,105 +118,139 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="RetrieveSchema10" xml:space="preserve">
-    <value>SELECT	schema_id [SchemaID],
-	name [Name]
-FROM sys.schemas
+    <value>SELECT	S.[schema_id] AS [SchemaID],
+	S.[name] AS [Name]
+FROM	sys.schemas AS S;
 
-SELECT	schema_id [SchemaID],
-	user_type_id [ID],
-	name [Name],
-	CASE WHEN system_type_id&lt;&gt;user_type_id THEN CONVERT(int, system_type_id) ELSE NULL END [BaseID],
-	max_length [MaxLength],
-	precision [Precision],
-	scale [Scale],
-	is_nullable [IsNullable],
-	is_user_defined [IsUserDefined],
-	is_assembly_type [IsCLR],
-	is_table_type [IsTable]
-FROM sys.types T
-ORDER BY BaseID
+SELECT	C.[name] AS [Name], 
+	COLLATIONPROPERTY(C.[name], 'CodePage') AS [CodePage],
+	COLLATIONPROPERTY(C.[name], 'LCID') AS [LCID],
+	COLLATIONPROPERTY(C.[name], 'ComparisonStyle') AS [ComparisonStyle], 
+	COLLATIONPROPERTY(C.[name], 'Version') AS [Version]
+FROM	sys.fn_helpcollations() C;
 
-SELECT	obj.type [ObjectType],
-	obj.schema_id [SchemaID],
-	obj.name [Name],
-	parm.parameter_id [Ordinal],
-	parm.name [ParameterName],
-	parm.user_type_id [TypeID],
-	parm.max_length [MaxLength],
-	parm.precision [Precision],
-	parm.scale [Scale],
-	parm.is_output [IsOutput],
-	parm.is_readonly [IsReadonly]
-FROM sys.objects obj
-LEFT JOIN sys.parameters parm ON parm.object_id = obj.object_id
-WHERE obj.type IN ('FN', 'FS', 'TF', 'IF', 'FT', 'AF', 'P', 'PC', 'X')
-ORDER BY ObjectType, SchemaID, Name, Ordinal
+SELECT	SERVERPROPERTY('collation') [ServerCollation],
+	D.[collation_name] AS [DatabaseCollation]
+FROM	sys.databases AS D
+WHERE	D.[database_id] = DB_ID();
 
-SELECT	obj.type [ObjectType],obj.schema_id [SchemaID],
-	obj.name [Name],
-	c.column_id [Ordinal],
-	c.name [ColumnName],
-	c.user_type_id [TypeID],
-	c.max_length [MaxLength],
-	c.precision [Precision],
-	c.scale [Scale],
-	c.is_nullable [IsNullable],
-	t.user_type_id [TableTypeID]	
-FROM sys.objects obj
-INNER JOIN sys.columns c on obj.object_id = c.object_id
-LEFT JOIN sys.table_types t on t.type_table_object_id = obj.object_id
-WHERE obj.type IN ('U', 'V', 'TT')
-ORDER BY ObjectType, SchemaID, Name, Ordinal</value>
+SELECT	T.[schema_id] AS [SchemaID],
+	T.[user_type_id] AS [ID],
+	T.[name] AS [Name],
+	CASE WHEN T.[system_type_id] &lt;&gt; T.[user_type_id] 
+		THEN CONVERT(int, T.[system_type_id]) 
+		ELSE NULL 
+	END AS [BaseID],
+	T.[max_length] AS [MaxLength],
+	T.[precision] AS [Precision],
+	T.[scale] AS [Scale],
+	T.[is_nullable] AS [IsNullable],
+	T.[is_user_defined] AS [IsUserDefined],
+	T.[is_assembly_type] AS [IsCLR],
+	T.[is_table_type] AS [IsTable]
+FROM	sys.types AS T
+ORDER BY	[BaseID];
+
+SELECT	O.[type] AS [ObjectType],
+	O.[schema_id] AS [SchemaID],
+	O.[name] AS [Name],
+	P.[parameter_id] AS [Ordinal],
+	P.[name] AS [ParameterName],
+	P.[user_type_id] AS [TypeID],
+	P.[max_length] AS [MaxLength],
+	P.[precision] AS [Precision],
+	P.[scale] AS [Scale],
+	P.[is_output] AS [IsOutput],
+	P.[is_readonly] AS [IsReadonly]
+FROM	sys.objects AS O
+	LEFT JOIN sys.parameters AS P ON O.[object_id] = P.[object_id]
+WHERE	O.[type] IN ('FN', 'FS', 'TF', 'IF', 'FT', 'AF', 'P', 'PC', 'X')
+ORDER BY	O.[type], O.[schema_id], O.[name], P.[parameter_id];
+
+SELECT	O.[type] AS [ObjectType],
+	O.[schema_id] AS [SchemaID],
+	O.[name] AS [Name],
+	C.[column_id] [Ordinal],
+	C.[name] [ColumnName],
+	C.[user_type_id] [TypeID],
+	C.[max_length] [MaxLength],
+	C.[precision] [Precision],
+	C.[scale] [Scale],
+	C.[is_nullable] [IsNullable],
+	C.[collation_name] [Collation],
+	T.[user_type_id] AS [TableTypeID]
+FROM	sys.objects AS O
+	INNER JOIN sys.columns AS C on O.[object_id] = C.[object_id]
+	LEFT JOIN sys.table_types AS T on T.[type_table_object_id] = O.[object_id]
+WHERE	O.[type] IN ('U', 'V', 'TT')
+ORDER BY	O.[type], O.[schema_id], O.[name], C.[column_id];</value>
     <comment>Used to retrieve schema from a database.</comment>
   </data>
   <data name="RetrieveSchema9" xml:space="preserve">
-    <value>SELECT	schema_id [SchemaID],
-	name [Name]
-FROM sys.schemas
+    <value>SELECT	S.[schema_id] AS [SchemaID],
+	S.[name] AS [Name]
+FROM	sys.schemas AS S;
 
-SELECT	schema_id [SchemaID],
-	user_type_id [ID],
-	name [Name],
-	CASE WHEN system_type_id&lt;&gt;user_type_id THEN CONVERT(int, system_type_id) ELSE NULL END [BaseID],
-	max_length [MaxLength],
-	precision [Precision],
-	scale [Scale],
-	is_nullable [IsNullable],
-	is_user_defined [IsUserDefined],
-	is_assembly_type [IsCLR],
-	CAST(0 as bit) [IsTable]
-FROM sys.types T
-ORDER BY BaseID
+SELECT	C.[name] AS [Name],
+	COLLATIONPROPERTY(C.[name], 'CodePage') AS [CodePage],
+	COLLATIONPROPERTY(C.[name], 'LCID') AS [LCID],
+	COLLATIONPROPERTY(C.[name], 'ComparisonStyle') AS [ComparisonStyle], 
+	COLLATIONPROPERTY(C.[name], 'Version') AS [Version]
+FROM	sys.fn_helpcollations() C;
 
-SELECT	obj.type [ObjectType],
-	obj.schema_id [SchemaID],
-	obj.name [Name],
-	parm.parameter_id [Ordinal],
-	parm.name [ParameterName],
-	parm.user_type_id [TypeID],
-	parm.max_length [MaxLength],
-	parm.precision [Precision],
-	parm.scale [Scale],
-	parm.is_output [IsOutput],
-	CAST(0 as bit) [IsReadonly]
-FROM sys.objects obj
-LEFT JOIN sys.parameters parm ON parm.object_id = obj.object_id
-WHERE obj.type IN ('FN', 'FS', 'TF', 'IF', 'FT', 'AF', 'P', 'PC', 'X')
-ORDER BY ObjectType, SchemaID, Name, Ordinal
+SELECT	SERVERPROPERTY('collation') [ServerCollation],
+	D.[collation_name] AS [DatabaseCollation]
+FROM	sys.databases AS D
+WHERE	D.[database_id] = DB_ID();
 
-SELECT	obj.type [ObjectType],obj.schema_id [SchemaID],
-	obj.name [Name],
-	c.column_id [Ordinal],
-	c.name [ColumnName],
-	c.user_type_id [TypeID],
-	c.max_length [MaxLength],
-	c.precision [Precision],
-	c.scale [Scale],
-	c.is_nullable [IsNullable],
-	null [TableTypeID]	
-FROM sys.objects obj
-INNER JOIN sys.columns c on obj.object_id = c.object_id
-WHERE obj.type IN ('U', 'V')
-ORDER BY ObjectType, SchemaID, Name, Ordinal</value>
+SELECT	T.[schema_id] AS [SchemaID],
+	T.[user_type_id] AS [ID],
+	T.[name] AS [Name],
+	CASE WHEN T.[system_type_id] &lt;&gt; T.[user_type_id] 
+		THEN CONVERT(int, T.[system_type_id]) 
+		ELSE NULL 
+	END AS [BaseID],
+	T.[max_length] AS [MaxLength],
+	T.[precision] AS [Precision],
+	T.[scale] AS [Scale],
+	T.[is_nullable] AS [IsNullable],
+	T.[is_user_defined] AS [IsUserDefined],
+	T.[is_assembly_type] AS [IsCLR],
+	CAST(0 as bit) AS [IsTable]
+FROM	sys.types AS T
+ORDER BY	[BaseID];
+
+SELECT	O.[type] AS [ObjectType],
+	O.[schema_id] AS [SchemaID],
+	O.[name] AS [Name],
+	P.[parameter_id] AS [Ordinal],
+	P.[name] AS [ParameterName],
+	P.[user_type_id] AS [TypeID],
+	P.[max_length] AS [MaxLength],
+	P.[precision] AS [Precision],
+	P.[scale] AS [Scale],
+	P.[is_output] AS [IsOutput],
+	CAST(0 AS bit) AS [IsReadonly]
+FROM	sys.objects AS O
+	LEFT JOIN sys.parameters AS P ON O.[object_id] = P.[object_id]
+WHERE	O.[type] IN ('FN', 'FS', 'TF', 'IF', 'FT', 'AF', 'P', 'PC', 'X')
+ORDER BY	O.[type], O.[schema_id], O.[name], P.[parameter_id];
+
+SELECT	O.[type] AS [ObjectType],
+	O.[schema_id] AS [SchemaID],
+	O.[name] AS [Name],
+	C.[column_id] [Ordinal],
+	C.[name] [ColumnName],
+	C.[user_type_id] [TypeID],
+	C.[max_length] [MaxLength],
+	C.[precision] [Precision],
+	C.[scale] [Scale],
+	C.[is_nullable] [IsNullable],
+	C.[collation_name] [Collation],
+	NULL AS [TableTypeID]
+FROM	sys.objects AS O
+	INNER JOIN sys.columns AS C on O.[object_id] = C.[object_id]
+WHERE	O.[type] IN ('U', 'V', 'TT')
+ORDER BY	O.[type], O.[schema_id], O.[name], C.[column_id];</value>
   </data>
 </root>

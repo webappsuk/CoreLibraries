@@ -81,11 +81,9 @@ namespace WebApplications.Utilities.Database.Schema
                 int schemaID,
                 [NotNull] string name)
             {
-                if (name == null) throw new ArgumentNullException("name");
-
+                Name = name ?? throw new ArgumentNullException(nameof(name));
                 Type = type;
                 SchemaID = schemaID;
-                Name = name;
             }
 
             /// <summary>
@@ -100,6 +98,13 @@ namespace WebApplications.Utilities.Database.Schema
             /// <param name="parameterSize">Size of the parameter.</param>
             /// <param name="parameterDirection">The parameter direction.</param>
             /// <param name="isReadonly">if set to <see langword="true" /> [is readonly].</param>
+            /// <exception cref="System.ArgumentNullException">
+            /// parameterName
+            /// or
+            /// parameterType
+            /// or
+            /// name
+            /// </exception>
             public ProgramDefinitionData(
                 SqlObjectType type,
                 int schemaID,
@@ -111,13 +116,12 @@ namespace WebApplications.Utilities.Database.Schema
                 ParameterDirection parameterDirection,
                 bool isReadonly)
             {
-                if (name == null) throw new ArgumentNullException("name");
-                if (parameterName == null) throw new ArgumentNullException("parameterName");
-                if (parameterType == null) throw new ArgumentNullException("parameterType");
+                if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
+                if (parameterType == null) throw new ArgumentNullException(nameof(parameterType));
 
                 Type = type;
                 SchemaID = schemaID;
-                Name = name;
+                Name = name ?? throw new ArgumentNullException(nameof(name));
                 Parameter = new SqlProgramParameter(
                     ordinal,
                     parameterName,
@@ -165,7 +169,8 @@ namespace WebApplications.Utilities.Database.Schema
             /// <param name="columnType">Type of the column.</param>
             /// <param name="columnSize">Size of the column.</param>
             /// <param name="isNullable">if set to <see langword="true" /> [is nullable].</param>
-            /// <param name="tableTypeID">The ID of the associated <see cref="SqlType"/> if this table defines a <see cref="SqlType"/>.</param>
+            /// <param name="collation">The collation.</param>
+            /// <param name="tableTypeID">The ID of the associated <see cref="SqlType" /> if this table defines a <see cref="SqlType" />.</param>
             public TableDefinitionData(
                 SqlObjectType type,
                 int schemaID,
@@ -175,16 +180,16 @@ namespace WebApplications.Utilities.Database.Schema
                 [NotNull] SqlType columnType,
                 SqlTypeSize columnSize,
                 bool isNullable,
+                SqlCollation collation,
                 int? tableTypeID)
             {
-                if (name == null) throw new ArgumentNullException("name");
-                if (columnName == null) throw new ArgumentNullException("columnName");
-                if (columnType == null) throw new ArgumentNullException("columnType");
+                if (columnName == null) throw new ArgumentNullException(nameof(columnName));
+                if (columnType == null) throw new ArgumentNullException(nameof(columnType));
 
                 Type = type;
                 SchemaID = schemaID;
-                Name = name;
-                Column = new SqlColumn(ordinal, columnName, columnType, columnSize, isNullable);
+                Name = name ?? throw new ArgumentNullException(nameof(name));
+                Column = new SqlColumn(ordinal, columnName, columnType, columnSize, isNullable, collation);
                 TableTypeID = tableTypeID;
             }
 
@@ -292,36 +297,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// <summary>
         /// Holds all the SQL schemas (<see cref="SqlSchema"/>, using the <see cref="SqlSchema.ID"/> as the key.
         /// </summary>
-        public IReadOnlyDictionary<int, SqlSchema> SchemasByID
-        {
-            get { return Current.SchemasByID; }
-        }
-
-        /// <summary>
-        ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema, which are stored with the <see cref="T:WebApplications.Utilities.Database.Schema.SqlProgramDefinition.FullName">full
-        ///   name</see> and <see cref="SqlProgramDefinition.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
-        /// </summary>
-        public IReadOnlyDictionary<string, SqlProgramDefinition> ProgramDefinitionsByName
-        {
-            get { return Current.ProgramDefinitionsByName; }
-        }
-
-        /// <summary>
-        ///   Holds all the table and view definitions (<see cref="SqlTableDefinition"/>) for the schema.
-        /// </summary>
-        public IReadOnlyDictionary<string, SqlTableDefinition> TablesByName
-        {
-            get { return Current.TablesByName; }
-        }
-
-        /// <summary>
-        ///   Holds all the types for the schema, which are stored with the <see cref="T:WebApplications.Utilities.Database.Schema.SqlType.FullName">full
-        ///   name</see> and <see cref="SqlType.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
-        /// </summary>
-        public IReadOnlyDictionary<string, SqlType> TypesByName
-        {
-            get { return Current.TypesByName; }
-        }
+        public IReadOnlyDictionary<int, SqlSchema> SchemasByID => Current.SchemasByID;
 
         /// <summary>
         ///   Gets the SQL schemas that were loaded from the database.
@@ -329,10 +305,36 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   An enumerable containing the schema names in ascended order.
         /// </value>
-        public IEnumerable<SqlSchema> Schemas
-        {
-            get { return Current.Schemas; }
-        }
+        public IReadOnlyCollection<SqlSchema> Schemas => Current.Schemas;
+
+        /// <summary>
+        ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema, which are stored with the <see cref="T:WebApplications.Utilities.Database.Schema.SqlProgramDefinition.FullName">full
+        ///   name</see> and <see cref="SqlProgramDefinition.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
+        /// </summary>
+        public IReadOnlyDictionary<string, SqlProgramDefinition> ProgramsByName => Current.ProgramsByName;
+
+        /// <summary>
+        ///   Gets the program definitions.
+        /// </summary>
+        /// <value>The program definitions.</value>
+        public IReadOnlyCollection<SqlProgramDefinition> Programs => Current.Programs;
+
+        /// <summary>
+        ///   Holds all the table and view definitions (<see cref="SqlTableDefinition"/>) for the schema.
+        /// </summary>
+        public IReadOnlyDictionary<string, SqlTableDefinition> TablesByName => Current.TablesByName;
+
+        /// <summary>
+        ///   Gets the table and view definitions.
+        /// </summary>
+        /// <value>The table and view definitions.</value>
+        public IReadOnlyCollection<SqlTableDefinition> Tables => Current.Tables;
+
+        /// <summary>
+        ///   Holds all the types for the schema, which are stored with the <see cref="T:WebApplications.Utilities.Database.Schema.SqlType.FullName">full
+        ///   name</see> and <see cref="SqlType.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
+        /// </summary>
+        public IReadOnlyDictionary<string, SqlType> TypesByName => Current.TypesByName;
 
         /// <summary>
         ///   Gets the SQL types from the schema.
@@ -340,36 +342,41 @@ namespace WebApplications.Utilities.Database.Schema
         /// <value>
         ///   The <see cref="SqlType">type</see>.
         /// </value>
-        public IEnumerable<SqlType> Types
-        {
-            get { return Current.Types; }
-        }
+        public IReadOnlyCollection<SqlType> Types => Current.Types;
 
         /// <summary>
-        ///   Gets the program definitions.
+        /// Holds all the collations for the schema
         /// </summary>
-        /// <value>The program definitions.</value>
-        public IEnumerable<SqlProgramDefinition> ProgramDefinitions
-        {
-            get { return Current.ProgramDefinitions; }
-        }
+        public IReadOnlyDictionary<string, SqlCollation> CollationsByName => Current.CollationsByName;
 
         /// <summary>
-        ///   Gets the table and view definitions.
+        /// Gets the collations for the schema.
         /// </summary>
-        /// <value>The table and view definitions.</value>
-        public IEnumerable<SqlTableDefinition> Tables
-        {
-            get { return Current.Tables; }
-        }
+        /// <value>
+        /// The collations.
+        /// </value>
+        public IReadOnlyCollection<SqlCollation> Collations => Current.Collations;
+
+        /// <summary>
+        /// Gets the server collation.
+        /// </summary>
+        /// <value>
+        /// The server collation.
+        /// </value>
+        public SqlCollation ServerCollation => Current.ServerCollation;
+
+        /// <summary>
+        /// Gets the database collation.
+        /// </summary>
+        /// <value>
+        /// The database collation.
+        /// </value>
+        public SqlCollation DatabaseCollation => Current.DatabaseCollation;
 
         /// <summary>
         ///   Unique identity of the schema.
         /// </summary>
-        public Guid Guid
-        {
-            get { return Current.Guid; }
-        }
+        public Guid Guid => Current.Guid;
         #endregion
 
         /// <summary>
@@ -385,7 +392,7 @@ namespace WebApplications.Utilities.Database.Schema
             bool forceReload = false,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (connection == null) throw new ArgumentNullException("connection");
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
 
             // ReSharper disable PossibleNullReferenceException
             return _databaseSchemas.GetOrAdd(
@@ -429,33 +436,34 @@ namespace WebApplications.Utilities.Database.Schema
                     (!forceReload || (current.Loaded > requested)))
                 {
                     // Rethrow load errors.
-                    if (current.ExceptionDispatchInfo != null)
-                        current.ExceptionDispatchInfo.Throw();
+                    current.ExceptionDispatchInfo?.Throw();
 
                     Debug.Assert(current.Schema != null);
                     return this;
                 }
-
-                // Create dictionaries
-                Dictionary<int, SqlSchema> sqlSchemas = new Dictionary<int, SqlSchema>();
-                Dictionary<int, SqlType> typesByID = new Dictionary<int, SqlType>();
-                Dictionary<string, SqlType> typesByName =
-                    new Dictionary<string, SqlType>(StringComparer.InvariantCultureIgnoreCase);
-                Dictionary<string, SqlProgramDefinition> programDefinitions =
-                    new Dictionary<string, SqlProgramDefinition>(StringComparer.InvariantCultureIgnoreCase);
-                Dictionary<string, SqlTableDefinition> tables =
-                    new Dictionary<string, SqlTableDefinition>(StringComparer.InvariantCultureIgnoreCase);
-
+                
                 try
                 {
+                    // Create dictionaries
+                    Dictionary<int, SqlSchema> sqlSchemas = new Dictionary<int, SqlSchema>();
+                    Dictionary<string, SqlCollation> collationsByName = new Dictionary<string, SqlCollation>();
+                    Dictionary<int, SqlType> typesByID = new Dictionary<int, SqlType>();
+
+                    // The comparer for these dictionaries is the database collation
+                    Dictionary<string, SqlType> typesByName;
+                    Dictionary<string, SqlProgramDefinition> programDefinitions;
+                    Dictionary<string, SqlTableDefinition> tables;
+
+                    SqlCollation serverCollation;
+                    SqlCollation databaseCollation;
+
                     // Open a connection
                     using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
                     {
                         // ReSharper disable once PossibleNullReferenceException
                         await sqlConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-                        Version version;
-                        if (!Version.TryParse(sqlConnection.ServerVersion, out version))
+                        if (!Version.TryParse(sqlConnection.ServerVersion, out Version version))
                             throw new DatabaseSchemaException(
                                 () => Resources.DatabaseSchema_Load_CouldNotParseVersionInformation);
                         Debug.Assert(version != null);
@@ -467,16 +475,14 @@ namespace WebApplications.Utilities.Database.Schema
 
                         string sql = version.Major == 9 ? SQLResources.RetrieveSchema9 : SQLResources.RetrieveSchema10;
 
-                        // Create the command first, as we will reuse on each connection.
-                        using (
-                            SqlCommand command = new SqlCommand(sql, sqlConnection) { CommandType = CommandType.Text })
-                            // Execute command
-                        using (SqlDataReader reader =
-                            // ReSharper disable once PossibleNullReferenceException
-                            await
-                                command.ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken)
-                                    .ConfigureAwait(false))
+                        // Create and execute the command to get the schema.
+                        using (SqlCommand command = new SqlCommand(sql, sqlConnection) { CommandType = CommandType.Text })
+                        using (SqlDataReader reader = await command
+                            .ExecuteReaderAsync(CommandBehavior.SequentialAccess, cancellationToken)
+                            .ConfigureAwait(false))
                         {
+                            Debug.Assert(reader != null);
+
                             /*
                              * Load SQL Schemas
                              */
@@ -491,8 +497,67 @@ namespace WebApplications.Utilities.Database.Schema
                                     () => Resources.DatabaseSchema_Load_CouldNotRetrieveSchemas);
 
                             /*
+                             * Load collations
+                             */
+                            // ReSharper disable once PossibleNullReferenceException
+                            if (!(await reader.NextResultAsync(cancellationToken).ConfigureAwait(false)))
+                                throw new DatabaseSchemaException(
+                                    () => "Ran out of results retrieving collations from database.");
+
+                            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                            {
+                                SqlCollation collation = new SqlCollation(
+                                    // ReSharper disable once AssignNullToNotNullAttribute
+                                    reader.GetString(0),
+                                    reader.GetInt32(1),
+                                    reader.GetInt32(2),
+                                    reader.GetInt32(3),
+                                    reader.GetByte(4));
+                                collationsByName.Add(collation.Name, collation);
+                            }
+
+                            if (collationsByName.Count < 1)
+                                throw new DatabaseSchemaException(
+                                    () => "Could not retrieve collations from database.");
+
+                            /*
+                             * Load server and database collation
+                             */
+                            // ReSharper disable once PossibleNullReferenceException
+                            if (!(await reader.NextResultAsync(cancellationToken).ConfigureAwait(false)))
+                                throw new DatabaseSchemaException(
+                                    () => "Ran out of results retrieving collations from database.");
+
+                            if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                throw new DatabaseSchemaException(
+                                    () => "Could not retrieve server and database collation from database.");
+
+                            string serverCollationName = reader.GetString(0);
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            if (!collationsByName.TryGetValue(serverCollationName, out serverCollation))
+                                throw new DatabaseSchemaException(
+                                    () => "Server collation '{0}' was not found.",
+                                    serverCollationName);
+
+                            string databaseCollationName = reader.GetString(1);
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            if (!collationsByName.TryGetValue(databaseCollationName, out databaseCollation))
+                                throw new DatabaseSchemaException(
+                                    () => "Database collation '{0}' was not found.",
+                                    databaseCollationName);
+
+                            if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                throw new DatabaseSchemaException(
+                                    () => "Unexpected server and database collation returned from database.");
+
+                            typesByName = new Dictionary<string, SqlType>(databaseCollation);
+                            programDefinitions = new Dictionary<string, SqlProgramDefinition>(databaseCollation);
+                            tables = new Dictionary<string, SqlTableDefinition>(databaseCollation);
+
+                            /*
                              * Load types
                              */
+                            // ReSharper disable once PossibleNullReferenceException
                             if (!(await reader.NextResultAsync(cancellationToken).ConfigureAwait(false)))
                                 throw new DatabaseSchemaException(
                                     () => Resources.DatabaseSchema_Load_RanOutOfResultsRetrievingTypes);
@@ -500,9 +565,7 @@ namespace WebApplications.Utilities.Database.Schema
                             while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                             {
                                 int schemaId = reader.GetInt32(0);
-                                SqlSchema sqlSchema;
-                                if (!sqlSchemas.TryGetValue(schemaId, out sqlSchema) ||
-                                    (sqlSchema == null))
+                                if (!sqlSchemas.TryGetValue(schemaId, out SqlSchema sqlSchema))
                                     throw new DatabaseSchemaException(
                                         () => Resources.DatabaseSchema_Load_CouldNotFindSchema,
                                         schemaId);
@@ -567,20 +630,14 @@ namespace WebApplications.Utilities.Database.Schema
                             List<ProgramDefinitionData> programDefinitionData = new List<ProgramDefinitionData>();
                             while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                             {
-                                SqlObjectType type;
                                 string typeString = reader.GetString(0) ?? string.Empty;
-                                if (!ExtendedEnum<SqlObjectType>.TryParse(typeString, true, out type))
+                                if (!ExtendedEnum<SqlObjectType>.TryParse(typeString, true, out SqlObjectType type))
                                     throw new DatabaseSchemaException(
                                         () => Resources.DatabaseSchema_Load_CouldNotFindTypeWhenLoadingPrograms,
                                         typeString);
 
                                 int schemaId = reader.GetInt32(1);
-                                SqlSchema sqlSchema;
-                                if (!sqlSchemas.TryGetValue(schemaId, out sqlSchema))
-                                    throw new DatabaseSchemaException(
-                                        () => Resources.DatabaseSchema_Load_CouldNotFindSchemaWhenLoadingPrograms,
-                                        schemaId);
-                                string name = reader.GetString(2).ToLower();
+                                string name = reader.GetString(2);
 
                                 // If we have a null ordinal, we have no parameters.
                                 if (reader.IsDBNull(3))
@@ -592,9 +649,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 int ordinal = reader.GetInt32(3);
                                 string parameterName = reader.GetString(4).ToLower();
                                 int typeId = reader.GetInt32(5);
-                                SqlType parameterType;
-                                if (!typesByID.TryGetValue(typeId, out parameterType) ||
-                                    (parameterType == null))
+                                if (!typesByID.TryGetValue(typeId, out SqlType parameterType))
                                     throw new DatabaseSchemaException(
                                         () => Resources.DatabaseSchema_Load_ParameterTypeNotFound,
                                         parameterName,
@@ -652,8 +707,7 @@ namespace WebApplications.Utilities.Database.Schema
 
                                         Debug.Assert(sqlSchemas != null);
 
-                                        SqlSchema sqlSchema;
-                                        if (!sqlSchemas.TryGetValue(first.SchemaID, out sqlSchema))
+                                        if (!sqlSchemas.TryGetValue(first.SchemaID, out SqlSchema sqlSchema))
                                             throw new DatabaseSchemaException(
                                                 () =>
                                                     Resources
@@ -686,9 +740,8 @@ namespace WebApplications.Utilities.Database.Schema
                             List<TableDefinitionData> tableDefinitionData = new List<TableDefinitionData>();
                             while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                             {
-                                SqlObjectType type;
                                 string typeString = reader.GetString(0) ?? string.Empty;
-                                if (!ExtendedEnum<SqlObjectType>.TryParse(typeString, true, out type))
+                                if (!ExtendedEnum<SqlObjectType>.TryParse(typeString, true, out SqlObjectType type))
                                     throw new DatabaseSchemaException(
                                         () => Resources.DatabaseSchema_Load_CouldNotFindObjectType,
                                         typeString);
@@ -697,9 +750,7 @@ namespace WebApplications.Utilities.Database.Schema
                                 int ordinal = reader.GetInt32(3);
                                 string columnName = reader.GetString(4).ToLower();
                                 int typeId = reader.GetInt32(5);
-                                SqlType sqlType;
-                                if (!typesByID.TryGetValue(typeId, out sqlType) ||
-                                    (sqlType == null))
+                                if (!typesByID.TryGetValue(typeId, out SqlType sqlType))
                                     throw new DatabaseSchemaException(
                                         () => Resources.DatabaseSchema_Load_ColumnTypeNotFound,
                                         columnName,
@@ -713,7 +764,16 @@ namespace WebApplications.Utilities.Database.Schema
 
                                 bool isNullable = reader.GetBoolean(9);
 
-                                int? tableType = reader.IsDBNull(10) ? null : (int?)reader.GetInt32(10);
+                                string collationName = reader.IsDBNull(10) ? null : reader.GetString(10);
+                                SqlCollation collation = null;
+                                if (collationName != null && !collationsByName.TryGetValue(collationName, out collation))
+                                    throw new DatabaseSchemaException(
+                                        () => "Could not find collation '{0}' when loading the '{1}' column for '{2}'",
+                                        collationName,
+                                        columnName,
+                                        name);
+
+                                int? tableType = reader.IsDBNull(11) ? null : (int?)reader.GetInt32(11);
 
                                 tableDefinitionData.Add(
                                     new TableDefinitionData(
@@ -724,7 +784,8 @@ namespace WebApplications.Utilities.Database.Schema
                                         columnName,
                                         sqlType,
                                         sqlTypeSize,
-                                        isNullable,
+                                        isNullable, 
+                                        collation,
                                         tableType));
                             }
 
@@ -751,12 +812,11 @@ namespace WebApplications.Utilities.Database.Schema
                                         Debug.Assert(first.Name != null);
                                         Debug.Assert(sqlSchemas != null);
 
-                                        SqlSchema sqlSchema;
-                                        if (!sqlSchemas.TryGetValue(first.SchemaID, out sqlSchema))
+                                        if (!sqlSchemas.TryGetValue(first.SchemaID, out SqlSchema sqlSchema))
                                             throw new DatabaseSchemaException(
                                                 () =>
                                                     Resources
-                                                    .DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews,
+                                                        .DatabaseSchema_Load_CouldNotFindSchemaLoadingTablesAndViews,
                                                 first.SchemaID);
                                         Debug.Assert(sqlSchema != null);
 
@@ -765,8 +825,7 @@ namespace WebApplications.Utilities.Database.Schema
                                         {
                                             Debug.Assert(typesByID != null);
 
-                                            SqlType tType;
-                                            if (!typesByID.TryGetValue(first.TableTypeID.Value, out tType))
+                                            if (!typesByID.TryGetValue(first.TableTypeID.Value, out SqlType tType))
                                                 throw new DatabaseSchemaException(
                                                     () => Resources.DatabaseSchema_Load_TableTypeNotFound,
                                                     first.TableTypeID.Value,
@@ -798,7 +857,15 @@ namespace WebApplications.Utilities.Database.Schema
                     }
 
                     // Update the current schema.
-                    _current = new CurrentSchema(Schema.GetOrAdd(sqlSchemas, programDefinitions, tables, typesByName));
+                    _current = new CurrentSchema(
+                        Schema.GetOrAdd(
+                            sqlSchemas,
+                            programDefinitions,
+                            tables,
+                            typesByName,
+                            collationsByName,
+                            serverCollation,
+                            databaseCollation));
 
                     // Always return this
                     return this;
@@ -849,15 +916,21 @@ namespace WebApplications.Utilities.Database.Schema
         }
 
         #region Equalities
+        /// <summary>Determines whether the specified object is equal to the current object.</summary>
+        /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
+        /// <param name="obj">The object to compare with the current object. </param>
+        public override bool Equals(object obj) => Equals(obj as ISchema);
+
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
-        public bool Equals([CanBeNull] ISchema other)
-        {
-            return Current.Equals(other);
-        }
+        public bool Equals([CanBeNull] ISchema other) => Current.Equals(other);
         #endregion
+
+        /// <summary>Serves as the default hash function. </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode() => Current.GetHashCode();
     }
 }

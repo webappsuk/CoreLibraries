@@ -790,7 +790,7 @@ namespace WebApplications.Utilities.Database
 
                     // Find the program
                     SqlProgramDefinition programDefinition;
-                    if (!schema.ProgramDefinitionsByName.TryGetValue(Name, out programDefinition))
+                    if (!schema.ProgramsByName.TryGetValue(Name, out programDefinition))
                         throw new LoggingException(
                             LoggingLevel.Critical,
                             () => Resources.SqlProgram_Validate_DefinitionsNotFound,

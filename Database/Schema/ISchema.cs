@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -44,16 +44,42 @@ namespace WebApplications.Utilities.Database.Schema
         IReadOnlyDictionary<int, SqlSchema> SchemasByID { get; }
 
         /// <summary>
+        ///   Gets the SQL schemas that were loaded from the database.
+        /// </summary>
+        /// <value>
+        ///   An enumerable containing the schema names in ascended order.
+        /// </value>
+        [NotNull]
+        [ItemNotNull]
+        IReadOnlyCollection<SqlSchema> Schemas { get; }
+
+        /// <summary>
         ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema.
         /// </summary>
         [NotNull]
-        IReadOnlyDictionary<string, SqlProgramDefinition> ProgramDefinitionsByName { get; }
+        IReadOnlyDictionary<string, SqlProgramDefinition> ProgramsByName { get; }
+
+        /// <summary>
+        ///   Gets the program definitions.
+        /// </summary>
+        /// <value>The program definitions.</value>
+        [NotNull]
+        [ItemNotNull]
+        IReadOnlyCollection<SqlProgramDefinition> Programs { get; }
 
         /// <summary>
         ///   Holds all the table and view definitions (<see cref="SqlTableDefinition"/>) for the schema.
         /// </summary>
         [NotNull]
         IReadOnlyDictionary<string, SqlTableDefinition> TablesByName { get; }
+
+        /// <summary>
+        ///   Gets the table and view definitions.
+        /// </summary>
+        /// <value>The table and view definitions.</value>
+        [NotNull]
+        [ItemNotNull]
+        IReadOnlyCollection<SqlTableDefinition> Tables { get; }
 
         /// <summary>
         ///   Holds all the types for the schema, which are stored with the <see cref="T:WebApplications.Utilities.Database.Schema.SqlType.FullName">full
@@ -63,36 +89,48 @@ namespace WebApplications.Utilities.Database.Schema
         IReadOnlyDictionary<string, SqlType> TypesByName { get; }
 
         /// <summary>
-        ///   Gets the SQL schemas that were loaded from the database.
-        /// </summary>
-        /// <value>
-        ///   An enumerable containing the schema names in ascended order.
-        /// </value>
-        [NotNull]
-        IEnumerable<SqlSchema> Schemas { get; }
-
-        /// <summary>
         ///   Gets the SQL types from the schema.
         /// </summary>
         /// <value>
         ///   The <see cref="SqlType">type</see>.
         /// </value>
         [NotNull]
-        IEnumerable<SqlType> Types { get; }
+        [ItemNotNull]
+        IReadOnlyCollection<SqlType> Types { get; }
 
         /// <summary>
-        ///   Gets the program definitions.
+        /// Holds all the collations for the schema
         /// </summary>
-        /// <value>The program definitions.</value>
         [NotNull]
-        IEnumerable<SqlProgramDefinition> ProgramDefinitions { get; }
+        IReadOnlyDictionary<string, SqlCollation> CollationsByName { get; }
 
         /// <summary>
-        ///   Gets the table and view definitions.
+        /// Gets the collations for the schema.
         /// </summary>
-        /// <value>The table and view definitions.</value>
+        /// <value>
+        /// The collations.
+        /// </value>
         [NotNull]
-        IEnumerable<SqlTableDefinition> Tables { get; }
+        [ItemNotNull]
+        IReadOnlyCollection<SqlCollation> Collations { get; }
+
+        /// <summary>
+        /// Gets the server collation.
+        /// </summary>
+        /// <value>
+        /// The server collation.
+        /// </value>
+        [NotNull]
+        SqlCollation ServerCollation { get; }
+
+        /// <summary>
+        /// Gets the database collation.
+        /// </summary>
+        /// <value>
+        /// The database collation.
+        /// </value>
+        [NotNull]
+        SqlCollation DatabaseCollation { get; }
 
         /// <summary>
         ///   Unique identity of the schema.

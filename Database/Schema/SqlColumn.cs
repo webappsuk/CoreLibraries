@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,8 @@ namespace WebApplications.Utilities.Database.Schema
         {
             c => c.Type,
             c => c.Ordinal,
-            c => c.IsNullable
+            c => c.IsNullable,
+            c => c.Collation
         };
 
         /// <summary>
@@ -78,50 +79,78 @@ namespace WebApplications.Utilities.Database.Schema
         public readonly bool IsNullable;
 
         /// <summary>
-        ///   Initializes a new instance of the <see cref="SqlColumn"/> class.
+        /// The collation of the column.
+        /// </summary>
+        [CanBeNull]
+        public readonly SqlCollation Collation;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlColumn" /> class.
         /// </summary>
         /// <param name="ordinal">The zero-based ordinal of the column.</param>
         /// <param name="name">The column name.</param>
         /// <param name="type">The type of the column's data.</param>
         /// <param name="size">The size information.</param>
-        /// <param name="isNullable">
-        ///   If set to <see langword="true"/> then the column is nullable.
-        /// </param>
+        /// <param name="isNullable">If set to <see langword="true" /> then the column is nullable.</param>
+        /// <param name="collation">The collation.</param>
         internal SqlColumn(
             int ordinal,
             [NotNull] string name,
             [NotNull] SqlType type,
             SqlTypeSize size,
-            bool isNullable)
+            bool isNullable,
+            SqlCollation collation)
             : base(name)
-            // ReSharper restore PossibleNullReferenceException
+        // ReSharper restore PossibleNullReferenceException
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (type == null) throw new ArgumentNullException("type");
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             Ordinal = ordinal;
             IsNullable = isNullable;
+            Collation = collation;
             Type = type.Size.Equals(size) ? type : new SqlType(type, size);
 
             switch (Type.SqlDbType)
             {
                 case SqlDbType.Binary:
-                case SqlDbType.Char:
                 case SqlDbType.VarBinary:
-                case SqlDbType.VarChar:
                     SqlMetaData = new SqlMetaData(name, Type.SqlDbType, Type.Size.MaximumLength);
+                    break;
+                case SqlDbType.Char:
+                case SqlDbType.VarChar:
+                    SqlMetaData = collation == null
+                        ? new SqlMetaData(name, Type.SqlDbType, Type.Size.MaximumLength)
+                        : new SqlMetaData(
+                            name,
+                            Type.SqlDbType,
+                            Type.Size.MaximumLength,
+                            collation.LCID,
+                            collation.SqlCompareOptions);
                     break;
                 case SqlDbType.NChar:
                 case SqlDbType.NVarChar:
-                    SqlMetaData = new SqlMetaData(
-                        name,
-                        Type.SqlDbType,
-                        Type.Size.MaximumLength > 0 ? Type.Size.MaximumLength / 2 : Type.Size.MaximumLength);
+                    SqlMetaData = collation == null
+                        ? new SqlMetaData(
+                            name,
+                            Type.SqlDbType,
+                            Type.Size.MaximumLength > 0 ? Type.Size.MaximumLength / 2 : Type.Size.MaximumLength)
+                        : new SqlMetaData(
+                            name,
+                            Type.SqlDbType,
+                            Type.Size.MaximumLength > 0 ? Type.Size.MaximumLength / 2 : Type.Size.MaximumLength,
+                            collation.LCID,
+                            collation.SqlCompareOptions);
                     break;
                 case SqlDbType.Image:
+                    SqlMetaData = new SqlMetaData(name, Type.SqlDbType);
+                    break;
                 case SqlDbType.Text:
                 case SqlDbType.NText:
-                    SqlMetaData = new SqlMetaData(name, Type.SqlDbType);
+                case SqlDbType.Xml:
+                    SqlMetaData = collation == null
+                        ? new SqlMetaData(name, Type.SqlDbType)
+                        : new SqlMetaData(name, Type.SqlDbType, -1L, collation.LCID, collation.SqlCompareOptions);
                     break;
                 case SqlDbType.Decimal:
                     SqlMetaData = new SqlMetaData(
