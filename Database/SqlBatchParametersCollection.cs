@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
@@ -70,12 +71,21 @@ namespace WebApplications.Utilities.Database
         public IReadOnlyList<DbBatchParameter> Parameters => _parameters;
 
         /// <summary>
+        /// Gets the return value parameter.
+        /// </summary>
+        /// <value>
+        /// The return value parameter.
+        /// </value>
+        [CanBeNull]
+        public DbBatchParameter ReturnValueParameter { get; private set; }
+
+        /// <summary>
         /// Gets the output parameters in the collection.
         /// </summary>
         /// <value>
         /// The output parameters.
         /// </value>
-        [NotNull]
+        [CanBeNull]
         [ItemNotNull]
         internal IEnumerable<DbBatchParameter, IOut> OutputParameters => _outputParameters;
 
@@ -111,9 +121,24 @@ namespace WebApplications.Utilities.Database
                 return _parameters[index];
 
             SqlBatchParameter batchParameter = new SqlBatchParameter(
+                programParameter,
                 programParameter.CreateSqlParameter(),
                 "_" + _command.Id.ToString("X4") + _parameters.Count.ToString("X4"));
             _parameters.Add(batchParameter);
+
+            if (programParameter.Direction == ParameterDirection.ReturnValue)
+            {
+                if (ReturnValueParameter != null)
+                {
+                    throw new LoggingException(
+                        LoggingLevel.Error,
+                        () => Resources.SqlBatchParametersCollection_GetOrAddParameter_MultipleReturns,
+                        _command.Program.Name);
+                }
+
+                ReturnValueParameter = batchParameter;
+            }
+
             return batchParameter;
         }
 
@@ -179,7 +204,6 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Adds the output parameter value given if it isn't null.
         /// </summary>
-        /// <param name="sqlProgramParameter">The program parameter the value is for.</param>
         /// <param name="parameter">The sql parameter the value is for.</param>
         /// <param name="outValue">The output value.</param>
         private void AddOutParameter(

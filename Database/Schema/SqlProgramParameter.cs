@@ -159,7 +159,7 @@ namespace WebApplications.Utilities.Database.Schema
 
             if (value == null)
             {
-                parameter.Value = null;
+                parameter.Value = DBNull.Value;
                 return;
             }
 
@@ -189,8 +189,9 @@ namespace WebApplications.Utilities.Database.Schema
                 
                 output.SetParameter(parameter);
 
-                if (hasInput)
-                    parameter.Value = Type.CastCLRValue(output.InputValue.Value, output.Type, mode);
+                parameter.Value = hasInput
+                    ? Type.CastCLRValue(output.InputValue.Value, output.Type, mode)
+                    : DBNull.Value;
             }
             else
                 parameter.Value = Type.CastCLRValue(value, mode);

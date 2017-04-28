@@ -2261,6 +2261,7 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="T19">The type of parameter 19.</typeparam>
         /// <typeparam name="TOut">The output type expected.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
+        /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</param>
         /// <param name="p1Value">Value of SQL Parameter 1.</param>
         /// <param name="p2Value">Value of SQL Parameter 2.</param>
         /// <param name="p3Value">Value of SQL Parameter 3.</param>
@@ -2280,14 +2281,16 @@ namespace WebApplications.Utilities.Database
         /// <param name="p17Value">Value of SQL Parameter 17.</param>
         /// <param name="p18Value">Value of SQL Parameter 18.</param>
         /// <param name="p19Value">Value of SQL Parameter 19.</param>
-        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</returns>
-        public SqlBatchResult<TOut> AddExecuteScalar<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, TOut>(
-            [NotNull] SqlProgram program,
+        /// <param name="constraintMode">The constraint mode. Overrides the configured default for the program.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteScalar<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, TOut>(
+            [NotNull] SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> program,
+            [NotNull] out SqlBatchResult<TOut> result,
             Input<T1> p1Value = default(Input<T1>), Input<T2> p2Value = default(Input<T2>), Input<T3> p3Value = default(Input<T3>), Input<T4> p4Value = default(Input<T4>), Input<T5> p5Value = default(Input<T5>), Input<T6> p6Value = default(Input<T6>), Input<T7> p7Value = default(Input<T7>), Input<T8> p8Value = default(Input<T8>), Input<T9> p9Value = default(Input<T9>), Input<T10> p10Value = default(Input<T10>), Input<T11> p11Value = default(Input<T11>), Input<T12> p12Value = default(Input<T12>), Input<T13> p13Value = default(Input<T13>), Input<T14> p14Value = default(Input<T14>), Input<T15> p15Value = default(Input<T15>), Input<T16> p16Value = default(Input<T16>), Input<T17> p17Value = default(Input<T17>), Input<T18> p18Value = default(Input<T18>), Input<T19> p19Value = default(Input<T19>),
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteScalar<TOut>(program, c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteScalar<TOut>(program, c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, constraintMode ?? program.ConstraintMode), out result);
         }
 
         /// <summary>
@@ -2313,6 +2316,7 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="T18">The type of parameter 18.</typeparam>
         /// <typeparam name="T19">The type of parameter 19.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
+        /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the number of rows affected.</param>
         /// <param name="p1Value">Value of SQL Parameter 1.</param>
         /// <param name="p2Value">Value of SQL Parameter 2.</param>
         /// <param name="p3Value">Value of SQL Parameter 3.</param>
@@ -2333,13 +2337,15 @@ namespace WebApplications.Utilities.Database
         /// <param name="p18Value">Value of SQL Parameter 18.</param>
         /// <param name="p19Value">Value of SQL Parameter 19.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>A <see cref="SqlBatchResult{T}"/> which can be used to get the number of rows affected.</returns>
-        public SqlBatchResult<int> AddExecuteNonQuery<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
-            [NotNull] SqlProgram program,
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteNonQuery<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
+            [NotNull] SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> program,
+            [NotNull] out SqlBatchResult<int> result,
             Input<T1> p1Value = default(Input<T1>), Input<T2> p2Value = default(Input<T2>), Input<T3> p3Value = default(Input<T3>), Input<T4> p4Value = default(Input<T4>), Input<T5> p5Value = default(Input<T5>), Input<T6> p6Value = default(Input<T6>), Input<T7> p7Value = default(Input<T7>), Input<T8> p8Value = default(Input<T8>), Input<T9> p9Value = default(Input<T9>), Input<T10> p10Value = default(Input<T10>), Input<T11> p11Value = default(Input<T11>), Input<T12> p12Value = default(Input<T12>), Input<T13> p13Value = default(Input<T13>), Input<T14> p14Value = default(Input<T14>), Input<T15> p15Value = default(Input<T15>), Input<T16> p16Value = default(Input<T16>), Input<T17> p17Value = default(Input<T17>), Input<T18> p18Value = default(Input<T18>), Input<T19> p19Value = default(Input<T19>),
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteNonQuery(program, c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteNonQuery(program, c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
         }
 
         /// <summary>
@@ -2366,6 +2372,7 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="T19">The type of parameter 19.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
         /// <param name="p1Value">Value of SQL Parameter 1.</param>
         /// <param name="p2Value">Value of SQL Parameter 2.</param>
         /// <param name="p3Value">Value of SQL Parameter 3.</param>
@@ -2387,17 +2394,17 @@ namespace WebApplications.Utilities.Database
         /// <param name="p19Value">Value of SQL Parameter 19.</param>
         /// <param name="behavior">The query's effect on the database.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>
-        /// A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.
-        /// </returns>
-        public SqlBatchResult AddExecuteReader<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
-            [NotNull] SqlProgram program,
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteReader<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(
+            [NotNull] SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> program,
             [NotNull] ResultDelegateAsync resultAction,
+            [NotNull] out SqlBatchResult result,
             Input<T1> p1Value = default(Input<T1>), Input<T2> p2Value = default(Input<T2>), Input<T3> p3Value = default(Input<T3>), Input<T4> p4Value = default(Input<T4>), Input<T5> p5Value = default(Input<T5>), Input<T6> p6Value = default(Input<T6>), Input<T7> p7Value = default(Input<T7>), Input<T8> p8Value = default(Input<T8>), Input<T9> p9Value = default(Input<T9>), Input<T10> p10Value = default(Input<T10>), Input<T11> p11Value = default(Input<T11>), Input<T12> p12Value = default(Input<T12>), Input<T13> p13Value = default(Input<T13>), Input<T14> p14Value = default(Input<T14>), Input<T15> p15Value = default(Input<T15>), Input<T16> p16Value = default(Input<T16>), Input<T17> p17Value = default(Input<T17>), Input<T18> p18Value = default(Input<T18>), Input<T19> p19Value = default(Input<T19>),
             CommandBehavior behavior = CommandBehavior.Default,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteReader(program, resultAction, behavior, c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteReader(program, resultAction, behavior, c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
         }
 
         /// <summary>
@@ -2426,6 +2433,7 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="TOut">The type of the result.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.</param>
         /// <param name="p1Value">Value of SQL Parameter 1.</param>
         /// <param name="p2Value">Value of SQL Parameter 2.</param>
         /// <param name="p3Value">Value of SQL Parameter 3.</param>
@@ -2447,18 +2455,17 @@ namespace WebApplications.Utilities.Database
         /// <param name="p19Value">Value of SQL Parameter 19.</param>
         /// <param name="behavior">The query's effect on the database.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>
-        /// A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public SqlBatchResult<TOut> AddExecuteReader<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, TOut>(
-            [NotNull] SqlProgram program,
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteReader<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, TOut>(
+            [NotNull] SqlProgram<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> program,
             [NotNull] ResultDelegateAsync<TOut> resultFunc,
+            [NotNull] out SqlBatchResult<TOut> result,
             Input<T1> p1Value = default(Input<T1>), Input<T2> p2Value = default(Input<T2>), Input<T3> p3Value = default(Input<T3>), Input<T4> p4Value = default(Input<T4>), Input<T5> p5Value = default(Input<T5>), Input<T6> p6Value = default(Input<T6>), Input<T7> p7Value = default(Input<T7>), Input<T8> p8Value = default(Input<T8>), Input<T9> p9Value = default(Input<T9>), Input<T10> p10Value = default(Input<T10>), Input<T11> p11Value = default(Input<T11>), Input<T12> p12Value = default(Input<T12>), Input<T13> p13Value = default(Input<T13>), Input<T14> p14Value = default(Input<T14>), Input<T15> p15Value = default(Input<T15>), Input<T16> p16Value = default(Input<T16>), Input<T17> p17Value = default(Input<T17>), Input<T18> p18Value = default(Input<T18>), Input<T19> p19Value = default(Input<T19>),
             CommandBehavior behavior = CommandBehavior.Default,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteReader<TOut>(program, resultFunc, behavior, c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteReader<TOut>(program, resultFunc, behavior, c => c.SetParameters(p1Value, p2Value, p3Value, p4Value, p5Value, p6Value, p7Value, p8Value, p9Value, p10Value, p11Value, p12Value, p13Value, p14Value, p15Value, p16Value, p17Value, p18Value, p19Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
         }
     }
     #endregion
@@ -2530,115 +2537,115 @@ namespace WebApplications.Utilities.Database
                 programParameter = parameters[0];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p1Value, mode);
-                AddOutParameter(parameter, p1Value as IOut);
+                AddOutParameter(parameter, p1Value.Value as IOut);
                 batchParameters[0] = parameter;
                 // Find or create SQL Parameter 2.
                 programParameter = parameters[1];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p2Value, mode);
-                AddOutParameter(parameter, p2Value as IOut);
+                AddOutParameter(parameter, p2Value.Value as IOut);
                 batchParameters[1] = parameter;
                 // Find or create SQL Parameter 3.
                 programParameter = parameters[2];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p3Value, mode);
-                AddOutParameter(parameter, p3Value as IOut);
+                AddOutParameter(parameter, p3Value.Value as IOut);
                 batchParameters[2] = parameter;
                 // Find or create SQL Parameter 4.
                 programParameter = parameters[3];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p4Value, mode);
-                AddOutParameter(parameter, p4Value as IOut);
+                AddOutParameter(parameter, p4Value.Value as IOut);
                 batchParameters[3] = parameter;
                 // Find or create SQL Parameter 5.
                 programParameter = parameters[4];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p5Value, mode);
-                AddOutParameter(parameter, p5Value as IOut);
+                AddOutParameter(parameter, p5Value.Value as IOut);
                 batchParameters[4] = parameter;
                 // Find or create SQL Parameter 6.
                 programParameter = parameters[5];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p6Value, mode);
-                AddOutParameter(parameter, p6Value as IOut);
+                AddOutParameter(parameter, p6Value.Value as IOut);
                 batchParameters[5] = parameter;
                 // Find or create SQL Parameter 7.
                 programParameter = parameters[6];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p7Value, mode);
-                AddOutParameter(parameter, p7Value as IOut);
+                AddOutParameter(parameter, p7Value.Value as IOut);
                 batchParameters[6] = parameter;
                 // Find or create SQL Parameter 8.
                 programParameter = parameters[7];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p8Value, mode);
-                AddOutParameter(parameter, p8Value as IOut);
+                AddOutParameter(parameter, p8Value.Value as IOut);
                 batchParameters[7] = parameter;
                 // Find or create SQL Parameter 9.
                 programParameter = parameters[8];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p9Value, mode);
-                AddOutParameter(parameter, p9Value as IOut);
+                AddOutParameter(parameter, p9Value.Value as IOut);
                 batchParameters[8] = parameter;
                 // Find or create SQL Parameter 10.
                 programParameter = parameters[9];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p10Value, mode);
-                AddOutParameter(parameter, p10Value as IOut);
+                AddOutParameter(parameter, p10Value.Value as IOut);
                 batchParameters[9] = parameter;
                 // Find or create SQL Parameter 11.
                 programParameter = parameters[10];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p11Value, mode);
-                AddOutParameter(parameter, p11Value as IOut);
+                AddOutParameter(parameter, p11Value.Value as IOut);
                 batchParameters[10] = parameter;
                 // Find or create SQL Parameter 12.
                 programParameter = parameters[11];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p12Value, mode);
-                AddOutParameter(parameter, p12Value as IOut);
+                AddOutParameter(parameter, p12Value.Value as IOut);
                 batchParameters[11] = parameter;
                 // Find or create SQL Parameter 13.
                 programParameter = parameters[12];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p13Value, mode);
-                AddOutParameter(parameter, p13Value as IOut);
+                AddOutParameter(parameter, p13Value.Value as IOut);
                 batchParameters[12] = parameter;
                 // Find or create SQL Parameter 14.
                 programParameter = parameters[13];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p14Value, mode);
-                AddOutParameter(parameter, p14Value as IOut);
+                AddOutParameter(parameter, p14Value.Value as IOut);
                 batchParameters[13] = parameter;
                 // Find or create SQL Parameter 15.
                 programParameter = parameters[14];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p15Value, mode);
-                AddOutParameter(parameter, p15Value as IOut);
+                AddOutParameter(parameter, p15Value.Value as IOut);
                 batchParameters[14] = parameter;
                 // Find or create SQL Parameter 16.
                 programParameter = parameters[15];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p16Value, mode);
-                AddOutParameter(parameter, p16Value as IOut);
+                AddOutParameter(parameter, p16Value.Value as IOut);
                 batchParameters[15] = parameter;
                 // Find or create SQL Parameter 17.
                 programParameter = parameters[16];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p17Value, mode);
-                AddOutParameter(parameter, p17Value as IOut);
+                AddOutParameter(parameter, p17Value.Value as IOut);
                 batchParameters[16] = parameter;
                 // Find or create SQL Parameter 18.
                 programParameter = parameters[17];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p18Value, mode);
-                AddOutParameter(parameter, p18Value as IOut);
+                AddOutParameter(parameter, p18Value.Value as IOut);
                 batchParameters[17] = parameter;
                 // Find or create SQL Parameter 19.
                 programParameter = parameters[18];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p19Value, mode);
-                AddOutParameter(parameter, p19Value as IOut);
+                AddOutParameter(parameter, p19Value.Value as IOut);
                 batchParameters[18] = parameter;
             }
 
@@ -2723,115 +2730,115 @@ namespace WebApplications.Utilities.Database
                 programParameter = parameters[0];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p1Value, mode);
-                AddOutParameter(parameter, p1Value as IOut);
+                AddOutParameter(parameter, p1Value.Value as IOut);
                 batchParameters[0] = parameter;
                 // Find or create SQL Parameter 2.
                 programParameter = parameters[1];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p2Value, mode);
-                AddOutParameter(parameter, p2Value as IOut);
+                AddOutParameter(parameter, p2Value.Value as IOut);
                 batchParameters[1] = parameter;
                 // Find or create SQL Parameter 3.
                 programParameter = parameters[2];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p3Value, mode);
-                AddOutParameter(parameter, p3Value as IOut);
+                AddOutParameter(parameter, p3Value.Value as IOut);
                 batchParameters[2] = parameter;
                 // Find or create SQL Parameter 4.
                 programParameter = parameters[3];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p4Value, mode);
-                AddOutParameter(parameter, p4Value as IOut);
+                AddOutParameter(parameter, p4Value.Value as IOut);
                 batchParameters[3] = parameter;
                 // Find or create SQL Parameter 5.
                 programParameter = parameters[4];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p5Value, mode);
-                AddOutParameter(parameter, p5Value as IOut);
+                AddOutParameter(parameter, p5Value.Value as IOut);
                 batchParameters[4] = parameter;
                 // Find or create SQL Parameter 6.
                 programParameter = parameters[5];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p6Value, mode);
-                AddOutParameter(parameter, p6Value as IOut);
+                AddOutParameter(parameter, p6Value.Value as IOut);
                 batchParameters[5] = parameter;
                 // Find or create SQL Parameter 7.
                 programParameter = parameters[6];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p7Value, mode);
-                AddOutParameter(parameter, p7Value as IOut);
+                AddOutParameter(parameter, p7Value.Value as IOut);
                 batchParameters[6] = parameter;
                 // Find or create SQL Parameter 8.
                 programParameter = parameters[7];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p8Value, mode);
-                AddOutParameter(parameter, p8Value as IOut);
+                AddOutParameter(parameter, p8Value.Value as IOut);
                 batchParameters[7] = parameter;
                 // Find or create SQL Parameter 9.
                 programParameter = parameters[8];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p9Value, mode);
-                AddOutParameter(parameter, p9Value as IOut);
+                AddOutParameter(parameter, p9Value.Value as IOut);
                 batchParameters[8] = parameter;
                 // Find or create SQL Parameter 10.
                 programParameter = parameters[9];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p10Value, mode);
-                AddOutParameter(parameter, p10Value as IOut);
+                AddOutParameter(parameter, p10Value.Value as IOut);
                 batchParameters[9] = parameter;
                 // Find or create SQL Parameter 11.
                 programParameter = parameters[10];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p11Value, mode);
-                AddOutParameter(parameter, p11Value as IOut);
+                AddOutParameter(parameter, p11Value.Value as IOut);
                 batchParameters[10] = parameter;
                 // Find or create SQL Parameter 12.
                 programParameter = parameters[11];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p12Value, mode);
-                AddOutParameter(parameter, p12Value as IOut);
+                AddOutParameter(parameter, p12Value.Value as IOut);
                 batchParameters[11] = parameter;
                 // Find or create SQL Parameter 13.
                 programParameter = parameters[12];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p13Value, mode);
-                AddOutParameter(parameter, p13Value as IOut);
+                AddOutParameter(parameter, p13Value.Value as IOut);
                 batchParameters[12] = parameter;
                 // Find or create SQL Parameter 14.
                 programParameter = parameters[13];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p14Value, mode);
-                AddOutParameter(parameter, p14Value as IOut);
+                AddOutParameter(parameter, p14Value.Value as IOut);
                 batchParameters[13] = parameter;
                 // Find or create SQL Parameter 15.
                 programParameter = parameters[14];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p15Value, mode);
-                AddOutParameter(parameter, p15Value as IOut);
+                AddOutParameter(parameter, p15Value.Value as IOut);
                 batchParameters[14] = parameter;
                 // Find or create SQL Parameter 16.
                 programParameter = parameters[15];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p16Value, mode);
-                AddOutParameter(parameter, p16Value as IOut);
+                AddOutParameter(parameter, p16Value.Value as IOut);
                 batchParameters[15] = parameter;
                 // Find or create SQL Parameter 17.
                 programParameter = parameters[16];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p17Value, mode);
-                AddOutParameter(parameter, p17Value as IOut);
+                AddOutParameter(parameter, p17Value.Value as IOut);
                 batchParameters[16] = parameter;
                 // Find or create SQL Parameter 18.
                 programParameter = parameters[17];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p18Value, mode);
-                AddOutParameter(parameter, p18Value as IOut);
+                AddOutParameter(parameter, p18Value.Value as IOut);
                 batchParameters[17] = parameter;
                 // Find or create SQL Parameter 19.
                 programParameter = parameters[18];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p19Value, mode);
-                AddOutParameter(parameter, p19Value as IOut);
+                AddOutParameter(parameter, p19Value.Value as IOut);
                 batchParameters[18] = parameter;
             }
 

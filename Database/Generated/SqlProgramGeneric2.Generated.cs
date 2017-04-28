@@ -1122,16 +1122,19 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="T2">The type of parameter 2.</typeparam>
         /// <typeparam name="TOut">The output type expected.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
+        /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</param>
         /// <param name="p1Value">Value of SQL Parameter 1.</param>
         /// <param name="p2Value">Value of SQL Parameter 2.</param>
-        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</returns>
-        public SqlBatchResult<TOut> AddExecuteScalar<T1, T2, TOut>(
-            [NotNull] SqlProgram program,
+        /// <param name="constraintMode">The constraint mode. Overrides the configured default for the program.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteScalar<T1, T2, TOut>(
+            [NotNull] SqlProgram<T1, T2> program,
+            [NotNull] out SqlBatchResult<TOut> result,
             Input<T1> p1Value = default(Input<T1>), Input<T2> p2Value = default(Input<T2>),
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteScalar<TOut>(program, c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteScalar<TOut>(program, c => c.SetParameters(p1Value, p2Value, constraintMode ?? program.ConstraintMode), out result);
         }
 
         /// <summary>
@@ -1140,16 +1143,19 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="T1">The type of parameter 1.</typeparam>
         /// <typeparam name="T2">The type of parameter 2.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
+        /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the number of rows affected.</param>
         /// <param name="p1Value">Value of SQL Parameter 1.</param>
         /// <param name="p2Value">Value of SQL Parameter 2.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>A <see cref="SqlBatchResult{T}"/> which can be used to get the number of rows affected.</returns>
-        public SqlBatchResult<int> AddExecuteNonQuery<T1, T2>(
-            [NotNull] SqlProgram program,
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteNonQuery<T1, T2>(
+            [NotNull] SqlProgram<T1, T2> program,
+            [NotNull] out SqlBatchResult<int> result,
             Input<T1> p1Value = default(Input<T1>), Input<T2> p2Value = default(Input<T2>),
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteNonQuery(program, c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteNonQuery(program, c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
         }
 
         /// <summary>
@@ -1159,21 +1165,22 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="T2">The type of parameter 2.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
         /// <param name="p1Value">Value of SQL Parameter 1.</param>
         /// <param name="p2Value">Value of SQL Parameter 2.</param>
         /// <param name="behavior">The query's effect on the database.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>
-        /// A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.
-        /// </returns>
-        public SqlBatchResult AddExecuteReader<T1, T2>(
-            [NotNull] SqlProgram program,
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteReader<T1, T2>(
+            [NotNull] SqlProgram<T1, T2> program,
             [NotNull] ResultDelegateAsync resultAction,
+            [NotNull] out SqlBatchResult result,
             Input<T1> p1Value = default(Input<T1>), Input<T2> p2Value = default(Input<T2>),
             CommandBehavior behavior = CommandBehavior.Default,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteReader(program, resultAction, behavior, c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteReader(program, resultAction, behavior, c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
         }
 
         /// <summary>
@@ -1185,22 +1192,22 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="TOut">The type of the result.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.</param>
         /// <param name="p1Value">Value of SQL Parameter 1.</param>
         /// <param name="p2Value">Value of SQL Parameter 2.</param>
         /// <param name="behavior">The query's effect on the database.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>
-        /// A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public SqlBatchResult<TOut> AddExecuteReader<T1, T2, TOut>(
-            [NotNull] SqlProgram program,
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteReader<T1, T2, TOut>(
+            [NotNull] SqlProgram<T1, T2> program,
             [NotNull] ResultDelegateAsync<TOut> resultFunc,
+            [NotNull] out SqlBatchResult<TOut> result,
             Input<T1> p1Value = default(Input<T1>), Input<T2> p2Value = default(Input<T2>),
             CommandBehavior behavior = CommandBehavior.Default,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteReader<TOut>(program, resultFunc, behavior, c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteReader<TOut>(program, resultFunc, behavior, c => c.SetParameters(p1Value, p2Value, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
         }
     }
     #endregion
@@ -1238,13 +1245,13 @@ namespace WebApplications.Utilities.Database
                 programParameter = parameters[0];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p1Value, mode);
-                AddOutParameter(parameter, p1Value as IOut);
+                AddOutParameter(parameter, p1Value.Value as IOut);
                 batchParameters[0] = parameter;
                 // Find or create SQL Parameter 2.
                 programParameter = parameters[1];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p2Value, mode);
-                AddOutParameter(parameter, p2Value as IOut);
+                AddOutParameter(parameter, p2Value.Value as IOut);
                 batchParameters[1] = parameter;
             }
 
@@ -1295,13 +1302,13 @@ namespace WebApplications.Utilities.Database
                 programParameter = parameters[0];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p1Value, mode);
-                AddOutParameter(parameter, p1Value as IOut);
+                AddOutParameter(parameter, p1Value.Value as IOut);
                 batchParameters[0] = parameter;
                 // Find or create SQL Parameter 2.
                 programParameter = parameters[1];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p2Value, mode);
-                AddOutParameter(parameter, p2Value as IOut);
+                AddOutParameter(parameter, p2Value.Value as IOut);
                 batchParameters[1] = parameter;
             }
 

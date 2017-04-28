@@ -448,6 +448,15 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Multiple return value parameters set for the &apos;{0}&apos; program..
+        /// </summary>
+        internal static string SqlBatchParametersCollection_GetOrAddParameter_MultipleReturns {
+            get {
+                return ResourceManager.GetString("SqlBatchParametersCollection_GetOrAddParameter_MultipleReturns", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unsupported SqlDbType &apos;{0}&apos;..
         /// </summary>
         internal static string SqlMetaType_GetMetaTypeFromSqlDbType_UnsupportedType {

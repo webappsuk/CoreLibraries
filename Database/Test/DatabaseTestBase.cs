@@ -101,7 +101,7 @@ namespace WebApplications.Utilities.Database.Test
         protected static string CreateConnectionString(string databaseName)
         {
             return
-                $@"Data Source=(localdb)\v11.0;AttachDbFilename=|DataDirectory|\{databaseName
+                $@"Data Source=(localdb)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\{databaseName
                     }.mdf;Integrated Security=True;Connect Timeout=30;";
         }
 

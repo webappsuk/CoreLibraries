@@ -1124,15 +1124,18 @@ namespace WebApplications.Utilities.Database
         <#= Strings.TypeComments #>
         /// <typeparam name="TOut">The output type expected.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
+        /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</param>
         <#= Strings.ParameterComments #>
-        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</returns>
-        public SqlBatchResult<TOut> AddExecuteScalar<<#= Strings.TypeParams#>, TOut>(
-            [NotNull] SqlProgram program,
+        /// <param name="constraintMode">The constraint mode. Overrides the configured default for the program.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteScalar<<#= Strings.TypeParams#>, TOut>(
+            [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
+            [NotNull] out SqlBatchResult<TOut> result,
             <#= Strings.InputParametersTypedDefault #>,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteScalar<TOut>(program, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteScalar<TOut>(program, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), out result);
         }
 
         /// <summary>
@@ -1140,15 +1143,18 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         <#= Strings.TypeComments #>
         /// <param name="program">The program to add to the batch.</param>
+        /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the number of rows affected.</param>
         <#= Strings.ParameterComments #>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>A <see cref="SqlBatchResult{T}"/> which can be used to get the number of rows affected.</returns>
-        public SqlBatchResult<int> AddExecuteNonQuery<<#= Strings.TypeParams#>>(
-            [NotNull] SqlProgram program,
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteNonQuery<<#= Strings.TypeParams#>>(
+            [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
+            [NotNull] out SqlBatchResult<int> result,
             <#= Strings.InputParametersTypedDefault #>,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteNonQuery(program, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteNonQuery(program, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
         }
 
         /// <summary>
@@ -1157,20 +1163,21 @@ namespace WebApplications.Utilities.Database
         <#= Strings.TypeComments #>
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
         <#= Strings.ParameterComments #>
         /// <param name="behavior">The query's effect on the database.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>
-        /// A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.
-        /// </returns>
-        public SqlBatchResult AddExecuteReader<<#= Strings.TypeParams#>>(
-            [NotNull] SqlProgram program,
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteReader<<#= Strings.TypeParams#>>(
+            [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
             [NotNull] ResultDelegateAsync resultAction,
+            [NotNull] out SqlBatchResult result,
             <#= Strings.InputParametersTypedDefault #>,
             CommandBehavior behavior = CommandBehavior.Default,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteReader(program, resultAction, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteReader(program, resultAction, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
         }
 
         /// <summary>
@@ -1181,21 +1188,21 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="TOut">The type of the result.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.</param>
         <#= Strings.ParameterComments #>
         /// <param name="behavior">The query's effect on the database.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
-        /// <returns>
-        /// A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.
-        /// </returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public SqlBatchResult<TOut> AddExecuteReader<<#= Strings.TypeParams#>, TOut>(
-            [NotNull] SqlProgram program,
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteReader<<#= Strings.TypeParams#>, TOut>(
+            [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
             [NotNull] ResultDelegateAsync<TOut> resultFunc,
+            [NotNull] out SqlBatchResult<TOut> result,
             <#= Strings.InputParametersTypedDefault #>,
             CommandBehavior behavior = CommandBehavior.Default,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteReader<TOut>(program, resultFunc, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteReader<TOut>(program, resultFunc, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
         }
     }
     #endregion
@@ -1232,7 +1239,7 @@ namespace WebApplications.Utilities.Database
                 programParameter = parameters[<#= i #>];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p<#= i+1 #>Value, mode);
-                AddOutParameter(parameter, p<#= i+1 #>Value as IOut);
+                AddOutParameter(parameter, p<#= i+1 #>Value.Value as IOut);
                 batchParameters[<#= i #>] = parameter;
 <# } #>
             }
@@ -1283,7 +1290,7 @@ namespace WebApplications.Utilities.Database
                 programParameter = parameters[<#= i #>];
                 parameter = GetOrAddParameter(programParameter);
                 parameter.SetParameterValue(programParameter, p<#= i+1 #>Value, mode);
-                AddOutParameter(parameter, p<#= i+1 #>Value as IOut);
+                AddOutParameter(parameter, p<#= i+1 #>Value.Value as IOut);
                 batchParameters[<#= i #>] = parameter;
 <# } #>
             }

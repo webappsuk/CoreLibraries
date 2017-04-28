@@ -369,4 +369,7 @@
   <data name="SqlBatch_ExecuteAsync_Empty" xml:space="preserve">
     <value>Cannot execute an empty batch.</value>
   </data>
+  <data name="SqlBatchParametersCollection_GetOrAddParameter_MultipleReturns" xml:space="preserve">
+    <value>Multiple return value parameters set for the '{0}' program.</value>
+  </data>
 </root>

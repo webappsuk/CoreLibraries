@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -38,6 +39,7 @@ namespace WebApplications.Utilities.Database
     /// Base class for a parameter to a <see cref="SqlBatchCommand"/>.
     /// </summary>
     /// <seealso cref="DbParameter" />
+    [PublicAPI]
     public abstract class DbBatchParameter : DbParameter
     {
         private const int MaxParameterNameLength = 128;
@@ -46,7 +48,7 @@ namespace WebApplications.Utilities.Database
         /// The base parameter.
         /// </summary>
         [NotNull]
-        protected internal DbParameter BaseParameter { get; internal set; }
+        public DbParameter BaseParameter { get; internal set; }
 
         /// <summary>
         /// The parameter name de-dupe suffix.
@@ -55,14 +57,36 @@ namespace WebApplications.Utilities.Database
         protected readonly string Dedupe;
 
         /// <summary>
+        /// Gets the program parameter this batch parameter is for.
+        /// </summary>
+        /// <value>
+        /// The program parameter.
+        /// </value>
+        [NotNull]
+        public SqlProgramParameter ProgramParameter { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the output value of this parameter is used.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true" /> if the output value is used; otherwise, <see langword="false" />.
+        /// </value>
+        public bool IsOutputUsed { get; private set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DbBatchParameter" /> class.
         /// </summary>
+        /// <param name="programParameter">The program parameter.</param>
         /// <param name="baseParameter">The base parameter definition.</param>
         /// <param name="dedupe">The dedupe string.</param>
-        protected DbBatchParameter([NotNull] DbParameter baseParameter, [NotNull] string dedupe)
+        protected DbBatchParameter(
+            [NotNull] SqlProgramParameter programParameter,
+            [NotNull] DbParameter baseParameter,
+            [NotNull] string dedupe)
         {
-            BaseParameter = baseParameter;
-            Dedupe = dedupe;
+            ProgramParameter = programParameter ?? throw new ArgumentNullException(nameof(programParameter));
+            BaseParameter = baseParameter ?? throw new ArgumentNullException(nameof(baseParameter));
+            Dedupe = dedupe ?? throw new ArgumentNullException(nameof(dedupe));
             ParameterName = baseParameter.ParameterName;
         }
 
@@ -82,6 +106,7 @@ namespace WebApplications.Utilities.Database
                 OutputValue = value.OutputValue;
             else
                 SetParameterValue(parameter, value.Value, mode);
+            IsOutputUsed = value.Value is IOut;
         }
 
         /// <summary>
@@ -97,13 +122,13 @@ namespace WebApplications.Utilities.Database
             TypeConstraintMode mode);
 
         /// <summary>
-        /// Gets the output value.
+        /// Gets the output value that is passed into this parameter.
         /// </summary>
         /// <value>The output value.</value>
         internal IOut OutputValue { get; private set; }
 
         [NotNull]
-        private string _parameterName;
+        private string _parameterName = String.Empty;
 
         /// <summary>Gets or sets the name of the <see cref="T:System.Data.Common.DbParameter" />.</summary>
         /// <returns>The name of the <see cref="T:System.Data.Common.DbParameter" />. The default is an empty string ("").</returns>
@@ -226,6 +251,7 @@ namespace WebApplications.Utilities.Database
     /// Represents a parameter to a <see cref="SqlBatchCommand"/>.
     /// </summary>
     /// <seealso cref="DbBatchParameter" />
+    [PublicAPI]
     public sealed class SqlBatchParameter : DbBatchParameter
     {
         [NotNull]
@@ -234,10 +260,14 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Initializes a new instance of the <see cref="DbBatchParameter" /> class.
         /// </summary>
+        /// <param name="programParameter">The program parameter.</param>
         /// <param name="baseParameter">The base parameter definition.</param>
         /// <param name="dedupe">The dedupe string.</param>
-        public SqlBatchParameter([NotNull] SqlParameter baseParameter, [NotNull] string dedupe)
-            : base(baseParameter, dedupe)
+        public SqlBatchParameter(
+            [NotNull] SqlProgramParameter programParameter,
+            [NotNull] SqlParameter baseParameter,
+            [NotNull] string dedupe)
+            : base(programParameter, baseParameter, dedupe)
         {
         }
 

@@ -25,10 +25,12 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Schema;
 
 namespace WebApplications.Utilities.Database
 {
@@ -102,6 +104,59 @@ namespace WebApplications.Utilities.Database
             _setParameters?.Invoke(parameters);
 
             return parameters;
+        }
+
+        /// <summary>
+        /// Appends the SQL for executing the command to the <paramref name="builder" /> provided.
+        /// </summary>
+        /// <param name="builder">The <see cref="SqlStringBuilder" /> to append the SQL to.</param>
+        /// <param name="parameters">The parameters to execute with.</param>
+        public virtual void AppendExecuteSql(
+            [NotNull] SqlStringBuilder builder,
+            [NotNull] SqlBatchParametersCollection parameters)
+        {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
+            SqlProgramDefinition def = parameters.Mapping.Definition;
+
+            builder.Append("EXECUTE ");
+
+            // If there is a return value parameter, need to assign the result to it
+            if (parameters.ReturnValueParameter != null)
+            {
+                builder
+                    .Append(parameters.ReturnValueParameter.BaseParameter.ParameterName)
+                    .Append(" = ");
+            }
+
+            builder
+                .AppendIdentifier(def.SqlSchema.FullName)
+                .Append('.')
+                .AppendIdentifier(def.Name);
+
+            bool first = true;
+            foreach (DbBatchParameter parameter in parameters.Parameters)
+            {
+                // Already dealt with return value parameter
+                if (parameter.Direction == ParameterDirection.ReturnValue)
+                    continue;
+
+                if (first) first = false;
+                else builder.Append(',');
+
+                builder
+                    .Append(' ')
+                    .Append(parameter.ProgramParameter.FullName)
+                    .Append(" = ")
+                    .Append(parameter.BaseParameter.ParameterName);
+                
+                // If the parameter value is Out<T>, need to add OUT to actually get the return value
+                if (parameter.IsOutputUsed)
+                    builder.Append(" OUT");
+            }
+
+            builder.AppendLine(";");
         }
 
         /// <summary>
