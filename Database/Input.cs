@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database
 {
@@ -33,25 +34,23 @@ namespace WebApplications.Utilities.Database
     /// Represents an input value to a batched program call.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    public struct Input<T>// : IInput
+    public struct Input<T>
     {
         /// <summary>
-        /// Gets the value, if not <see cref="IsOutputValue"/>.
-        /// </summary>
-        /// <value>
-        /// The value.
-        /// </value>
-        public T Value { get; }
-
-        /// <summary>
-        /// Gets the output value, if <see cref="IsOutputValue"/>.
+        /// The output value, if <see cref="IsOutputValue"/>.
         /// </summary>
         /// <value>
         /// The output value.
         /// </value>
-        public Out<T> OutputValue { get; }
+        public readonly Out<T> OutputValue;
 
-        private readonly State _state;
+        /// <summary>
+        /// The value, if not <see cref="IsOutputValue"/>.
+        /// </summary>
+        /// <value>
+        /// The value.
+        /// </value>
+        public readonly T Value;
 
         /// <summary>
         /// Gets a value indicating whether the value is the output of a previous command
@@ -59,16 +58,8 @@ namespace WebApplications.Utilities.Database
         /// <value>
         ///   <see langword="true" /> if the value is an output value; otherwise, <see langword="false" />.
         /// </value>
-        public bool IsOutputValue => _state == State.Output;
-
-        /// <summary>
-        /// Gets a value indicating whether the value is assigned.
-        /// </summary>
-        /// <value>
-        ///   <see langword="true" /> if the value is assigned; otherwise, <see langword="false" />.
-        /// </value>
-        public bool IsAssigned => _state != State.Unassigned;
-
+        public bool IsOutputValue => OutputValue != null;
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="Input{T}"/> struct.
         /// </summary>
@@ -77,18 +68,16 @@ namespace WebApplications.Utilities.Database
         {
             Value = value;
             OutputValue = null;
-            _state = State.Input;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Input{T}"/> struct.
         /// </summary>
         /// <param name="value">The value.</param>
-        public Input(Out<T> value)
+        public Input([NotNull] Out<T> value)
         {
+            OutputValue = value ?? throw new ArgumentNullException(nameof(value));
             Value = default(T);
-            OutputValue = value;
-            _state = State.Output;
         }
 
         /// <summary>
@@ -108,12 +97,5 @@ namespace WebApplications.Utilities.Database
         /// The result of the conversion.
         /// </returns>
         public static implicit operator Input<T>(Out<T> value) => new Input<T>(value);
-
-        private enum State : byte
-        {
-            Unassigned,
-            Input,
-            Output
-        }
     }
 }

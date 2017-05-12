@@ -1,4 +1,4 @@
-﻿<#@ template language="C#" hostspecific="True"
+﻿<#@ template language="C#" hostspecific="True" 
 #><#@output extension=".log" 
 #><#@import namespace="System"
 #><#@import namespace="System.IO"
@@ -52,6 +52,7 @@ Schema code file generation
 ============================
 Started			: <#= started #>
 <#
+if (manager != null)
 try {
     for (int count = 1; count <= 32; count++)
     {
@@ -1135,8 +1136,8 @@ namespace WebApplications.Utilities.Database
             <#= Strings.InputParametersTypedDefault #>,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteScalar<TOut>(program, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), out result);
-        }
+            return this.AddExecuteScalar<TOut>(program, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode));
+        } 
 
         /// <summary>
         /// Adds the specified program to the batch. The number of rows affected will be returned by the <see cref="SqlBatchResult{T}"/>.
@@ -1154,7 +1155,7 @@ namespace WebApplications.Utilities.Database
             <#= Strings.InputParametersTypedDefault #>,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteNonQuery(program, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
+            return this.AddExecuteNonQuery(program, out result, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
         }
 
         /// <summary>
@@ -1177,7 +1178,7 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteReader(program, resultAction, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
+            return this.AddExecuteReader(program, resultAction, out result, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
         }
 
         /// <summary>
@@ -1202,7 +1203,7 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteReader<TOut>(program, resultFunc, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)), out result);
+            return this.AddExecuteReader<TOut>(program, resultFunc, out result, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
         }
     }
     #endregion

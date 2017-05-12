@@ -25,29 +25,51 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+// TODO Remove when migrated to .net standard project format
+#define NET452
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
 {
     /// <summary>
     /// Represents the result of a batched <see cref="SqlProgram"/>
     /// </summary>
-    public class SqlBatchResult
+    public abstract class SqlBatchResult
     {
+        /// <summary>
+        /// The <see cref="TaskCreationOptions"/> to use for the results <see cref="TaskCompletionSource" />
+        /// </summary>
+#if NET452
+        protected static readonly TaskCreationOptions CompletionSourceOptions;
+        static SqlBatchResult()
+        {
+            FieldInfo field = typeof(TaskCreationOptions).GetField("RunContinuationsAsynchronously");
+            if (field == null)
+            {
+                CompletionSourceOptions = TaskCreationOptions.None;
+                return;
+            }
+
+            CompletionSourceOptions = (TaskCreationOptions)field.GetValue(null);
+        }
+#else
+        protected const TaskCreationOptions CompletionSourceOptions = TaskCreationOptions.RunContinuationsAsynchronously;
+#endif
+
         /// <summary>
         /// The command that this is the result of.
         /// </summary>
-        private readonly SqlBatchCommand _command;
-
-        private List<Task> _resultTasks;
-
-        protected IReadOnlyList<Task> ResultTasks => _resultTasks;
+        [NotNull]
+        protected readonly SqlBatchCommand Command;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlBatchResult"/> class.
@@ -55,37 +77,65 @@ namespace WebApplications.Utilities.Database
         /// <param name="command">The command that this is the result of.</param>
         internal SqlBatchResult([NotNull] SqlBatchCommand command)
         {
-            _command = command ?? throw new ArgumentNullException(nameof(command));
+            Command = command ?? throw new ArgumentNullException(nameof(command));
         }
 
         /// <summary>
-        /// Adds the specified result to this result. 
+        /// Sets the result count.
         /// </summary>
-        /// <param name="task">The result to add.</param>
-        internal virtual void AddResultTask([NotNull] Task task)
-        {
-            if (task == null) throw new ArgumentNullException(nameof(task));
+        /// <param name="count">The count.</param>
+        internal abstract void SetResultCount(int count);
 
-            if (_resultTasks == null)
-                _resultTasks = new List<Task>();
-            _resultTasks.Add(task);
-        }
+        /// <summary>
+        /// Sets the result to completed.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        internal abstract void SetCompleted(int index);
 
+        /// <summary>
+        /// Sets the exception that occurred.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="exception">The exception.</param>
+        internal abstract void SetException(int index, Exception exception);
+
+        /// <summary>
+        /// Sets the result to canceled.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        internal abstract void SetCanceled(int index);
+
+        /// <summary>
+        /// Gets the result asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
+        /// <returns>An awaitable task.</returns>
+        [NotNull]
         public Task GetResultAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // TODO Execute the command if not already running
+            => GetResultInternalAsync(cancellationToken);
 
-            Debug.Assert(_resultTasks != null);
-            return _resultTasks.Count == 1 ? _resultTasks[0] : Task.WhenAll(_resultTasks);
-        }
+        /// <summary>
+        /// When overridden, gets the result asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
+        /// <returns>An awaitable task.</returns>
+        [NotNull]
+        protected abstract Task GetResultInternalAsync(CancellationToken cancellationToken);
     }
 
     /// <summary>
     /// Represents the result of a batched <see cref="SqlProgram"/>
     /// </summary>
     /// <typeparam name="T">The type of the value returned by the program.</typeparam>
-    public class SqlBatchResult<T> : SqlBatchResult
+    public sealed class SqlBatchResult<T> : SqlBatchResult
     {
+        private (T result, bool completed, Exception exception)[] _results;
+        private bool _cancelled;
+
+        [NotNull]
+        private readonly TaskCompletionSource _completionSource =
+            new TaskCompletionSource(CompletionSourceOptions);
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlBatchResult"/> class.
         /// </summary>
@@ -96,40 +146,155 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        /// Adds the specified result to this result. 
+        /// Sets the result count.
         /// </summary>
-        /// <param name="task">The result to add.</param>
-        internal override void AddResultTask(Task task)
+        /// <param name="count">The count.</param>
+        internal override void SetResultCount(int count)
         {
-            if (task is Task<T>)
-                base.AddResultTask(task);
-            else
-                throw new ArgumentException($"Task should be of type {typeof(Task<T>)}", nameof(task));
+            _results = new(T, bool, Exception)[count];
         }
 
-        // Use with ExecuteAsync
-        public new Task<T> GetResultAsync(CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>
+        /// Sets the result for the index given.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="value">The value.</param>
+        internal void SetResult(int index, T value)
         {
-            // TODO Execute the command if not already running
+            Debug.Assert(_results != null, "_results != null");
 
-            Debug.Assert(ResultTasks != null);
-            if (ResultTasks.Count != 1)
-                throw new InvalidOperationException();
-
-            return (Task<T>)ResultTasks[0];
+            _results[index].result = value;
         }
 
-        // Use with ExecuteAllAsync?
-        public Task<IEnumerable<T>> GetResultsAsync(CancellationToken cancellationToken = default(CancellationToken))
+        /// <summary>
+        /// Sets the result to completed.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        internal override void SetCompleted(int index)
         {
-            // TODO Execute the command if not already running
+            // Set the result to completed
+            _results[index].completed = true;
 
-            Debug.Assert(ResultTasks != null);
+            if (_completionSource.Task.IsCompleted) return;
 
-            return Task.WhenAll(ResultTasks.Cast<Task<T>>())
-                .ContinueWith(
-                    t => (IEnumerable<T>)t.GetAwaiter().GetResult(),
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.NotOnCanceled);
+            // If all the results are completed, we need to complete the task
+            foreach ((_, bool completed, _) in _results)
+                if (!completed) return;
+
+            // If there are any exceptions, set the result to faulted
+            if (_results.Any(r => r.exception != null))
+            {
+                _completionSource.TrySetException(_results.Select(t => t.exception).Where(e => e != null));
+                return;
+            }
+
+            // If any connection was cancelled, cancel the result
+            if (_cancelled)
+            {
+                _completionSource.TrySetCanceled();
+                return;
+            }
+
+            // Otherwise its completed
+            _completionSource.TrySetCompleted();
+        }
+
+        /// <summary>
+        /// Sets the exception that occurred.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="exception">The exception.</param>
+        internal override void SetException(int index, Exception exception)
+        {
+            Debug.Assert(_results != null, "_results != null");
+
+            // Combine the exceptions for the index
+            AddException(ref _results[index].exception, exception, index);
+
+            SetCompleted(index);
+
+            void AddException(ref Exception origEx, Exception newEx, int i)
+            {
+                switch (origEx)
+                {
+                    case null:
+                        origEx = newEx;
+                        break;
+                    case AggregateException aggEx:
+                        origEx = new AggregateException(aggEx.Message, aggEx.InnerExceptions.Append(newEx));
+                        break;
+                    default:
+                        origEx = new AggregateException(
+                            $"Multiple exceptions occurred for the command on connection #{i}",
+                            origEx,
+                            newEx);
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the result to canceled.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        internal override void SetCanceled(int index)
+        {
+            _cancelled = true;
+            SetCompleted(index);
+        }
+
+        /// <summary>
+        /// Gets the result asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
+        /// <returns>An awaitable task.</returns>
+        protected override Task GetResultInternalAsync(CancellationToken cancellationToken) 
+            => GetResultAsync(cancellationToken);
+
+        /// <summary>
+        /// Gets the result asynchronously.
+        /// </summary>
+        /// <remarks>If the batch was executed against all connections, this will return the result of a single connection.</remarks>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
+        /// <returns>An awaitable task which returns the result.</returns>
+        public new async Task<T> GetResultAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Execute the command if its not already running
+            Command.Batch.BeginExecute(false);
+
+            await _completionSource.Task.WithCancellation(cancellationToken).ConfigureAwait(false);
+
+#if NET452
+            // If TCO.RunContinuationsAsynchronously isnt supported, need to yield after waiting for the task
+            if (CompletionSourceOptions == TaskCreationOptions.None)
+                await Task.Yield();
+#endif
+
+            Debug.Assert(_results != null, "_results != null");
+            return _results[0].result;
+        }
+
+        /// <summary>
+        /// Gets the results for all connections asynchronously.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
+        /// <remarks>The order of the results is based on the order of the connections in the <see cref="SqlBatch.CommonConnectionStrings"/> property.</remarks>
+        /// <returns>An awaitable task which returns the results for all connections.</returns>
+        public async Task<IEnumerable<T>> GetResultsAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // Execute the command for all connections if its not already running
+            Command.Batch.BeginExecute(true);
+
+            await _completionSource.Task.WithCancellation(cancellationToken).ConfigureAwait(false);
+
+#if NET452
+            // If TCO.RunContinuationsAsynchronously isnt supported, need to yield after waiting for the task
+            if (CompletionSourceOptions == TaskCreationOptions.None)
+                await Task.Yield();
+#endif
+
+            Debug.Assert(_results != null, "_results != null");
+            return _results.Select(t => t.result);
         }
     }
 }

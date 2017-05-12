@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.ExceptionServices;
@@ -55,14 +56,14 @@ namespace WebApplications.Utilities.Database
     public delegate void SetParametersDelegate([NotNull] SqlProgramCommand command);
 
     /// <summary>
-    /// A delegate that accepts any method that accepts a <see cref="SqlDataReader"/>.
+    /// A delegate that accepts any method that accepts a <see cref="DbDataReader"/>.
     /// </summary>
     /// <param name="reader">The reader.</param>
     /// <remarks>The <paramref name="reader"/> is disposed automatically after use, so should not be disposed by this method.</remarks>
-    public delegate void ResultDelegate([NotNull] SqlDataReader reader);
+    public delegate void ResultDelegate([NotNull] DbDataReader reader);
 
     /// <summary>
-    /// A delegate that accepts any method that accepts a <see cref="SqlDataReader"/>, and a disposable.
+    /// A delegate that accepts any method that accepts a <see cref="DbDataReader"/>, and a disposable.
     /// </summary>
     /// <param name="reader">The reader.</param>
     /// <param name="disposable">The disposer that can be used to clean up manually.</param>
@@ -71,20 +72,20 @@ namespace WebApplications.Utilities.Database
     /// <see cref="IDisposable.Dispose"/> method when ready.</para>
     /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
     /// with a <see cref="CloseableStream"/>.</para></remarks>
-    public delegate void ResultDisposableDelegate([NotNull] SqlDataReader reader, [NotNull] IDisposable disposable);
+    public delegate void ResultDisposableDelegate([NotNull] DbDataReader reader, [NotNull] IDisposable disposable);
 
     /// <summary>
-    /// An asynchronous delegate that accepts any method that accepts a <see cref="SqlDataReader" />.
+    /// An asynchronous delegate that accepts any method that accepts a <see cref="DbDataReader" />.
     /// </summary>
     /// <param name="reader">The reader.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>An awaitable task.</returns>
     /// <remarks>The reader is disposed automatically after use, so should not be disposed by this method.</remarks>
     [NotNull]
-    public delegate Task ResultDelegateAsync([NotNull] SqlDataReader reader, CancellationToken cancellationToken);
+    public delegate Task ResultDelegateAsync([NotNull] DbDataReader reader, CancellationToken cancellationToken);
 
     /// <summary>
-    /// An asynchronous delegate that accepts any method that accepts a <see cref="SqlDataReader" />.
+    /// An asynchronous delegate that accepts any method that accepts a <see cref="DbDataReader" />.
     /// </summary>
     /// <param name="reader">The reader.</param>
     /// <param name="disposable">The disposer that can be used to clean up manually.</param>
@@ -95,20 +96,20 @@ namespace WebApplications.Utilities.Database
     /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
     /// with a <see cref="CloseableStream"/>.</para></remarks>
     [NotNull]
-    public delegate Task ResultDisposableDelegateAsync([NotNull] SqlDataReader reader, [NotNull] IDisposable disposable, CancellationToken cancellationToken);
+    public delegate Task ResultDisposableDelegateAsync([NotNull] DbDataReader reader, [NotNull] IDisposable disposable, CancellationToken cancellationToken);
 
     /// <summary>
-    /// A delegate that accepts any method that accepts a <see cref="SqlDataReader" /> and returns a result.
+    /// A delegate that accepts any method that accepts a <see cref="DbDataReader" /> and returns a result.
     /// </summary>
     /// <typeparam name="T">The result type.</typeparam>
     /// <param name="reader">The reader.</param>
     /// <returns>The result.</returns>
     /// <remarks>The reader is disposed automatically after use, so should not be disposed by this method.</remarks>
     [CanBeNull]
-    public delegate T ResultDelegate<out T>([NotNull] SqlDataReader reader);
+    public delegate T ResultDelegate<out T>([NotNull] DbDataReader reader);
 
     /// <summary>
-    /// A delegate that accepts any method that accepts a <see cref="SqlDataReader" /> and returns a result.
+    /// A delegate that accepts any method that accepts a <see cref="DbDataReader" /> and returns a result.
     /// </summary>
     /// <typeparam name="T">The result type.</typeparam>
     /// <param name="reader">The reader.</param>
@@ -120,20 +121,20 @@ namespace WebApplications.Utilities.Database
     /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
     /// with a <see cref="CloseableStream"/>.</para></remarks>
     [CanBeNull]
-    public delegate T ResultDisposableDelegate<out T>([NotNull] SqlDataReader reader, [NotNull] IDisposable disposable);
+    public delegate T ResultDisposableDelegate<out T>([NotNull] DbDataReader reader, [NotNull] IDisposable disposable);
 
     /// <summary>
-    /// An asynchronous delegate that accepts any method that accepts a <see cref="SqlDataReader" /> and returns a result.
+    /// An asynchronous delegate that accepts any method that accepts a <see cref="DbDataReader" /> and returns a result.
     /// </summary>
     /// <param name="reader">The reader.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>An awaitable task, containing the result.</returns>
     /// <remarks>The reader is disposed automatically after use, so should not be disposed by this method.</remarks>
     [NotNull]
-    public delegate Task<T> ResultDelegateAsync<T>([NotNull] SqlDataReader reader, CancellationToken cancellationToken);
+    public delegate Task<T> ResultDelegateAsync<T>([NotNull] DbDataReader reader, CancellationToken cancellationToken);
 
     /// <summary>
-    /// An asynchronous delegate that accepts any method that accepts a <see cref="SqlDataReader" /> and returns a result.
+    /// An asynchronous delegate that accepts any method that accepts a <see cref="DbDataReader" /> and returns a result.
     /// </summary>
     /// <param name="reader">The reader.</param>
     /// <param name="disposable">The disposer that can be used to clean up manually.</param>
@@ -145,7 +146,7 @@ namespace WebApplications.Utilities.Database
     /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
     /// with a <see cref="CloseableStream"/>.</para></remarks>
     [NotNull]
-    public delegate Task<T> ResultDisposableDelegateAsync<T>([NotNull] SqlDataReader reader, [NotNull] IDisposable disposable, CancellationToken cancellationToken);
+    public delegate Task<T> ResultDisposableDelegateAsync<T>([NotNull] DbDataReader reader, [NotNull] IDisposable disposable, CancellationToken cancellationToken);
 
     /// <summary>
     /// A delegate that accepts any method that accepts a <see cref="XmlReader"/>.

@@ -58,7 +58,7 @@ namespace WebApplications.Utilities.Database
         private readonly List<DbBatchParameter> _parameters = new List<DbBatchParameter>();
 
         [CanBeNull]
-        private List<DbBatchParameter, IOut> _outputParameters;
+        private List<(DbBatchParameter, IOut)> _outputParameters;
 
         /// <summary>
         /// Gets the parameters in the collection.
@@ -86,8 +86,7 @@ namespace WebApplications.Utilities.Database
         /// The output parameters.
         /// </value>
         [CanBeNull]
-        [ItemNotNull]
-        internal IEnumerable<DbBatchParameter, IOut> OutputParameters => _outputParameters;
+        internal IReadOnlyList<(DbBatchParameter, IOut)> OutputParameters => _outputParameters;
 
         /// <summary>
         /// Gets the program mapping.
@@ -184,11 +183,6 @@ namespace WebApplications.Utilities.Database
                     parameterName);
             Debug.Assert(parameterDefinition != null);
 
-            if (value.IsOutputValue)
-            {
-                throw new NotImplementedException();
-            }
-
             lock (_parameters)
             {
                 // Find or create SQL Parameter.
@@ -212,8 +206,8 @@ namespace WebApplications.Utilities.Database
         {
             if (outValue == null) return;
             if (_outputParameters == null)
-                _outputParameters = new List<DbBatchParameter, IOut>();
-            _outputParameters.Add(parameter, outValue);
+                _outputParameters = new List<(DbBatchParameter, IOut)>();
+            _outputParameters.Add((parameter, outValue));
         }
     }
 }

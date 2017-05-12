@@ -372,4 +372,16 @@
   <data name="SqlBatchParametersCollection_GetOrAddParameter_MultipleReturns" xml:space="preserve">
     <value>Multiple return value parameters set for the '{0}' program.</value>
   </data>
+  <data name="SqlBatchDataTextReader_Read_NonNegativeRequired" xml:space="preserve">
+    <value>Non-negative number required.</value>
+  </data>
+  <data name="SqlBatchDataTextReader_Read_BufferNull" xml:space="preserve">
+    <value>Buffer cannot be null.</value>
+  </data>
+  <data name="SqlBatchDataTextReader_Read_OffsetLengthInvalid" xml:space="preserve">
+    <value>Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.</value>
+  </data>
+  <data name="SqlBatchDataTextReader_Closed" xml:space="preserve">
+    <value>The reader is closed.</value>
+  </data>
 </root>

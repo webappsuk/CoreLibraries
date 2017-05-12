@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
 using System.Diagnostics;
@@ -56,7 +57,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="SerializationException">The serialization stream supports seeking but its length is 0.</exception>
         [CanBeNull]
         public static object GetObjectByName(
-            [NotNull] this SqlDataReader reader,
+            [NotNull] this DbDataReader reader,
             [NotNull] string column,
             [CanBeNull] object nullValue = null,
             [CanBeNull] object context = null,
@@ -68,9 +69,8 @@ namespace WebApplications.Utilities.Database
             int ordinal = reader.GetOrdinal(column);
             if (reader.IsDBNull(ordinal))
                 return nullValue;
-
-            SqlBytes bytes = reader.GetSqlBytes(ordinal);
-            using (Stream serializationStream = bytes.Stream)
+            
+            using (Stream serializationStream = reader.GetStream(ordinal))
             {
                 Debug.Assert(serializationStream != null);
                 return Serialize.GetFormatter(context, contextState).Deserialize(serializationStream);

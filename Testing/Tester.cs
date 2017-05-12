@@ -922,6 +922,42 @@ namespace WebApplications.Testing
         /// <summary>
         /// Generates a random string.
         /// </summary>
+        /// <param name="encoding">The encoding of the string to get.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <param name="nullProbability">The probability of a null being returned (0.0 for no nulls).</param>
+        /// <param name="minLength">The minimum length.</param>
+        /// <returns>
+        /// A random <see cref="System.String" />.
+        /// </returns>
+        [CanBeNull]
+        public static string RandomString(
+            Encoding encoding,
+            int maxLength = 8001,
+            double nullProbability = 0.0,
+            int minLength = 0)
+        {
+            // Check for random nulls
+            if ((nullProbability > 0.0) &&
+                (RandomGenerator.NextDouble() < nullProbability))
+                return null;
+
+            // Get string length, if there's no maximum then use 8001 (as 8000 is max specific size in SQL Server).
+            if (maxLength < 0)
+                maxLength = 8001;
+            if (minLength < 0)
+                minLength = 0;
+            int length = RandomGenerator.Next(maxLength - minLength) + minLength;
+            if (length < 1)
+                return string.Empty;
+
+            byte[] bytes = new byte[length];
+            RandomGenerator.NextBytes(bytes);
+            return encoding.GetString(bytes);
+        }
+
+        /// <summary>
+        /// Generates a random string.
+        /// </summary>
         /// <param name="random">The random generator.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <param name="unicode">if set to <see langword="true" /> string is UTF16; otherwise it uses ASCII.</param>
@@ -962,6 +998,45 @@ namespace WebApplications.Testing
             for (int charIndex = 0; charIndex < length; ++charIndex)
                 stringBuilder.Append(random.RandomUnicodeCharacter());
             return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Generates a random string.
+        /// </summary>
+        /// <param name="random">The random generator.</param>
+        /// <param name="encoding">The encoding of the string to get.</param>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <param name="nullProbability">The probability of a null being returned (0.0 for no nulls).</param>
+        /// <param name="minLength">The minimum length.</param>
+        /// <returns>
+        /// A random <see cref="System.String" />.
+        /// </returns>
+        [CanBeNull]
+        public static string RandomString(
+            [CanBeNull] this Random random,
+            Encoding encoding,
+            int maxLength = 8001,
+            double nullProbability = 0.0,
+            int minLength = 0)
+        {
+            random = random ?? RandomGenerator;
+            // Check for random nulls
+            if ((nullProbability > 0.0) &&
+                (random.NextDouble() < nullProbability))
+                return null;
+
+            // Get string length, if there's no maximum then use 8001 (as 8000 is max specific size in SQL Server).
+            if (maxLength < 0)
+                maxLength = 8001;
+            if (minLength < 0)
+                minLength = 0;
+            int length = random.Next(maxLength - minLength) + minLength;
+            if (length < 1)
+                return String.Empty;
+
+            byte[] bytes = new byte[length];
+            random.NextBytes(bytes);
+            return encoding.GetString(bytes);
         }
 
         /// <summary>

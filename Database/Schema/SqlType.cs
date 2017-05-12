@@ -844,6 +844,7 @@ namespace WebApplications.Utilities.Database.Schema
                                             }
 
                                             // Check for non ASCII chars
+                                            // BUG Non-unicode strings are NOT ASCII, depends on the collation
                                             if (c.Any(ch => ch > 255))
                                             {
                                                 if (m == TypeConstraintMode.Error)

@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Data.Common;
 using System.Data.SqlClient;
 using WebApplications.Utilities.Annotations;
 
@@ -62,7 +63,7 @@ namespace WebApplications.Utilities.Database
     [PublicAPI]
     public class Out<T> : IOut
     {
-        private SqlParameter _parameter;
+        private DbParameter _parameter;
 
         private readonly Optional<T> _inputValue;
 
@@ -161,7 +162,7 @@ namespace WebApplications.Utilities.Database
         /// The instance of <see cref="IOut" /> for the parameter.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        void IOut.SetParameter(SqlParameter parameter) => SetParameter(parameter);
+        void IOut.SetParameter(DbParameter parameter) => SetParameter(parameter);
 
         /// <summary>
         /// Sets the parameter to get the value from.
@@ -172,7 +173,7 @@ namespace WebApplications.Utilities.Database
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
         /// <exception cref="InvalidOperationException">This value is already being used by a parameter.</exception>
-        protected internal virtual void SetParameter(SqlParameter parameter)
+        protected internal virtual void SetParameter(DbParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
             if (_parameter != null || _outputValue.IsAssigned)
@@ -188,7 +189,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameter">The parameter to set the value of.</param>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException">The value of this parameter has already been set.</exception>
-        void IOut.SetOutputValue(object value, SqlParameter parameter) => SetOutputValue(value, parameter);
+        void IOut.SetOutputValue(object value, DbParameter parameter) => SetOutputValue(value, parameter);
 
         /// <summary>
         /// Sets the output value for the parameter given.
@@ -197,7 +198,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameter">The parameter to set the value of.</param>
         /// <exception cref="ArgumentException">The value of this parameter has already been set.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        protected internal virtual void SetOutputValue(object value, SqlParameter parameter)
+        protected internal virtual void SetOutputValue(object value, DbParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
             if (_parameter == null || _outputValue.IsAssigned)
@@ -215,7 +216,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameter">The parameter to set the exception of.</param>
         /// <exception cref="ArgumentException">The value of this parameter has already been set.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        void IOut.SetOutputError(Exception exception, SqlParameter parameter) => SetOutputError(exception, parameter);
+        void IOut.SetOutputError(Exception exception, DbParameter parameter) => SetOutputError(exception, parameter);
 
         /// <summary>
         /// Indicates that the value returned by the database is invalid for the type of the parameter.
@@ -224,7 +225,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameter">The parameter to set the exception of.</param>
         /// <exception cref="ArgumentException">The value of this parameter has already been set.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        protected internal virtual void SetOutputError(Exception exception, SqlParameter parameter)
+        protected internal virtual void SetOutputError(Exception exception, DbParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
             if (_parameter == null || _outputError != null)

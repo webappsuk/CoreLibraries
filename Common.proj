@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-  <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <!-- Standard common properties -->
     <PropertyGroup>
       <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,7 +10,7 @@
       <OldToolsVersion>4.0</OldToolsVersion>
       <RestorePackages>true</RestorePackages>
       <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
-      <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+      <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
 
       <!-- Force the solution directory to the same as the file -->
       <SlnDir>$(MSBuildThisFileDirectory)</SlnDir>
@@ -102,17 +102,16 @@
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 
     <!-- Text Templating includes -->
-    <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" />
-    <PropertyGroup Condition="'$(TransformOutOfDateOnly)' == ''">
+    <PropertyGroup Condition="'$(TransformOnBuild)' == ''">
       <TransformOnBuild>True</TransformOnBuild>
-      <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
-      <TransformOutOfDateOnly Condition="'$(Configuration)' == 'Release' OR '$(Configuration)' == 'NuGet'">false</TransformOutOfDateOnly>
+      <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
     </PropertyGroup>
     <ItemGroup>
       <T4ParameterValues Include="ProjectDir">
         <Value>$(ProjectDir)</Value>
       </T4ParameterValues>
     </ItemGroup>
+    <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" />
 
     <!-- NuGet package restore -->
     <Import Project="$(SlnDir).nuget\NuGet.targets" Condition="Exists('$(SlnDir)\.nuget\NuGet.targets')" />

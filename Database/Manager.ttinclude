@@ -1,3 +1,4 @@
+<#@ template language="C#" hostspecific="True" #>
 <#@ assembly name="System.Core" #>
 <#@ assembly name="System.Data" #>
 <#@ assembly name="System.Data.Entity" #>
@@ -1078,6 +1079,5 @@ public sealed class FileProperties
 		}
 	}
 }
-
 
 #>

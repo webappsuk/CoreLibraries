@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -124,7 +125,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             }
         }
 
-        private dynamic CreateDatabaseResult(SqlDataReader reader)
+        private dynamic CreateDatabaseResult(DbDataReader reader)
         {
             return new
             {

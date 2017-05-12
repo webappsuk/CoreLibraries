@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Data.Common;
 using System.Data.SqlClient;
 using WebApplications.Utilities.Annotations;
 
@@ -58,7 +59,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="parameter">The parameter to get the value from.</param>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        void SetParameter([NotNull] SqlParameter parameter);
+        void SetParameter([NotNull] DbParameter parameter);
 
         /// <summary>
         /// Sets the output value for the parameter given.
@@ -67,7 +68,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameter">The parameter to set the value of.</param>
         /// <exception cref="ArgumentException">The value of this parameter has already been set.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        void SetOutputValue([CanBeNull] object value, [NotNull] SqlParameter parameter);
+        void SetOutputValue([CanBeNull] object value, [NotNull] DbParameter parameter);
 
         /// <summary>
         /// Indicates that the value returned by the database is invalid for the type of the parameter.
@@ -76,6 +77,6 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameter">The parameter to set the exception of.</param>
         /// <exception cref="ArgumentException">The value of this parameter has already been set.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        void SetOutputError(Exception exception, SqlParameter parameter);
+        void SetOutputError(Exception exception, DbParameter parameter);
     }
 }

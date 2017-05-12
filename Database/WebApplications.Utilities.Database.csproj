@@ -6,6 +6,8 @@
     <RootNamespace>WebApplications.Utilities.Database</RootNamespace>
     <AssemblyName>WebApplications.Utilities.Database</AssemblyName>
     <DefineConstants>PerfSetup;CopyResources</DefineConstants>
+    <!-- Temporary untill Manager.ttinclude can be fixed to not need DTE -->
+    <TransformOnBuild>false</TransformOnBuild>
   </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)..\Common.proj" />
   <ItemGroup>
@@ -174,6 +176,7 @@
     <Compile Include="Schema\SqlProgramParameter.cs" />
     <Compile Include="SqlBatch.cs" />
     <Compile Include="SqlBatchCommand.cs" />
+    <Compile Include="SqlBatchDataTextReader.cs" />
     <Compile Include="SqlBatchParameter.cs" />
     <Compile Include="SqlBatchParametersCollection.cs" />
     <Compile Include="SqlBatchResult.cs" />

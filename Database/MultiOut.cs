@@ -28,6 +28,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using WebApplications.Utilities.Annotations;
@@ -44,7 +45,7 @@ namespace WebApplications.Utilities.Database
     public class MultiOut<T> : Out<T>, IMultiOut, IReadOnlyCollection<Out<T>>
     {
         [NotNull]
-        private readonly Dictionary<SqlParameter, Out<T>> _outputs = new Dictionary<SqlParameter, Out<T>>();
+        private readonly Dictionary<DbParameter, Out<T>> _outputs = new Dictionary<DbParameter, Out<T>>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MultiOut{T}"/> class with no input value.
@@ -102,7 +103,7 @@ namespace WebApplications.Utilities.Database
         /// The instance of <see cref="Out{T}" /> for the parameter.
         /// </returns>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        protected internal override void SetParameter(SqlParameter parameter)
+        protected internal override void SetParameter(DbParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
             Out<T> output;
@@ -122,7 +123,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameter">The parameter to set the value of.</param>
         /// <exception cref="ArgumentException">The value of this parameter has already been set.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        protected internal override void SetOutputValue(object value, [NotNull] SqlParameter parameter)
+        protected internal override void SetOutputValue(object value, [NotNull] DbParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 
@@ -140,7 +141,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameter">The parameter to set the exception of.</param>
         /// <exception cref="ArgumentException">The value of this parameter has already been set.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="parameter"/> is <see langword="null" />.</exception>
-        protected internal override void SetOutputError(Exception exception, SqlParameter parameter)
+        protected internal override void SetOutputError(Exception exception, DbParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 

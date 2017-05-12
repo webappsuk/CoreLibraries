@@ -659,7 +659,11 @@ namespace WebApplications.Utilities.Database
             try
             {
                 using (ReaderDisposer disposer = CreateReaderDisposer())
-                    return (T)disposer.ExecuteScalar();
+                {
+                    object value = disposer.ExecuteScalar();
+                    if (value == DBNull.Value) value = null;
+                    return (T)value;
+                }
             }
             catch (Exception exception)
             {
@@ -692,9 +696,11 @@ namespace WebApplications.Utilities.Database
                 using (ReaderDisposer disposer =
                     await CreateReaderDisposerAsync(cancellationToken).ConfigureAwait(false))
                 {
-                    return (T)await disposer
+                    object value = await disposer
                         .ExecuteScalarAsync(cancellationToken)
                         .ConfigureAwait(false);
+                    if (value == DBNull.Value) value = null;
+                    return (T)value;
                 }
             }
             catch (Exception exception)

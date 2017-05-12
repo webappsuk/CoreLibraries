@@ -448,6 +448,42 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The reader is closed..
+        /// </summary>
+        internal static string SqlBatchDataTextReader_Closed {
+            get {
+                return ResourceManager.GetString("SqlBatchDataTextReader_Closed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buffer cannot be null..
+        /// </summary>
+        internal static string SqlBatchDataTextReader_Read_BufferNull {
+            get {
+                return ResourceManager.GetString("SqlBatchDataTextReader_Read_BufferNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Non-negative number required..
+        /// </summary>
+        internal static string SqlBatchDataTextReader_Read_NonNegativeRequired {
+            get {
+                return ResourceManager.GetString("SqlBatchDataTextReader_Read_NonNegativeRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection..
+        /// </summary>
+        internal static string SqlBatchDataTextReader_Read_OffsetLengthInvalid {
+            get {
+                return ResourceManager.GetString("SqlBatchDataTextReader_Read_OffsetLengthInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Multiple return value parameters set for the &apos;{0}&apos; program..
         /// </summary>
         internal static string SqlBatchParametersCollection_GetOrAddParameter_MultipleReturns {

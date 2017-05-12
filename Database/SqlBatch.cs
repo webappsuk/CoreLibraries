@@ -25,6 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+// TODO Remove when migrated to .net standard project format
+#define NET452
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,14 +36,10 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
-using WebApplications.Utilities;
 using WebApplications.Utilities.Annotations;
-using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
@@ -68,6 +67,9 @@ namespace WebApplications.Utilities.Database
 
         private Duration _batchTimeout;
 
+        [NotNull]
+        private readonly ResettableLazy<HashSet<string>> _commonConnectionStrings;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlBatch"/> class.
         /// </summary>
@@ -75,6 +77,7 @@ namespace WebApplications.Utilities.Database
         public SqlBatch(Duration? batchTimeout = null)
         {
             BatchTimeout = batchTimeout ?? Duration.FromSeconds(30);
+            _commonConnectionStrings = new ResettableLazy<HashSet<string>>(GetCommonConnections);
         }
 
         /// <summary>
@@ -103,6 +106,29 @@ namespace WebApplications.Utilities.Database
             }
         }
 
+        /// <summary>
+        /// Gets the connection strings which are common to all the commands that have been added to this batch.
+        /// </summary>
+        /// <value>
+        /// The common connection strings.
+        /// </value>
+        [NotNull]
+        [ItemNotNull]
+        public IReadOnlyCollection<string> CommonConnectionStrings
+        {
+            get
+            {
+                lock (_addLock)
+                {
+                    return _commonConnectionStrings.Value
+#if NET452
+                            .ToArray()
+#endif
+                        ;
+                }
+            }
+        }
+
         /// <summary>Gets the number of elements in the collection.</summary>
         /// <returns>The number of elements in the collection. </returns>
         public int Count => _commands.Count;
@@ -119,11 +145,7 @@ namespace WebApplications.Utilities.Database
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
         public IEnumerator<SqlBatchCommand> GetEnumerator() => _commands.GetEnumerator();
-
-        // TODO Transaction support
-        // TODO ResultDelegate needs to take a DbDataReader instead
-        // TODO Not all CommandBehaviors may be possible to do
-
+        
         /// <summary>
         /// Checks the state is valid for adding to the batch.
         /// </summary>
@@ -146,14 +168,17 @@ namespace WebApplications.Utilities.Database
         {
             lock (_addLock)
             {
+                CheckState();
+
                 if (_commands.Count >= ushort.MaxValue)
                     throw new InvalidOperationException("Only allowed 65536 commands per batch.");
 
                 command.Id = (ushort)_commands.Count;
                 _commands.Add(command);
+                _commonConnectionStrings.Reset();
             }
         }
-
+        
         /// <summary>
         /// Adds the specified program to the batch.
         /// The first column of the first row in the result set returned by the query will be returned from the <see cref="SqlBatchResult{T}" />.
@@ -162,26 +187,12 @@ namespace WebApplications.Utilities.Database
         /// <typeparam name="TOut">The output type expected.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</param>
-        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
-        public SqlBatch AddExecuteScalar<TOut>(
-            [NotNull] SqlProgram program,
-            [NotNull] out SqlBatchResult<TOut> result)
-            => AddExecuteScalar(program, null, out result);
-
-        /// <summary>
-        /// Adds the specified program to the batch.
-        /// The first column of the first row in the result set returned by the query will be returned from the <see cref="SqlBatchResult{T}" />.
-        /// Additional columns or rows are ignored.
-        /// </summary>
-        /// <typeparam name="TOut">The output type expected.</typeparam>
-        /// <param name="program">The program to add to the batch.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
-        /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         public SqlBatch AddExecuteScalar<TOut>(
             [NotNull] SqlProgram program,
-            [CanBeNull] SetBatchParametersDelegate setParameters,
-            [NotNull] out SqlBatchResult<TOut> result)
+            [NotNull] out SqlBatchResult<TOut> result,
+            [CanBeNull] SetBatchParametersDelegate setParameters = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             CheckState();
@@ -194,18 +205,6 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        /// Adds the specified program to the batch.
-        /// The number of records affected by the program will be returned from the <see cref="SqlBatchResult{T}" />.
-        /// </summary>
-        /// <param name="program">The program to add to the batch.</param>
-        /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to get the number of records affected by the program.</param>
-        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
-        public SqlBatch AddExecuteNonQuery(
-            [NotNull] SqlProgram program,
-            [NotNull] out SqlBatchResult<int> result)
-            => AddExecuteNonQuery(program, null, out result);
-
-        /// <summary>
         /// Adds the specified program to the batch. 
         /// The number of records affected by the program will be returned from the <see cref="SqlBatchResult{T}"/>.
         /// </summary>
@@ -215,8 +214,8 @@ namespace WebApplications.Utilities.Database
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         public SqlBatch AddExecuteNonQuery(
             [NotNull] SqlProgram program,
-            [CanBeNull] SetBatchParametersDelegate setParameters,
-            [NotNull] out SqlBatchResult<int> result)
+            [NotNull] out SqlBatchResult<int> result,
+            [CanBeNull] SetBatchParametersDelegate setParameters = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             CheckState();
@@ -233,34 +232,6 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="resultAction">The action used to process the result.</param>
-        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
-        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
-        public SqlBatch AddExecuteReader(
-            [NotNull] SqlProgram program,
-            [NotNull] ResultDelegateAsync resultAction,
-            [NotNull] out SqlBatchResult result)
-            => AddExecuteReader(program, resultAction, CommandBehavior.Default, null, out result);
-
-        /// <summary>
-        /// Adds the specified program to the batch.
-        /// </summary>
-        /// <param name="program">The program to add to the batch.</param>
-        /// <param name="resultAction">The action used to process the result.</param>
-        /// <param name="behavior">The query's effect on the database.</param>
-        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
-        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
-        public SqlBatch AddExecuteReader(
-            [NotNull] SqlProgram program,
-            [NotNull] ResultDelegateAsync resultAction,
-            CommandBehavior behavior,
-            [NotNull] out SqlBatchResult result)
-            => AddExecuteReader(program, resultAction, behavior, null, out result);
-
-        /// <summary>
-        /// Adds the specified program to the batch.
-        /// </summary>
-        /// <param name="program">The program to add to the batch.</param>
-        /// <param name="resultAction">The action used to process the result.</param>
         /// <param name="behavior">The query's effect on the database.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
@@ -268,12 +239,16 @@ namespace WebApplications.Utilities.Database
         public SqlBatch AddExecuteReader(
             [NotNull] SqlProgram program,
             [NotNull] ResultDelegateAsync resultAction,
-            CommandBehavior behavior,
-            [CanBeNull] SetBatchParametersDelegate setParameters,
-            [NotNull] out SqlBatchResult result)
+            [NotNull] out SqlBatchResult result,
+            CommandBehavior behavior = CommandBehavior.Default,
+            [CanBeNull] SetBatchParametersDelegate setParameters = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+            if ((behavior & CommandBehavior.CloseConnection) != 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(behavior),
+                    "CommandBehavior.CloseConnection is not supported");
             CheckState();
 
             SqlBatchCommand.Reader command = new SqlBatchCommand.Reader(
@@ -283,45 +258,11 @@ namespace WebApplications.Utilities.Database
                 behavior,
                 setParameters);
             AddCommand(command);
-            result =  command.Result;
+            result = command.Result;
 
             return this;
         }
-
-        /// <summary>
-        /// Adds the specified program to the batch. 
-        /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
-        /// </summary>
-        /// <typeparam name="TOut">The type of the result.</typeparam>
-        /// <param name="program">The program to add to the batch.</param>
-        /// <param name="resultFunc">The function used to process the result.</param>
-        /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
-        /// and get the value returned by <paramref name="resultFunc"/>.</param>
-        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
-        public SqlBatch AddExecuteReader<TOut>(
-            [NotNull] SqlProgram program,
-            [NotNull] ResultDelegateAsync<TOut> resultFunc,
-            [NotNull] out SqlBatchResult<TOut> result)
-            => AddExecuteReader(program, resultFunc, CommandBehavior.Default, null, out result);
-
-        /// <summary>
-        /// Adds the specified program to the batch. 
-        /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
-        /// </summary>
-        /// <typeparam name="TOut">The type of the result.</typeparam>
-        /// <param name="program">The program to add to the batch.</param>
-        /// <param name="resultFunc">The function used to process the result.</param>
-        /// <param name="behavior">The query's effect on the database.</param>
-        /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
-        /// and get the value returned by <paramref name="resultFunc"/>.</param>
-        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
-        public SqlBatch AddExecuteReader<TOut>(
-            [NotNull] SqlProgram program,
-            [NotNull] ResultDelegateAsync<TOut> resultFunc,
-            CommandBehavior behavior,
-            [NotNull] out SqlBatchResult<TOut> result)
-            => AddExecuteReader(program, resultFunc, behavior, null, out result);
-
+        
         /// <summary>
         /// Adds the specified program to the batch. 
         /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
@@ -337,12 +278,16 @@ namespace WebApplications.Utilities.Database
         public SqlBatch AddExecuteReader<TOut>(
             [NotNull] SqlProgram program,
             [NotNull] ResultDelegateAsync<TOut> resultFunc,
-            CommandBehavior behavior,
-            [CanBeNull] SetBatchParametersDelegate setParameters,
-            [NotNull] out SqlBatchResult<TOut> result)
+            [NotNull] out SqlBatchResult<TOut> result,
+            CommandBehavior behavior = CommandBehavior.Default,
+            [CanBeNull] SetBatchParametersDelegate setParameters = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+            if ((behavior & CommandBehavior.CloseConnection) != 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(behavior),
+                    "CommandBehavior.CloseConnection is not supported");
             CheckState();
 
             SqlBatchCommand.Reader<TOut> command = new SqlBatchCommand.Reader<TOut>(
@@ -356,8 +301,68 @@ namespace WebApplications.Utilities.Database
 
             return this;
         }
+        
+        /// <summary>
+        /// Adds the specified program to the batch.
+        /// </summary>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        public SqlBatch AddExecuteXmlReader(
+            [NotNull] SqlProgram program,
+            [NotNull] XmlResultDelegateAsync resultAction,
+            [NotNull] out SqlBatchResult result,
+            [CanBeNull] SetBatchParametersDelegate setParameters = null)
+        {
+            if (program == null) throw new ArgumentNullException(nameof(program));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+            CheckState();
 
-        // TODO Execute XML reader
+            SqlBatchCommand.XmlReader command = new SqlBatchCommand.XmlReader(
+                this,
+                program,
+                resultAction,
+                setParameters);
+            AddCommand(command);
+            result = command.Result;
+
+            return this;
+        }
+        /// <summary>
+        /// Adds the specified program to the batch. 
+        /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
+        /// </summary>
+        /// <typeparam name="TOut">The type of the result.</typeparam>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+        /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
+        /// and get the value returned by <paramref name="resultFunc"/>.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        public SqlBatch AddExecuteXmlReader<TOut>(
+            [NotNull] SqlProgram program,
+            [NotNull] XmlResultDelegateAsync<TOut> resultFunc,
+            [NotNull] out SqlBatchResult<TOut> result,
+            [CanBeNull] SetBatchParametersDelegate setParameters = null)
+        {
+            if (program == null) throw new ArgumentNullException(nameof(program));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+            CheckState();
+
+            SqlBatchCommand.XmlReader<TOut> command = new SqlBatchCommand.XmlReader<TOut>(
+                this,
+                program,
+                resultFunc,
+                setParameters);
+            AddCommand(command);
+            result = command.Result;
+
+            return this;
+        }
+
+        // TODO Add nested batch
 
         /// <summary>
         /// Executes the batch on a single connection, asynchronously.
@@ -366,11 +371,13 @@ namespace WebApplications.Utilities.Database
         /// <returns>An awaitable task which completes when the batch is complete.</returns>
         public async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (_commands.Count < 1)
-                throw new InvalidOperationException(Resources.SqlBatch_ExecuteAsync_Empty);
+            lock (_addLock)
+            {
+                if (_commands.Count < 1)
+                    throw new InvalidOperationException(Resources.SqlBatch_ExecuteAsync_Empty);
 
-            int state = Interlocked.CompareExchange(ref _state, Executing, Building);
-            if (state == Completed) return;
+                if (Interlocked.CompareExchange(ref _state, Executing, Building) == Completed) return;
+            }
 
             using (await _executeLock.LockAsync(cancellationToken).ConfigureAwait(false))
             {
@@ -380,7 +387,11 @@ namespace WebApplications.Utilities.Database
                 {
                     string connectionString = DetermineConnection();
 
-                    await ExecuteInternal(connectionString, cancellationToken).ConfigureAwait(false);
+                    // Set the result count for each command to the number of connections
+                    foreach (SqlBatchCommand command in _commands)
+                        command.Result.SetResultCount(1);
+
+                    await ExecuteInternal(connectionString, 0, cancellationToken).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -396,11 +407,13 @@ namespace WebApplications.Utilities.Database
         /// <returns>An awaitable task which completes when the batch is complete.</returns>
         public async Task ExecuteAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (_commands.Count < 1)
-                throw new InvalidOperationException(Resources.SqlBatch_ExecuteAsync_Empty);
+            lock (_addLock)
+            {
+                if (_commands.Count < 1)
+                    throw new InvalidOperationException(Resources.SqlBatch_ExecuteAsync_Empty);
 
-            int state = Interlocked.CompareExchange(ref _state, Executing, Building);
-            if (state == Completed) return;
+                if (Interlocked.CompareExchange(ref _state, Executing, Building) == Completed) return;
+            }
 
             using (await _executeLock.LockAsync(cancellationToken).ConfigureAwait(false))
             {
@@ -409,10 +422,15 @@ namespace WebApplications.Utilities.Database
                 try
                 {
                     // Get the connection strings which are common to each program
-                    HashSet<string> commonConnections = GetCommonConnections();
+                    HashSet<string> commonConnections = _commonConnectionStrings.Value;
+                    Debug.Assert(commonConnections != null, "commonConnections != null");
+
+                    // Set the result count for each command to the number of connections
+                    foreach (SqlBatchCommand command in _commands)
+                        command.Result.SetResultCount(commonConnections.Count);
 
                     Task[] tasks = commonConnections
-                        .Select(cs => ExecuteInternal(cs, cancellationToken))
+                        .Select((cs, i) => Task.Run(() => ExecuteInternal(cs, i, cancellationToken)))
                         .ToArray();
 
                     await Task.WhenAll(tasks).ConfigureAwait(false);
@@ -424,29 +442,230 @@ namespace WebApplications.Utilities.Database
             }
         }
 
+        /// <summary>
+        /// Begins executing the batch if it is not already executing.
+        /// </summary>
+        /// <param name="all">if set to <see langword="true" /> execute the batch on all connections.</param>
+        internal void BeginExecute(bool all)
+        {
+            // If the state is Executing or Completed, don't need to do anything.
+            lock (_addLock)
+                if (_state != Building)
+                    return;
+
+            // Execute the batch
+            if (all)
+                Task.Run(() => ExecuteAllAsync());
+            else
+                Task.Run(() => ExecuteAsync());
+        }
+
+        /// <summary>
+        /// Indicates the next record set will be for the output parameters for the command.
+        /// </summary>
+        private const string OutputState = "Output";
+
+        /// <summary>
+        /// Indicates the command has ended.
+        /// </summary>
+        private const string EndState = "End";
+
+        /// <summary>
+        /// Executes the batch.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="connectionIndex">Index of the connection.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
         [NotNull]
         private async Task ExecuteInternal(
             [NotNull] string connectionString,
+            int connectionIndex,
             CancellationToken cancellationToken)
         {
-            const string startState = "Start";
-            const string outputState = "Output";
-            const string endState = "End";
-
-            HashSet<AsyncSemaphore> connectionSemaphores = new HashSet<AsyncSemaphore>();
-            HashSet<AsyncSemaphore> loadBalConnectionSemaphores = new HashSet<AsyncSemaphore>();
-            HashSet<AsyncSemaphore> databaseSemaphores = new HashSet<AsyncSemaphore>();
-
             SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-            CommandBehavior allBehavior = CommandBehavior.Default;
             string uid = $"{Guid.NewGuid():B}@{DateTime.UtcNow:O}:";
 
             List<DbParameter> allParameters = new List<DbParameter>();
 
             Dictionary<IOut, DbParameter> outParameters = new Dictionary<IOut, DbParameter>();
 
-            // Build the batch SQL from the commands
-            int index = 0;
+            Dictionary<SqlBatchCommand, IReadOnlyList<(DbBatchParameter param, IOut output)>> commandOutParams =
+                new Dictionary<SqlBatchCommand, IReadOnlyList<(DbBatchParameter param, IOut output)>>();
+
+            // Build the batch SQL and get the parameters to the commands
+            PreProcess(
+                uid,
+                connectionString,
+                allParameters,
+                outParameters,
+                commandOutParams,
+                sqlBuilder,
+                out AsyncSemaphore[] semaphores,
+                out CommandBehavior allBehavior);
+
+            string state = null;
+            int index = -1;
+            int actualIndex = 0;
+            DbBatchDataReader commandReader = null;
+
+            void MessageHandler(string message)
+            {
+                if (!TryParseInfoMessage(message, out var info)) return;
+
+                state = info.state;
+                index = info.index;
+
+                if (commandReader != null)
+                    commandReader.State = BatchReaderState.Finished;
+            }
+
+            using (await AsyncSemaphore.WaitAllAsync(cancellationToken, semaphores).ConfigureAwait(false))
+            using (DbConnection dbConnection = await CreateOpenConnectionAsync(connectionString, uid, MessageHandler, cancellationToken)
+                    .ConfigureAwait(false))
+            using (DbCommand dbCommand = CreateCommand(sqlBuilder.ToString(), dbConnection, allParameters.ToArray()))
+            using (DbDataReader reader = await dbCommand.ExecuteReaderAsync(allBehavior, cancellationToken)
+                .ConfigureAwait(false))
+            {
+                Debug.Assert(reader != null, "reader != null");
+
+                object[] values = null;
+
+                List<SqlBatchCommand>.Enumerator commandEnumerator = _commands.GetEnumerator();
+                while (commandEnumerator.MoveNext())
+                {
+                    SqlBatchCommand command = commandEnumerator.Current;
+                    Debug.Assert(command != null, "command != null");
+
+                    try
+                    {
+                        using (commandReader = CreateReader(reader, command.CommandBehavior))
+                        {
+                            if (index >= actualIndex)
+                                commandReader.State = BatchReaderState.Finished;
+
+                            await command.HandleCommandAsync(
+                                    commandReader,
+                                    dbCommand,
+                                    connectionIndex,
+                                    cancellationToken)
+                                .ConfigureAwait(false);
+
+                            if (commandReader.IsOpen)
+                            {
+                                // Read the rest of the result sets until an info message finishes the reader
+                                await commandReader.ReadTillClosedAsync(cancellationToken).ConfigureAwait(false);
+                            }
+                        }
+                        commandReader = null;
+
+                        // Check the end states
+                        while (state != EndState && index == actualIndex)
+                        {
+                            if (state == OutputState)
+                            {
+                                // Get the expected output parameters for the command
+                                if (!commandOutParams.TryGetValue(command, out var outs))
+                                    throw new NotImplementedException(
+                                        "Proper exception, unexpected output parameters");
+
+                                // No longer expect the output parameters
+                                commandOutParams.Remove(command);
+
+                                if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                    throw new NotImplementedException("Proper exception, missing data");
+
+                                if (outs.Count != reader.VisibleFieldCount)
+                                    throw new NotImplementedException("Proper exception, field count mismatch");
+
+                                // Expand the values buffer if needed
+                                if (values == null)
+                                    values = new object[reader.VisibleFieldCount];
+                                else if (values.Length < reader.VisibleFieldCount)
+                                    Array.Resize(ref values, reader.VisibleFieldCount);
+
+                                // Get the output values record
+                                reader.GetValues(values);
+
+                                // Set the output values
+                                for (int i = 0; i < outs.Count; i++)
+                                {
+                                    Debug.Assert(outs[i].output != null, "outs[i].output != null");
+                                    Debug.Assert(outs[i].param != null, "outs[i].param != null");
+
+                                    outs[i].output.SetOutputValue(values[i], outs[i].param.BaseParameter);
+                                }
+
+                                if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                    throw new NotImplementedException("Proper exception, unexpected data");
+
+                                // TODO Do something with this?
+                                bool hasNext = await reader.NextResultAsync(cancellationToken)
+                                    .ConfigureAwait(false);
+                            }
+                            else
+                                throw new NotImplementedException("Proper exception, unexpected state");
+                        }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        Debug.Assert(cancellationToken.IsCancellationRequested);
+                        command.Result.SetCanceled(connectionIndex);
+
+                        while (commandEnumerator.MoveNext())
+                            commandEnumerator.Current.Result.SetCanceled(connectionIndex);
+                        commandEnumerator.Dispose();
+
+                        throw;
+                    }
+                    catch (Exception e)
+                    {
+                        command.Result.SetException(connectionIndex, e);
+
+                        while (commandEnumerator.MoveNext())
+                            commandEnumerator.Current.Result.SetCanceled(connectionIndex);
+                        commandEnumerator.Dispose();
+
+                        throw;
+                    }
+                    finally
+                    {
+                        command.Result.SetCompleted(connectionIndex);
+                    }
+
+                    actualIndex++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Pre-processes the commands to be executed
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="allParameters">All parameters.</param>
+        /// <param name="outParameters">The out parameters.</param>
+        /// <param name="commandOutParams">The command out parameters.</param>
+        /// <param name="sqlBuilder">The SQL builder.</param>
+        /// <param name="semaphores">The semaphores.</param>
+        /// <param name="allBehavior">All behavior.</param>
+        private void PreProcess(
+            [NotNull] string uid,
+            [NotNull] string connectionString,
+            [NotNull] List<DbParameter> allParameters,
+            [NotNull] Dictionary<IOut, DbParameter> outParameters,
+            [NotNull] Dictionary<SqlBatchCommand, IReadOnlyList<(DbBatchParameter, IOut)>> commandOutParams,
+            [NotNull] SqlStringBuilder sqlBuilder,
+            [NotNull] out AsyncSemaphore[] semaphores,
+            out CommandBehavior allBehavior)
+        {
+            HashSet<AsyncSemaphore> connectionSemaphores = new HashSet<AsyncSemaphore>();
+            HashSet<AsyncSemaphore> loadBalConnectionSemaphores = new HashSet<AsyncSemaphore>();
+            HashSet<AsyncSemaphore> databaseSemaphores = new HashSet<AsyncSemaphore>();
+
+            // Start the behavior asking for sequential access. All commands must want it to be able to use it
+            allBehavior = CommandBehavior.SequentialAccess;
+
+            int commandIndex = 0;
             foreach (SqlBatchCommand command in _commands)
             {
                 // Get the parameters for the command
@@ -465,11 +684,11 @@ namespace WebApplications.Utilities.Database
                     {
                         allParameters.Add(batchParameter.BaseParameter);
                     }
-
                 }
 
                 // Add any output parameters to the dictionary for passing into following commands
                 if (parameters.OutputParameters != null)
+                {
                     foreach ((DbBatchParameter batchParameter, IOut outValue) in parameters.OutputParameters)
                     {
                         if (outParameters.ContainsKey(outValue))
@@ -477,6 +696,9 @@ namespace WebApplications.Utilities.Database
 
                         outParameters.Add(outValue, (SqlParameter)batchParameter.BaseParameter);
                     }
+
+                    commandOutParams.Add(command, parameters.OutputParameters);
+                }
 
                 SqlProgramMapping mapping = parameters.Mapping;
                 SqlProgram program = command.Program;
@@ -491,17 +713,19 @@ namespace WebApplications.Utilities.Database
                 if (loadBalancedConnection.DatabaseSemaphore != null)
                     databaseSemaphores.Add(loadBalancedConnection.DatabaseSemaphore);
 
+                // The mask the behavior with this commands behavior
+                allBehavior &= command.CommandBehavior;
+
                 // Build batch SQL
                 sqlBuilder
                     .Append("-- ")
                     .AppendLine(command.Program.Name);
 
-                AppendInfo(sqlBuilder, uid, startState, index);
                 command.AppendExecuteSql(sqlBuilder, parameters);
 
                 if (parameters.OutputParameters != null)
                 {
-                    AppendInfo(sqlBuilder, uid, outputState, index)
+                    AppendInfo(sqlBuilder, uid, OutputState, commandIndex)
                         .Append("SELECT ");
 
                     bool firstParam = true;
@@ -515,92 +739,29 @@ namespace WebApplications.Utilities.Database
                     sqlBuilder.AppendLine(";");
                 }
 
-                AppendInfo(sqlBuilder, uid, endState, index).AppendLine();
-                
-                index++;
+                AppendInfo(sqlBuilder, uid, EndState, commandIndex).AppendLine();
+
+                commandIndex++;
             }
 
-            // NOTE! Do NOT reorder these without also reordering the semaphores in SqlProgramCommand.WaitSemaphoresAsync
-            AsyncSemaphore[] semaphores = connectionSemaphores
-                .Concat(loadBalConnectionSemaphores)
-                .Concat(databaseSemaphores)
-                .ToArray();
-
-            using (await AsyncSemaphore.WaitAllAsync(cancellationToken, semaphores).ConfigureAwait(false))
-            using (DbConnection dbConnection = new SqlConnection(connectionString))
+            // Concat the semaphores to a single array
+            int semaphoreCount =
+                connectionSemaphores.Count + loadBalConnectionSemaphores.Count + databaseSemaphores.Count;
+            if (semaphoreCount < 1)
+                semaphores = Array<AsyncSemaphore>.Empty;
+            else
             {
-                await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                semaphores = new AsyncSemaphore[semaphoreCount];
+                int i = 0;
 
-                BatchState state = new BatchState();
-                int currentIndex = -1;
-                RegisterInfoMessageHandler(
-                    dbConnection,
-                    uid,
-                    m =>
-                    {
-                        if (!TryParseInfo(m, out var info) || info.index != currentIndex) return;
-
-                        state.State = info.state;
-
-                        DbBatchDataReader currReader = state.Reader;
-                        if (info.state != startState && currReader != null)
-                            currReader.State = BatchReaderState.Finished;
-                    });
-
-                DbTransaction transaction = null;
-
-                using (DbCommand dbCommand = CreateCommand(sqlBuilder.ToString(), dbConnection, allParameters.ToArray(), transaction))
-                using (DbDataReader reader = await dbCommand.ExecuteReaderAsync(allBehavior, cancellationToken)
-                    .ConfigureAwait(false))
-                {
-                    foreach (SqlBatchCommand command in _commands)
-                    {
-                        using (DbBatchDataReader commandReader = CreateReader(reader))
-                        {
-                            state.Reader = commandReader;
-
-                            await command.HandleCommandAsync(state.Reader, cancellationToken).ConfigureAwait(false);
-
-                            if (state.Reader.IsOpen)
-                            {
-                                // ReSharper disable once PossibleNullReferenceException
-                                while (await state.Reader.SafeNextResultAsync(cancellationToken).ConfigureAwait(false))
-                                {
-                                }
-                            }
-                        }
-
-                        while (true)
-                        {
-                            if (state.State == startState)
-                            {
-                                // shouldnt be possible at this point
-                                break;
-                            }
-                            else if (state.State == outputState)
-                            {
-                                if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                                    throw new NotImplementedException("Proper exception, missing data");
-
-                                // TODO get output parameter values and set the value of the IOut for it
-                                
-                                if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                                    throw new NotImplementedException("Proper exception, unexpected data");
-                            }
-                            else if (state.State == endState)
-                                break;
-                        }
-
-                        currentIndex++;
-                    }
-                }
+                // NOTE! Do NOT reorder these without also reordering the semaphores in SqlProgramCommand.WaitSemaphoresAsync
+                foreach (AsyncSemaphore semaphore in connectionSemaphores)
+                    semaphores[i++] = semaphore;
+                foreach (AsyncSemaphore semaphore in loadBalConnectionSemaphores)
+                    semaphores[i++] = semaphore;
+                foreach (AsyncSemaphore semaphore in databaseSemaphores)
+                    semaphores[i++] = semaphore;
             }
-        }
-
-        private class BatchState
-        {
-            public DbBatchDataReader Reader;
-            public string State;
         }
 
         // this would be provider specific
@@ -619,8 +780,8 @@ namespace WebApplications.Utilities.Database
                 .Append(unchecked((byte)index))
                 .AppendLine(");");
         }
-        
-        private static bool TryParseInfo([NotNull] string message, out (string state, int index) info)
+
+        private static bool TryParseInfoMessage([NotNull] string message, out (string state, int index) info)
         {
             int ind = message.IndexOf(':');
             if (ind < 0 || !ushort.TryParse(message.Substring(ind + 1), out ushort index))
@@ -666,19 +827,50 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// Creates and opens a connection asynchronously.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="uid">The uid.</param>
+        /// <param name="messageHandler">The message handler.</param>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
+        [NotNull]
+        [ItemNotNull]
+        private async Task<DbConnection> CreateOpenConnectionAsync(
+            string connectionString,
+            string uid,
+            Action<string> messageHandler,
+            CancellationToken cancellationToken)
+        {
+            DbConnection dbConnection = null;
+            try
+            {
+                dbConnection = new SqlConnection(connectionString);
+
+                RegisterInfoMessageHandler(dbConnection, uid, messageHandler);
+
+                await dbConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+                return dbConnection;
+            }
+            catch
+            {
+                dbConnection.Dispose();
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Creates a command for the batch.
         /// </summary>
         /// <param name="text">The text to execute.</param>
         /// <param name="connection">The connection.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <param name="transaction">The transaction.</param>
         /// <returns></returns>
         [NotNull]
         private DbCommand CreateCommand(
             [NotNull] string text,
             [NotNull] DbConnection connection,
-            [NotNull] DbParameter[] parameters,
-            DbTransaction transaction)
+            [NotNull] DbParameter[] parameters)
         {
             DbCommand command = connection.CreateCommand();
             try
@@ -688,11 +880,7 @@ namespace WebApplications.Utilities.Database
                 command.CommandText = text;
                 command.CommandType = CommandType.Text;
                 command.CommandTimeout = (int)BatchTimeout.TotalSeconds();
-                command.Transaction = transaction;
                 command.Parameters.AddRange(parameters);
-
-                // TODO if there are any NonQuery commands, need to use this
-                // sqlCommand.StatementCompleted += ...
 
                 return command;
             }
@@ -704,16 +892,18 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        /// Creates the <see cref="DbBatchDataReader"/> for the underlying reader given.
+        /// Creates the <see cref="DbBatchDataReader" /> for the underlying reader given.
         /// </summary>
-        /// <param name="reader">The reader.</param>
+        /// <param name="reader">The base reader.</param>
+        /// <param name="commandBehavior">The command behavior.</param>
+        /// <returns></returns>
         [NotNull]
-        private DbBatchDataReader CreateReader([NotNull] DbDataReader reader)
+        private DbBatchDataReader CreateReader([NotNull] DbDataReader reader, CommandBehavior commandBehavior)
         {
             switch (reader)
             {
                 case SqlDataReader sqlReader:
-                    return new SqlBatchDataReader(sqlReader);
+                    return new SqlBatchDataReader(sqlReader, commandBehavior);
                 default:
                     // Eventually will support multiple db providers
                     throw new NotSupportedException();
@@ -732,7 +922,7 @@ namespace WebApplications.Utilities.Database
             Debug.Assert(_commands.Count > 0);
 
             // Get the connection strings which are common to each program
-            HashSet<string> commonConnections = GetCommonConnections();
+            HashSet<string> commonConnections = _commonConnectionStrings.Value;
 
             // If there is a single common connection string, just use that
             if (commonConnections.Count == 1)
@@ -753,10 +943,13 @@ namespace WebApplications.Utilities.Database
 
                 foreach (SqlProgramMapping mapping in mappings)
                 {
-                    // ReSharper disable once PossibleNullReferenceException
-                    connWeightCounts
-                        .GetOrAdd(mapping.Connection.ConnectionString, _ => new WeightCounter())
-                        .Increment(mapping.Connection.Weight / totWeight);
+                    if (!connWeightCounts.TryGetValue(mapping.Connection.ConnectionString, out var counter))
+                    {
+                        counter = new WeightCounter();
+                        connWeightCounts.Add(mapping.Connection.ConnectionString, counter);
+                    }
+
+                    counter.Increment(mapping.Connection.Weight / totWeight);
                 }
             }
 
@@ -822,13 +1015,6 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        /// Type used as the return type of the wrapper resultFunc for <see cref="AddExecuteReader"/>.
-        /// </summary>
-        private struct VoidType
-        {
-        }
-
-        /// <summary>
         /// Used to aggregate weights.
         /// </summary>
         private class WeightCounter
@@ -851,7 +1037,8 @@ namespace WebApplications.Utilities.Database
             public void Increment(double weight)
             {
                 _totalCount++;
-                _weightedCounts.AddOrUpdate(weight, _ => 1, (_, c) => c + 1);
+                _weightedCounts.TryGetValue(weight, out var count);
+                _weightedCounts[weight] = count + 1;
             }
 
             /// <summary>
@@ -860,7 +1047,12 @@ namespace WebApplications.Utilities.Database
             /// <returns></returns>
             public double GetWeight()
             {
-                if (_weightedCounts.Count == 1) return _weightedCounts.Keys.Single();
+                if (_weightedCounts.Count == 1)
+                {
+                    Dictionary<double, int>.KeyCollection.Enumerator enumerator = _weightedCounts.Keys.GetEnumerator();
+                    enumerator.MoveNext();
+                    return enumerator.Current;
+                }
 
                 double totCount = _totalCount;
                 double weight = 0;

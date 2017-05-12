@@ -262,7 +262,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                 reader =>
                     {
                         Assert.IsTrue(reader.Read());
-                        Assert.IsInstanceOfType(reader.GetValue(0), typeof (byte[]));
+                        Assert.IsInstanceOfType(reader.GetValue(0), typeof(byte[]));
 
                         // Deserialize object
                         TestSerializableObject deserializedObject =
