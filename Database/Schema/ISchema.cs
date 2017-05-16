@@ -136,5 +136,14 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Unique identity of the schema.
         /// </summary>
         Guid Guid { get; }
+
+        /// <summary>
+        /// Gets the server version.
+        /// </summary>
+        /// <value>
+        /// The server version.
+        /// </value>
+        [NotNull]
+        Version ServerVersion { get; }
     }
 }

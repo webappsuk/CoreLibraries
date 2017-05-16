@@ -297,11 +297,7 @@ namespace WebApplications.Utilities.Database
             => BaseReaderOpen().IsDBNullAsync(ordinal, cancellationToken);
 
         /// <summary>Closes the <see cref="T:System.Data.Common.DbDataReader" /> object.</summary>
-        public override void Close()
-        {
-            State = BatchReaderState.Closed;
-            // TODO event handler?
-        }
+        public override void Close() => State = BatchReaderState.Closed;
 
         /// <summary>Releases the managed resources used by the <see cref="T:System.Data.Common.DbDataReader" /> and optionally releases the unmanaged resources.</summary>
         /// <param name="disposing">true to release managed and unmanaged resources; false to release only unmanaged resources.</param>
@@ -702,20 +698,22 @@ namespace WebApplications.Utilities.Database
         /// <returns>An <see cref="XmlReader"/> for reading XML from the current record set.</returns>
         protected internal override XmlReader GetXmlReader()
         {
-            if (BaseReader.FieldCount == 1)
-                switch (BaseReader.GetDataTypeName(0))
-                {
-                    case "ntext":
-                    case "nvarchar":
-                        return XmlReader.Create(new SqlBatchDataTextReader(this), _xmlReaderSettings);
-                    case "xml":
-                        // ReSharper disable once AssignNullToNotNullAttribute
-                        return BaseReader.Read()
-                            ? BaseReader.GetXmlReader(0)
-                            : XmlReader.Create(new StringReader(string.Empty), _xmlReaderSettings);
-                }
+            if (BaseReader.FieldCount != 1)
+                throw new InvalidOperationException("The command must return a single column.");
 
-            throw new InvalidOperationException("TODO");
+            switch (BaseReader.GetDataTypeName(0))
+            {
+                case "ntext":
+                case "nvarchar":
+                    return XmlReader.Create(new SqlBatchDataTextReader(this), _xmlReaderSettings);
+                case "xml":
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    return BaseReader.Read()
+                        ? BaseReader.GetXmlReader(0)
+                        : XmlReader.Create(new StringReader(string.Empty), _xmlReaderSettings);
+            }
+
+            throw new InvalidOperationException("The command must return an Xml result.");
         }
     }
 }

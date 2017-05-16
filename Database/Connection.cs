@@ -178,6 +178,11 @@ namespace WebApplications.Utilities.Database
         internal readonly AsyncSemaphore Semaphore;
 
         /// <summary>
+        /// The database schema for this connection.
+        /// </summary>
+        internal DatabaseSchema CachedSchema;
+
+        /// <summary>
         /// Returns a new connection with the <see cref="Weight"/> increased by <paramref name="weight"/>.
         /// </summary>
         /// <param name="weight">The weight.</param>
@@ -248,7 +253,12 @@ namespace WebApplications.Utilities.Database
             bool forceReload,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return DatabaseSchema.GetOrAdd(this, false, cancellationToken);
+            if (CachedSchema == null)
+                return DatabaseSchema.GetOrAdd(this, forceReload, cancellationToken);
+
+            return forceReload
+                ? CachedSchema.ReLoad(cancellationToken)
+                : Task.FromResult(CachedSchema);
         }
 
         #region Equalities

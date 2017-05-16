@@ -145,9 +145,18 @@ namespace WebApplications.Utilities.Database.Schema
             public Guid Guid { get; }
 
             /// <summary>
+            /// Gets the server version.
+            /// </summary>
+            /// <value>
+            /// The server version.
+            /// </value>
+            public Version ServerVersion { get; }
+
+            /// <summary>
             /// Initializes a new instance of the <see cref="Schema" /> class.
             /// </summary>
             /// <param name="guid">The unique identifier.</param>
+            /// <param name="serverVersion">The server version.</param>
             /// <param name="schemasByID">The schemas by identifier.</param>
             /// <param name="programDefinitionsByName">Name of the program definitions by.</param>
             /// <param name="tablesByName">Name of the tables by.</param>
@@ -162,6 +171,7 @@ namespace WebApplications.Utilities.Database.Schema
             /// <param name="databaseCollation">The database collation.</param>
             private Schema(
                 Guid guid,
+                [NotNull] Version serverVersion,
                 [NotNull] IReadOnlyDictionary<int, SqlSchema> schemasByID,
                 [NotNull] IReadOnlyDictionary<string, SqlProgramDefinition> programDefinitionsByName,
                 [NotNull] IReadOnlyDictionary<string, SqlTableDefinition> tablesByName,
@@ -176,6 +186,7 @@ namespace WebApplications.Utilities.Database.Schema
                 [NotNull] SqlCollation databaseCollation)
             {
                 Guid = guid;
+                ServerVersion = serverVersion;
                 SchemasByID = schemasByID;
                 ProgramsByName = programDefinitionsByName;
                 TablesByName = tablesByName;
@@ -193,6 +204,7 @@ namespace WebApplications.Utilities.Database.Schema
             /// <summary>
             /// Gets or adds a schema.
             /// </summary>
+            /// <param name="serverVersion">The server version.</param>
             /// <param name="schemasByID">The schemas by identifier.</param>
             /// <param name="programsByName">The programs by name.</param>
             /// <param name="tablesByName">The tables by name.</param>
@@ -200,9 +212,12 @@ namespace WebApplications.Utilities.Database.Schema
             /// <param name="collationsByName">The collations by name.</param>
             /// <param name="serverCollation">The server collation.</param>
             /// <param name="databaseCollation">The database collation.</param>
-            /// <returns>The schema.</returns>
+            /// <returns>
+            /// The schema.
+            /// </returns>
             [NotNull]
             protected internal static Schema GetOrAdd(
+                [NotNull] Version serverVersion,
                 [NotNull] IReadOnlyDictionary<int, SqlSchema> schemasByID,
                 [NotNull] IReadOnlyDictionary<string, SqlProgramDefinition> programsByName,
                 [NotNull] IReadOnlyDictionary<string, SqlTableDefinition> tablesByName,
@@ -246,6 +261,7 @@ namespace WebApplications.Utilities.Database.Schema
                     g =>
                         new Schema(
                             g,
+                            serverVersion,
                             schemasByID,
                             programsByName,
                             tablesByName,

@@ -421,6 +421,15 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Only allowed 65536 commands per batch..
+        /// </summary>
+        internal static string SqlBatch_AddCommand_OnlyAllowed65536 {
+            get {
+                return ResourceManager.GetString("SqlBatch_AddCommand_OnlyAllowed65536", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot add to a batch is completed..
         /// </summary>
         internal static string SqlBatch_CheckState_Completed {
@@ -439,11 +448,56 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot have an isolation level of Unspecified..
+        /// </summary>
+        internal static string SqlBatch_CreateTransaction_UnspecifiedIsoLvl {
+            get {
+                return ResourceManager.GetString("SqlBatch_CreateTransaction_UnspecifiedIsoLvl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot execute an empty batch..
         /// </summary>
         internal static string SqlBatch_ExecuteAsync_Empty {
             get {
                 return ResourceManager.GetString("SqlBatch_ExecuteAsync_Empty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The IsolationLevel enumeration value, {0}, is not supported..
+        /// </summary>
+        internal static string SqlBatch_Process_IsolationLevelNotSupported {
+            get {
+                return ResourceManager.GetString("SqlBatch_Process_IsolationLevelNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The batch has already been added to another batch..
+        /// </summary>
+        internal static string SqlBatch_RootBatch_AlreadyAdded {
+            get {
+                return ResourceManager.GetString("SqlBatch_RootBatch_AlreadyAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot add a batch which is completed..
+        /// </summary>
+        internal static string SqlBatch_RootBatch_Completed {
+            get {
+                return ResourceManager.GetString("SqlBatch_RootBatch_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot add a batch which is executing..
+        /// </summary>
+        internal static string SqlBatch_RootBatch_Executing {
+            get {
+                return ResourceManager.GetString("SqlBatch_RootBatch_Executing", resourceCulture);
             }
         }
         
@@ -489,6 +543,15 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlBatchParametersCollection_GetOrAddParameter_MultipleReturns {
             get {
                 return ResourceManager.GetString("SqlBatchParametersCollection_GetOrAddParameter_MultipleReturns", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only allowed 65536 parameters per command..
+        /// </summary>
+        internal static string SqlBatchParametersCollection_GetOrAddParameter_OnlyAllowed65536 {
+            get {
+                return ResourceManager.GetString("SqlBatchParametersCollection_GetOrAddParameter_OnlyAllowed65536", resourceCulture);
             }
         }
         

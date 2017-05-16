@@ -51,6 +51,8 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         private readonly SqlBatchCommand _command;
 
+        private readonly ushort _commandIndex;
+
         [NotNull]
         private readonly SqlProgramMapping _mapping;
 
@@ -100,10 +102,12 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="mapping">The mapping.</param>
         /// <param name="command">The command.</param>
-        internal SqlBatchParametersCollection([NotNull] SqlProgramMapping mapping, [NotNull] SqlBatchCommand command)
+        /// <param name="commandIndex">Index of the command.</param>
+        internal SqlBatchParametersCollection([NotNull] SqlProgramMapping mapping, [NotNull] SqlBatchCommand command, ushort commandIndex)
         {
             _mapping = mapping;
             _command = command;
+            _commandIndex = commandIndex;
         }
 
         /// <summary>
@@ -119,10 +123,13 @@ namespace WebApplications.Utilities.Database
             if (index >= 0)
                 return _parameters[index];
 
+            if (_parameters.Count >= ushort.MaxValue)
+                throw new InvalidOperationException(Resources.SqlBatchParametersCollection_GetOrAddParameter_OnlyAllowed65536);
+
             SqlBatchParameter batchParameter = new SqlBatchParameter(
                 programParameter,
                 programParameter.CreateSqlParameter(),
-                "_" + _command.Id.ToString("X4") + _parameters.Count.ToString("X4"));
+                "_" + _commandIndex.ToString("X4") + _parameters.Count.ToString("X4"));
             _parameters.Add(batchParameter);
 
             if (programParameter.Direction == ParameterDirection.ReturnValue)

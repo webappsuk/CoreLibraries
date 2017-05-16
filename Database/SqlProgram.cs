@@ -693,6 +693,7 @@ namespace WebApplications.Utilities.Database
         /// Gets the valid <see cref="SqlProgramMapping">mappings</see> for the <see cref="SqlProgram"/>.
         /// </summary>
         [NotNull]
+        [ItemNotNull]
         public IEnumerable<SqlProgramMapping> Mappings
         {
             get

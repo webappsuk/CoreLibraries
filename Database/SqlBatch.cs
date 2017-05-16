@@ -40,45 +40,358 @@ using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
 {
     /// <summary>
+    /// Delegate to a method for handling an exception.
+    /// </summary>
+    /// <typeparam name="T">The type of the exception.</typeparam>
+    /// <param name="exception">The exception to handle.</param>
+    /// <param name="suppress">Set to <see langword="true"/> to suppress the exception.</param>
+    public delegate void ExceptionHandler<in T>(T exception, ref bool suppress)
+        where T : Exception;
+
+    /// <summary>
     /// Allows multiple <see cref="SqlProgram">SqlPrograms</see> to be executed in a single database call.
     /// </summary>
-    public partial class SqlBatch : IReadOnlyList<SqlBatchCommand>
+    public partial class SqlBatch : IEnumerable<SqlBatchCommand>, IBatchItem
     {
-        private const int Building = 0;
-        private const int Executing = 1;
-        private const int Completed = 2;
+        /// <summary>
+        /// The type of a transaction.
+        /// </summary>
+        [Flags]
+        private enum TransactionType : byte
+        {
+            /// <summary>
+            /// No transaction
+            /// </summary>
+            None,
+            
+            /// <summary>
+            /// A transaction which commits if successfully executed
+            /// </summary>
+            Commit,
 
+            /// <summary>
+            /// A transaction which always rolls back
+            /// </summary>
+            Rollback
+        }
+
+        /// <summary>
+        /// Holds the state of a batch
+        /// </summary>
+        /// <seealso cref="System.IDisposable" />
+        private sealed class State : IDisposable
+        {
+            /// <summary>
+            /// The batch the state is for.
+            /// </summary>
+            [NotNull]
+            public readonly SqlBatch Batch;
+            /// <summary>
+            /// The execute lock
+            /// </summary>
+            [NotNull]
+            public readonly AsyncLock ExecuteLock = new AsyncLock();
+            /// <summary>
+            /// The value of the state.
+            /// </summary>
+            public int Value = Constants.BatchState.Building;
+            /// <summary>
+            /// The command count.
+            /// </summary>
+            public int CommandCount;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="State"/> class.
+            /// </summary>
+            /// <param name="batch">The batch.</param>
+            public State([NotNull] SqlBatch batch)
+            {
+                Batch = batch;
+            }
+
+            /// <summary>
+            /// Checks the state is valid for adding to the batch.
+            /// </summary>
+            public void CheckBuildingState()
+            {
+                if (Value != Constants.BatchState.Building)
+                {
+                    throw new InvalidOperationException(
+                        Value == Constants.BatchState.Executing
+                            ? Resources.SqlBatch_CheckState_Executing
+                            : Resources.SqlBatch_CheckState_Completed);
+                }
+            }
+
+            /// <summary>Releases the lock held on this state.</summary>
+            public void Dispose() => Monitor.Exit(this);
+        }
+
+        /// <summary>
+        /// The states of two batches.
+        /// </summary>
+        /// <seealso cref="System.IDisposable" />
+        private struct States : IDisposable
+        {
+            public State StateA;
+            public State StateB;
+
+            /// <summary>
+            /// Releases the locks held on the states
+            /// </summary>
+            public void Dispose()
+            {
+                try
+                {
+                    try
+                    {
+                    }
+                    finally
+                    {
+                        State stateB = Interlocked.Exchange(ref StateB, null);
+                        if (stateB != null) Monitor.Exit(stateB);
+                    }
+                }
+                finally
+                {
+                    State stateA = Interlocked.Exchange(ref StateA, null);
+                    if (stateA != null) Monitor.Exit(StateA);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the state.
+        /// </summary>
         [NotNull]
-        private readonly object _addLock = new object();
+        private State GetState()
+        {
+            bool hasLock = false;
+            State state = _state;
+            Monitor.Enter(state, ref hasLock);
+            try
+            {
+                while (state.Batch._parent != null)
+                {
+                    Monitor.Exit(Interlocked.Exchange(ref state, state.Batch._parent._state));
+                    hasLock = false;
+                    Monitor.Enter(state, ref hasLock);
+                }
+                Debug.Assert(hasLock);
+                _state = state;
+                return state;
+            }
+            catch
+            {
+                if (hasLock)
+                    Monitor.Exit(state);
+                throw;
+            }
+        }
 
+        /// <summary>
+        /// Gets the states of two batches.
+        /// </summary>
+        /// <param name="batchA">The batch a.</param>
+        /// <param name="batchB">The batch b.</param>
+        /// <returns></returns>
+        private static States GetStates([NotNull] SqlBatch batchA, [NotNull] SqlBatch batchB)
+        {
+            States states = new States();
+            try
+            {
+                if (batchA.ID.CompareTo(batchB.ID) < 0)
+                {
+                    states.StateA = batchA.GetState();
+                    states.StateB = batchB.GetState();
+                }
+                else
+                {
+                    states.StateB = batchB.GetState();
+                    states.StateA = batchA.GetState();
+                }
+                return states;
+            }
+            catch
+            {
+                states.Dispose();
+                throw;
+            }
+        }
+        
         [NotNull]
-        private readonly AsyncLock _executeLock = new AsyncLock();
+        private State _state;
 
-        private int _state = Building;
+        private SqlBatch _parent;
 
         [NotNull]
         [ItemNotNull]
-        private readonly List<SqlBatchCommand> _commands = new List<SqlBatchCommand>();
+        private readonly List<IBatchItem> _items = new List<IBatchItem>();
 
         private Duration _batchTimeout;
 
-        [NotNull]
-        private readonly ResettableLazy<HashSet<string>> _commonConnectionStrings;
+        /// <summary>
+        /// The type of transaction to use.
+        /// </summary>
+        private readonly TransactionType _transaction;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlBatch"/> class.
+        /// The isolation level for the transaction.
+        /// </summary>
+        private readonly IsolationLevel _isolationLevel;
+
+        /// <summary>
+        /// If <see langword="true" /> then any errors that occur within this batch wont cause an exception to be thrown for the whole batch.
+        /// The command that failed will still throw an exception.
+        /// </summary>
+        private readonly bool _suppressErrors;
+
+        /// <summary>
+        /// The exception handler for any errors that occur in the database.
+        /// Only used if there is a transaction or errors are suppressed.
+        /// </summary>
+        private readonly ExceptionHandler<DbException> _exceptionHandler;
+
+#if DEBUG
+        /// <summary>
+        /// The SQL for the batch. For debugging purposes.
+        /// </summary>
+        private string _sql;
+#endif
+
+        /// <summary>
+        /// Creates a new batch.
         /// </summary>
         /// <param name="batchTimeout">The batch timeout. Defaults to 30 seconds.</param>
-        public SqlBatch(Duration? batchTimeout = null)
+        /// <returns>The new <see cref="SqlBatch"/>.</returns>
+        [NotNull]
+        public static SqlBatch Create(Duration? batchTimeout = null)
+        {
+            return new SqlBatch(batchTimeout);
+        }
+
+        /// <summary>
+        /// Creates a new batch which is wrapped in a try ... catch block. 
+        /// Any errors that occur within this batch wont cause an exception to be thrown for the whole batch, 
+        /// unless an <paramref name="exceptionHandler"/> is specified and doesn't suppress the error.
+        /// The command that failed will still throw an exception.
+        /// </summary>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <param name="batchTimeout">The batch timeout. Defaults to 30 seconds.</param>
+        /// <returns>The new <see cref="SqlBatch"/>.</returns>
+        [NotNull]
+        public static SqlBatch CreateTryCatch(
+            ExceptionHandler<DbException> exceptionHandler = null,
+            Duration? batchTimeout = null)
+        {
+            return new SqlBatch(batchTimeout, suppressErrors: true, exceptionHandler: exceptionHandler);
+        }
+
+        /// <summary>
+        /// Creates a new batch which is wrapped in a transaction.
+        /// If an error occurs within the batch, the transaction will rollback.
+        /// </summary>
+        /// <param name="isolationLevel">The isolation level of the transaction.</param>
+        /// <param name="rollback">if set to <see langword="true" /> the transaction will always be rolled back.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this batch
+        /// wont cause an exception to be thrown for the whole batch. See <see cref="CreateTryCatch" />.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <param name="batchTimeout">The batch timeout. Defaults to 30 seconds.</param>
+        /// <returns>
+        /// The new <see cref="SqlBatch" />.
+        /// </returns>
+        [NotNull]
+        public static SqlBatch CreateTransaction(
+            IsolationLevel isolationLevel,
+            bool rollback = false,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null,
+            Duration? batchTimeout = null)
+        {
+            return new SqlBatch(
+                batchTimeout,
+                rollback ? TransactionType.Rollback : TransactionType.Commit,
+                isolationLevel,
+                suppressErrors,
+                exceptionHandler);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlBatch" /> class.
+        /// </summary>
+        /// <param name="batchTimeout">The batch timeout. Defaults to 30 seconds.</param>
+        /// <param name="transaction">The transaction.</param>
+        /// <param name="isolationLevel">The isolation level.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> errors are suppressed.</param>
+        /// <param name="exceptionHandler">The exception handler.</param>
+        private SqlBatch(
+            Duration? batchTimeout,
+            TransactionType transaction = TransactionType.None,
+            IsolationLevel isolationLevel = IsolationLevel.Unspecified,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null)
         {
             BatchTimeout = batchTimeout ?? Duration.FromSeconds(30);
-            _commonConnectionStrings = new ResettableLazy<HashSet<string>>(GetCommonConnections);
+            _state = new State(this);
+            _transaction = transaction;
+            _isolationLevel = isolationLevel;
+            _suppressErrors = suppressErrors;
+            _exceptionHandler = exceptionHandler;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlBatch" /> class.
+        /// </summary>
+        /// <param name="parent">The parent.</param>
+        /// <param name="transaction">The transaction.</param>
+        /// <param name="isolationLevel">The isolation level.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> errors are suppressed.</param>
+        /// <param name="exceptionHandler">The exception handler.</param>
+        private SqlBatch(
+            [NotNull] SqlBatch parent,
+            TransactionType transaction = TransactionType.None,
+            IsolationLevel isolationLevel = IsolationLevel.Unspecified,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null)
+        {
+            BatchTimeout = parent._batchTimeout;
+            _state = parent._state;
+            _parent = parent;
+            _transaction = transaction;
+            _isolationLevel = isolationLevel;
+            _suppressErrors = suppressErrors;
+            _exceptionHandler = exceptionHandler;
+        }
+
+        /// <summary>
+        /// Checks the state is valid for adding to the batch, without requiring a lock.
+        /// </summary>
+        private void CheckBuildingStateQuick()
+        {
+            State state = _state;
+            if (state.Batch._parent == null)
+                state.CheckBuildingState();
+        }
+
+        /// <summary>
+        /// Gets the identifier of the batch.
+        /// </summary>
+        /// <value>The identifier.</value>
+        public Guid ID { get; } = Guid.NewGuid();
+
+        /// <summary>
+        /// Gets a value indicating whether this is a root batch.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true" /> if this instance is root; otherwise, <see langword="false" />.
+        /// </value>
+        public bool IsRoot => _parent == null;
 
         /// <summary>
         ///   Gets or sets the batch timeout.
@@ -106,76 +419,51 @@ namespace WebApplications.Utilities.Database
             }
         }
 
-        /// <summary>
-        /// Gets the connection strings which are common to all the commands that have been added to this batch.
-        /// </summary>
-        /// <value>
-        /// The common connection strings.
-        /// </value>
-        [NotNull]
-        [ItemNotNull]
-        public IReadOnlyCollection<string> CommonConnectionStrings
-        {
-            get
-            {
-                lock (_addLock)
-                {
-                    return _commonConnectionStrings.Value
-#if NET452
-                            .ToArray()
-#endif
-                        ;
-                }
-            }
-        }
-
-        /// <summary>Gets the number of elements in the collection.</summary>
-        /// <returns>The number of elements in the collection. </returns>
-        public int Count => _commands.Count;
-
-        /// <summary>Gets the element at the specified index in the read-only list.</summary>
-        /// <returns>The element at the specified index in the read-only list.</returns>
-        /// <param name="index">The zero-based index of the element to get. </param>
-        public SqlBatchCommand this[int index] => _commands[index];
-
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>Returns an enumerator that iterates through the collection.</summary>
         /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
-        public IEnumerator<SqlBatchCommand> GetEnumerator() => _commands.GetEnumerator();
-        
-        /// <summary>
-        /// Checks the state is valid for adding to the batch.
-        /// </summary>
-        private void CheckState()
+        public IEnumerator<SqlBatchCommand> GetEnumerator()
         {
-            if (_state != Building)
+            Stack<List<IBatchItem>.Enumerator> stack = new Stack<List<IBatchItem>.Enumerator>();
+            stack.Push(_items.GetEnumerator());
+
+            while (stack.TryPop(out List<IBatchItem>.Enumerator enumerator))
             {
-                throw new InvalidOperationException(
-                    _state == Executing
-                        ? Resources.SqlBatch_CheckState_Executing
-                        : Resources.SqlBatch_CheckState_Completed);
+                while (enumerator.MoveNext())
+                {
+                    IBatchItem item = enumerator.Current;
+
+                    if (item is SqlBatchCommand command) yield return command;
+                    else
+                    {
+                        Debug.Assert(item is SqlBatch);
+
+                        stack.Push(enumerator);
+                        stack.Push(((SqlBatch)item)._items.GetEnumerator());
+                        break;
+                    }
+                }
             }
         }
-
+        
         /// <summary>
         /// Adds the command given to the batch.
         /// </summary>
         /// <param name="command">The command.</param>
         private void AddCommand([NotNull] SqlBatchCommand command)
         {
-            lock (_addLock)
+            using (State state = GetState())
             {
-                CheckState();
+                state.CheckBuildingState();
 
-                if (_commands.Count >= ushort.MaxValue)
-                    throw new InvalidOperationException("Only allowed 65536 commands per batch.");
-
-                command.Id = (ushort)_commands.Count;
-                _commands.Add(command);
-                _commonConnectionStrings.Reset();
+                if (state.CommandCount >= ushort.MaxValue || 
+                    Interlocked.Increment(ref state.CommandCount) > ushort.MaxValue)
+                    throw new InvalidOperationException(Resources.SqlBatch_AddCommand_OnlyAllowed65536);
+                
+                _items.Add(command);
             }
         }
         
@@ -189,13 +477,14 @@ namespace WebApplications.Utilities.Database
         /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
         public SqlBatch AddExecuteScalar<TOut>(
             [NotNull] SqlProgram program,
             [NotNull] out SqlBatchResult<TOut> result,
             [CanBeNull] SetBatchParametersDelegate setParameters = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
-            CheckState();
+            CheckBuildingStateQuick();
 
             SqlBatchCommand.Scalar<TOut> command = new SqlBatchCommand.Scalar<TOut>(this, program, setParameters);
             AddCommand(command);
@@ -212,13 +501,14 @@ namespace WebApplications.Utilities.Database
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to get the number of records affected by the program.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
         public SqlBatch AddExecuteNonQuery(
             [NotNull] SqlProgram program,
             [NotNull] out SqlBatchResult<int> result,
             [CanBeNull] SetBatchParametersDelegate setParameters = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
-            CheckState();
+            CheckBuildingStateQuick();
 
             SqlBatchCommand.NonQuery command = new SqlBatchCommand.NonQuery(this, program, setParameters);
             AddCommand(command);
@@ -236,6 +526,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
         public SqlBatch AddExecuteReader(
             [NotNull] SqlProgram program,
             [NotNull] ResultDelegateAsync resultAction,
@@ -249,7 +540,7 @@ namespace WebApplications.Utilities.Database
                 throw new ArgumentOutOfRangeException(
                     nameof(behavior),
                     "CommandBehavior.CloseConnection is not supported");
-            CheckState();
+            CheckBuildingStateQuick();
 
             SqlBatchCommand.Reader command = new SqlBatchCommand.Reader(
                 this,
@@ -262,7 +553,7 @@ namespace WebApplications.Utilities.Database
 
             return this;
         }
-        
+
         /// <summary>
         /// Adds the specified program to the batch. 
         /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
@@ -275,6 +566,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
         /// and get the value returned by <paramref name="resultFunc"/>.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
         public SqlBatch AddExecuteReader<TOut>(
             [NotNull] SqlProgram program,
             [NotNull] ResultDelegateAsync<TOut> resultFunc,
@@ -288,7 +580,7 @@ namespace WebApplications.Utilities.Database
                 throw new ArgumentOutOfRangeException(
                     nameof(behavior),
                     "CommandBehavior.CloseConnection is not supported");
-            CheckState();
+            CheckBuildingStateQuick();
 
             SqlBatchCommand.Reader<TOut> command = new SqlBatchCommand.Reader<TOut>(
                 this,
@@ -301,7 +593,7 @@ namespace WebApplications.Utilities.Database
 
             return this;
         }
-        
+
         /// <summary>
         /// Adds the specified program to the batch.
         /// </summary>
@@ -310,6 +602,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
         public SqlBatch AddExecuteXmlReader(
             [NotNull] SqlProgram program,
             [NotNull] XmlResultDelegateAsync resultAction,
@@ -318,7 +611,7 @@ namespace WebApplications.Utilities.Database
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-            CheckState();
+            CheckBuildingStateQuick();
 
             SqlBatchCommand.XmlReader command = new SqlBatchCommand.XmlReader(
                 this,
@@ -330,6 +623,7 @@ namespace WebApplications.Utilities.Database
 
             return this;
         }
+
         /// <summary>
         /// Adds the specified program to the batch. 
         /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
@@ -341,6 +635,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
         /// and get the value returned by <paramref name="resultFunc"/>.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
         public SqlBatch AddExecuteXmlReader<TOut>(
             [NotNull] SqlProgram program,
             [NotNull] XmlResultDelegateAsync<TOut> resultFunc,
@@ -349,7 +644,7 @@ namespace WebApplications.Utilities.Database
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-            CheckState();
+            CheckBuildingStateQuick();
 
             SqlBatchCommand.XmlReader<TOut> command = new SqlBatchCommand.XmlReader<TOut>(
                 this,
@@ -362,40 +657,215 @@ namespace WebApplications.Utilities.Database
             return this;
         }
 
-        // TODO Add nested batch
+        /// <summary>
+        /// Adds the specified batch to this batch.
+        /// </summary>
+        /// <param name="batch">The batch to add to this batch.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddBatch([NotNull] SqlBatch batch)
+        {
+            if (batch == null) throw new ArgumentNullException(nameof(batch));
+
+            // Can't add a batch which already has a parent
+            if (batch._parent != null)
+                throw new InvalidOperationException(Resources.SqlBatch_RootBatch_AlreadyAdded);
+
+            // Check the states before taking the locks
+            State myState = _state, otherState = batch._state;
+            if (otherState.Value != Constants.BatchState.Building)
+            {
+                throw new InvalidOperationException(
+                    otherState.Value == Constants.BatchState.Executing
+                        ? Resources.SqlBatch_RootBatch_Executing
+                        : Resources.SqlBatch_RootBatch_Completed);
+            }
+
+            // If the state is for the root, check its in the building state and has enough command capacity
+            if (myState.Batch._parent == null)
+            {
+                myState.CheckBuildingState();
+                if (myState.CommandCount + otherState.CommandCount > ushort.MaxValue)
+                    throw new InvalidOperationException(Resources.SqlBatch_AddCommand_OnlyAllowed65536);
+            }
+
+            // Get the states of both batches
+            using (States states = GetStates(this, batch))
+            {
+                myState = states.StateA;
+                otherState = states.StateB;
+
+                // Can't add a batch which already has a parent
+                if (batch._parent != null)
+                    throw new InvalidOperationException(Resources.SqlBatch_RootBatch_AlreadyAdded);
+                Debug.Assert(otherState.Batch == batch);
+
+                // Make sure the batches are in the Building state
+                myState.CheckBuildingState();
+                if (otherState.Value != Constants.BatchState.Building)
+                {
+                    throw new InvalidOperationException(
+                        otherState.Value == Constants.BatchState.Executing
+                            ? Resources.SqlBatch_RootBatch_Executing
+                            : Resources.SqlBatch_RootBatch_Completed);
+                }
+
+                // Increment the command counter
+                if (myState.CommandCount + otherState.CommandCount > ushort.MaxValue ||
+                    Interlocked.Add(ref myState.CommandCount, otherState.CommandCount) > ushort.MaxValue)
+                    throw new InvalidOperationException(Resources.SqlBatch_AddCommand_OnlyAllowed65536);
+
+                batch._parent = this;
+                batch._state = myState;
+
+                _items.Add(batch);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the batch to this batch, only checking the state of this batch.
+        /// </summary>
+        /// <param name="batch">The batch.</param>
+        /// <exception cref="System.InvalidOperationException"></exception>
+        private void AddBatchQuick(SqlBatch batch)
+        {
+            using (State state = GetState())
+            {
+                state.CheckBuildingState();
+                
+                _items.Add(batch);
+            }
+        }
+
+        /// <summary>
+        /// Adds a new batch to this batch.
+        /// </summary>
+        /// <param name="addToBatch">A delegate to the method to use to add commands to the new batch.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddBatch([NotNull] Action<SqlBatch> addToBatch)
+        {
+            if (addToBatch == null) throw new ArgumentNullException(nameof(addToBatch));
+            CheckBuildingStateQuick();
+
+            SqlBatch newBatch = new SqlBatch(this);
+
+            AddBatchQuick(newBatch);
+
+            addToBatch(newBatch);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a new batch to this batch.
+        /// Any errors that occur within the new batch wont cause an exception to be thrown for the whole batch, 
+        /// unless an <paramref name="exceptionHandler"/> is specified and doesn't suppress the error.
+        /// The command that failed will still throw an exception.
+        /// </summary>
+        /// <param name="addToBatch">A delegate to the method to use to add commands to the new batch.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddTryCatch(Action<SqlBatch> addToBatch, ExceptionHandler<DbException> exceptionHandler = null)
+        {
+            if (addToBatch == null) throw new ArgumentNullException(nameof(addToBatch));
+            CheckBuildingStateQuick();
+
+            SqlBatch newBatch = new SqlBatch(this, suppressErrors: true, exceptionHandler: exceptionHandler);
+
+            AddBatchQuick(newBatch);
+
+            addToBatch(newBatch);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a new batch to this batch.
+        /// If an error occurs within the batch, the transaction will rollback.
+        /// </summary>
+        /// <param name="addToBatch">A delegate to the method to use to add commands to the new batch.</param>
+        /// <param name="isolationLevel">The isolation level of the transaction.</param>
+        /// <param name="rollback">if set to <see langword="true" /> the transaction will always be rolled back.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this batch
+        /// wont cause an exception to be thrown for the whole batch. See <see cref="CreateTryCatch" />.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddTransaction(
+            Action<SqlBatch> addToBatch,
+            IsolationLevel isolationLevel,
+            bool rollback = false,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null)
+        {
+            if (addToBatch == null) throw new ArgumentNullException(nameof(addToBatch));
+            CheckBuildingStateQuick();
+
+            SqlBatch newBatch = new SqlBatch(
+                this,
+                rollback ? TransactionType.Rollback : TransactionType.Commit,
+                isolationLevel,
+                suppressErrors,
+                exceptionHandler);
+
+            AddBatchQuick(newBatch);
+
+            addToBatch(newBatch);
+
+            return this;
+        }
 
         /// <summary>
         /// Executes the batch on a single connection, asynchronously.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
         /// <returns>An awaitable task which completes when the batch is complete.</returns>
+        [NotNull]
         public async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            lock (_addLock)
+            // If this isnt the root batch, need to begin executing the root then wait for this batch to complete
+            if (!IsRoot)
             {
-                if (_commands.Count < 1)
-                    throw new InvalidOperationException(Resources.SqlBatch_ExecuteAsync_Empty);
-
-                if (Interlocked.CompareExchange(ref _state, Executing, Building) == Completed) return;
+                throw new NotImplementedException();
             }
 
-            using (await _executeLock.LockAsync(cancellationToken).ConfigureAwait(false))
+            // If we're already completed, just return
+            if (_state.Value == Constants.BatchState.Completed) return;
+
+            State state;
+            using (state = GetState())
             {
-                if (_state == Completed) return;
+                if (state.CommandCount < 1)
+                    throw new InvalidOperationException(Resources.SqlBatch_ExecuteAsync_Empty);
+
+                // Change the state to Executing, or return if the state has already been set to completed.
+                if (Interlocked.CompareExchange(
+                        ref state.Value,
+                        Constants.BatchState.Executing,
+                        Constants.BatchState.Building) == Constants.BatchState.Completed) return;
+            }
+
+            using (await state.ExecuteLock.LockAsync(cancellationToken).ConfigureAwait(false))
+            {
+                if (state.Value == Constants.BatchState.Completed) return;
 
                 try
                 {
-                    string connectionString = DetermineConnection();
+                    Connection connection = DetermineConnection();
 
                     // Set the result count for each command to the number of connections
-                    foreach (SqlBatchCommand command in _commands)
+                    foreach (SqlBatchCommand command in this)
                         command.Result.SetResultCount(1);
 
-                    await ExecuteInternal(connectionString, 0, cancellationToken).ConfigureAwait(false);
+                    await ExecuteInternal(connection, 0, cancellationToken).ConfigureAwait(false);
                 }
                 finally
                 {
-                    _state = Completed;
+                    state.Value = Constants.BatchState.Completed;
                 }
             }
         }
@@ -405,39 +875,53 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
         /// <returns>An awaitable task which completes when the batch is complete.</returns>
+        [NotNull]
         public async Task ExecuteAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            lock (_addLock)
+            if (!IsRoot)
             {
-                if (_commands.Count < 1)
-                    throw new InvalidOperationException(Resources.SqlBatch_ExecuteAsync_Empty);
-
-                if (Interlocked.CompareExchange(ref _state, Executing, Building) == Completed) return;
+                throw new NotImplementedException();
             }
 
-            using (await _executeLock.LockAsync(cancellationToken).ConfigureAwait(false))
+            // If we're already completed, just return
+            if (_state.Value == Constants.BatchState.Completed) return;
+
+            State state;
+            using (state = GetState())
             {
-                if (_state == Completed) return;
+                if (state.CommandCount < 1)
+                    throw new InvalidOperationException(Resources.SqlBatch_ExecuteAsync_Empty);
+
+                // Change the state to Executing, or return if the state has already been set to completed.
+                if (Interlocked.CompareExchange(
+                        ref state.Value,
+                        Constants.BatchState.Executing,
+                        Constants.BatchState.Building) == Constants.BatchState.Completed) return;
+            }
+
+            using (await state.ExecuteLock.LockAsync(cancellationToken).ConfigureAwait(false))
+            {
+                if (state.Value == Constants.BatchState.Completed) return;
 
                 try
                 {
                     // Get the connection strings which are common to each program
-                    HashSet<string> commonConnections = _commonConnectionStrings.Value;
+                    HashSet<Connection> commonConnections = GetCommonConnections();
                     Debug.Assert(commonConnections != null, "commonConnections != null");
 
                     // Set the result count for each command to the number of connections
-                    foreach (SqlBatchCommand command in _commands)
+                    foreach (SqlBatchCommand command in this)
                         command.Result.SetResultCount(commonConnections.Count);
 
                     Task[] tasks = commonConnections
-                        .Select((cs, i) => Task.Run(() => ExecuteInternal(cs, i, cancellationToken)))
+                        .Select((con, i) => Task.Run(() => ExecuteInternal(con, i, cancellationToken)))
                         .ToArray();
 
                     await Task.WhenAll(tasks).ConfigureAwait(false);
                 }
                 finally
                 {
-                    _state = Completed;
+                    state.Value = Constants.BatchState.Completed;
                 }
             }
         }
@@ -449,9 +933,8 @@ namespace WebApplications.Utilities.Database
         internal void BeginExecute(bool all)
         {
             // If the state is Executing or Completed, don't need to do anything.
-            lock (_addLock)
-                if (_state != Building)
-                    return;
+            if (_state.Value != Constants.BatchState.Building)
+                return;
 
             // Execute the batch
             if (all)
@@ -461,81 +944,66 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        /// Indicates the next record set will be for the output parameters for the command.
-        /// </summary>
-        private const string OutputState = "Output";
-
-        /// <summary>
-        /// Indicates the command has ended.
-        /// </summary>
-        private const string EndState = "End";
-
-        /// <summary>
         /// Executes the batch.
         /// </summary>
-        /// <param name="connectionString">The connection string.</param>
+        /// <param name="connection">The connection.</param>
         /// <param name="connectionIndex">Index of the connection.</param>
         /// <param name="cancellationToken">A cancellation token.</param>
         [NotNull]
         private async Task ExecuteInternal(
-            [NotNull] string connectionString,
+            [NotNull] Connection connection,
             int connectionIndex,
             CancellationToken cancellationToken)
         {
-            SqlStringBuilder sqlBuilder = new SqlStringBuilder();
-            string uid = $"{Guid.NewGuid():B}@{DateTime.UtcNow:O}:";
+            string uid = $"{ID:B} @ {DateTime.UtcNow:O}:";
 
-            List<DbParameter> allParameters = new List<DbParameter>();
+            DatabaseSchema schema = connection.CachedSchema;
+            // TODO Do we care enough? // ?? await connection.GetSchema(false, cancellationToken).ConfigureAwait(false);
 
-            Dictionary<IOut, DbParameter> outParameters = new Dictionary<IOut, DbParameter>();
-
-            Dictionary<SqlBatchCommand, IReadOnlyList<(DbBatchParameter param, IOut output)>> commandOutParams =
-                new Dictionary<SqlBatchCommand, IReadOnlyList<(DbBatchParameter param, IOut output)>>();
+            BatchProcessArgs args =
+                new BatchProcessArgs(schema?.ServerVersion ?? DatabaseSchema.MinimumSupportedServerVersion);
 
             // Build the batch SQL and get the parameters to the commands
             PreProcess(
                 uid,
-                connectionString,
-                allParameters,
-                outParameters,
-                commandOutParams,
-                sqlBuilder,
-                out AsyncSemaphore[] semaphores,
+                connection,
+                args,
                 out CommandBehavior allBehavior);
+
+            AsyncSemaphore[] semaphores = args.GetSemaphores();
 
             string state = null;
             int index = -1;
+            string stateArgs = null;
             int actualIndex = 0;
             DbBatchDataReader commandReader = null;
 
             void MessageHandler(string message)
             {
-                if (!TryParseInfoMessage(message, out var info)) return;
-
-                state = info.state;
-                index = info.index;
+                if (!TryParseInfoMessage(message, ref state, ref index, ref stateArgs)) return;
 
                 if (commandReader != null)
                     commandReader.State = BatchReaderState.Finished;
             }
 
+            // Wait the semaphores and setup the connection, command and reader
             using (await AsyncSemaphore.WaitAllAsync(cancellationToken, semaphores).ConfigureAwait(false))
-            using (DbConnection dbConnection = await CreateOpenConnectionAsync(connectionString, uid, MessageHandler, cancellationToken)
+            using (DbConnection dbConnection = await CreateOpenConnectionAsync(connection, uid, MessageHandler, cancellationToken)
                     .ConfigureAwait(false))
-            using (DbCommand dbCommand = CreateCommand(sqlBuilder.ToString(), dbConnection, allParameters.ToArray()))
+            using (DbCommand dbCommand = CreateCommand(args.SqlBuilder.ToString(), dbConnection, args.AllParameters.ToArray()))
             using (DbDataReader reader = await dbCommand.ExecuteReaderAsync(allBehavior, cancellationToken)
                 .ConfigureAwait(false))
             {
                 Debug.Assert(reader != null, "reader != null");
 
                 object[] values = null;
-
-                List<SqlBatchCommand>.Enumerator commandEnumerator = _commands.GetEnumerator();
+                
+                IEnumerator<SqlBatchCommand> commandEnumerator = GetEnumerator();
                 while (commandEnumerator.MoveNext())
                 {
                     SqlBatchCommand command = commandEnumerator.Current;
                     Debug.Assert(command != null, "command != null");
-
+                    
                     try
                     {
                         using (commandReader = CreateReader(reader, command.CommandBehavior))
@@ -559,51 +1027,57 @@ namespace WebApplications.Utilities.Database
                         commandReader = null;
 
                         // Check the end states
-                        while (state != EndState && index == actualIndex)
+                        while (state != Constants.ExecuteState.End && index == actualIndex)
                         {
-                            if (state == OutputState)
+                            switch (state)
                             {
-                                // Get the expected output parameters for the command
-                                if (!commandOutParams.TryGetValue(command, out var outs))
-                                    throw new NotImplementedException(
-                                        "Proper exception, unexpected output parameters");
-
-                                // No longer expect the output parameters
-                                commandOutParams.Remove(command);
-
-                                if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                                    throw new NotImplementedException("Proper exception, missing data");
-
-                                if (outs.Count != reader.VisibleFieldCount)
-                                    throw new NotImplementedException("Proper exception, field count mismatch");
-
-                                // Expand the values buffer if needed
-                                if (values == null)
-                                    values = new object[reader.VisibleFieldCount];
-                                else if (values.Length < reader.VisibleFieldCount)
-                                    Array.Resize(ref values, reader.VisibleFieldCount);
-
-                                // Get the output values record
-                                reader.GetValues(values);
-
-                                // Set the output values
-                                for (int i = 0; i < outs.Count; i++)
+                                case Constants.ExecuteState.Output:
                                 {
-                                    Debug.Assert(outs[i].output != null, "outs[i].output != null");
-                                    Debug.Assert(outs[i].param != null, "outs[i].param != null");
+                                    // Get the expected output parameters for the command
+                                    if (!args.CommandOutParams.TryGetValue(command, out var outs))
+                                        throw new NotImplementedException(
+                                            "Proper exception, unexpected output parameters");
 
-                                    outs[i].output.SetOutputValue(values[i], outs[i].param.BaseParameter);
+                                    // No longer expect the output parameters
+                                    args.CommandOutParams.Remove(command);
+
+                                    if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                        throw new NotImplementedException("Proper exception, missing data");
+
+                                    if (outs.Count != reader.VisibleFieldCount)
+                                        throw new NotImplementedException("Proper exception, field count mismatch");
+
+                                    // Expand the values buffer if needed
+                                    if (values == null)
+                                        values = new object[reader.VisibleFieldCount];
+                                    else if (values.Length < reader.VisibleFieldCount)
+                                        Array.Resize(ref values, reader.VisibleFieldCount);
+
+                                    // Get the output values record
+                                    reader.GetValues(values);
+
+                                    // Set the output values
+                                    for (int i = 0; i < outs.Count; i++)
+                                    {
+                                        Debug.Assert(outs[i].output != null, "outs[i].output != null");
+                                        Debug.Assert(outs[i].param != null, "outs[i].param != null");
+
+                                        outs[i].output.SetOutputValue(values[i], outs[i].param.BaseParameter);
+                                    }
+
+                                    if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                        throw new NotImplementedException("Proper exception, unexpected data");
+
+                                    // TODO Do something with this?
+                                    bool hasNext = await reader.NextResultAsync(cancellationToken)
+                                        .ConfigureAwait(false);
+                                    break;
                                 }
-
-                                if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                                    throw new NotImplementedException("Proper exception, unexpected data");
-
-                                // TODO Do something with this?
-                                bool hasNext = await reader.NextResultAsync(cancellationToken)
-                                    .ConfigureAwait(false);
+                                case Constants.ExecuteState.Error:
+                                    throw new NotImplementedException();
+                                default:
+                                    throw new NotImplementedException("Proper exception, unexpected state");
                             }
-                            else
-                                throw new NotImplementedException("Proper exception, unexpected state");
                         }
                     }
                     catch (OperationCanceledException)
@@ -642,158 +1116,306 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="uid">The uid.</param>
         /// <param name="connectionString">The connection string.</param>
-        /// <param name="allParameters">All parameters.</param>
-        /// <param name="outParameters">The out parameters.</param>
-        /// <param name="commandOutParams">The command out parameters.</param>
-        /// <param name="sqlBuilder">The SQL builder.</param>
-        /// <param name="semaphores">The semaphores.</param>
+        /// <param name="args">The arguments.</param>
         /// <param name="allBehavior">All behavior.</param>
         private void PreProcess(
             [NotNull] string uid,
             [NotNull] string connectionString,
-            [NotNull] List<DbParameter> allParameters,
-            [NotNull] Dictionary<IOut, DbParameter> outParameters,
-            [NotNull] Dictionary<SqlBatchCommand, IReadOnlyList<(DbBatchParameter, IOut)>> commandOutParams,
-            [NotNull] SqlStringBuilder sqlBuilder,
-            [NotNull] out AsyncSemaphore[] semaphores,
+            [NotNull] BatchProcessArgs args,
             out CommandBehavior allBehavior)
         {
-            HashSet<AsyncSemaphore> connectionSemaphores = new HashSet<AsyncSemaphore>();
-            HashSet<AsyncSemaphore> loadBalConnectionSemaphores = new HashSet<AsyncSemaphore>();
-            HashSet<AsyncSemaphore> databaseSemaphores = new HashSet<AsyncSemaphore>();
+            ((IBatchItem)this).Process(
+                uid,
+                connectionString,
+                args);
 
-            // Start the behavior asking for sequential access. All commands must want it to be able to use it
-            allBehavior = CommandBehavior.SequentialAccess;
+            allBehavior = args.Behavior;
+        }
 
-            int commandIndex = 0;
-            foreach (SqlBatchCommand command in _commands)
+        /// <summary>
+        /// Processes the batch to be executed.
+        /// </summary>
+        /// <param name="uid">The uid.</param>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="args">The arguments.</param>
+        void IBatchItem.Process(
+            string uid,
+            string connectionString,
+            BatchProcessArgs args)
+        {
+            args.SqlBuilder
+                .AppendLine()
+                .AppendLine("/*")
+                .Append(" * Starting batch ")
+                .AppendLine(ID.ToString("D"))
+                .AppendLine(" */");
+
+            if (IsRoot)
             {
-                // Get the parameters for the command
-                SqlBatchParametersCollection parameters = command.GetParametersForConnection(connectionString);
+                // Declare the variable for storing the index of the currently executing command
+                args.SqlBuilder
+                    .AppendLine("DECLARE @CmdIndex int;");
+            }
 
-                // Add the parameters to the collection to pass to the command
-                foreach (DbBatchParameter batchParameter in parameters.Parameters)
+            args.SqlBuilder.AppendLine();
+
+            bool hasTransaction = _transaction != TransactionType.None;
+            bool hasTryCatch = _suppressErrors || hasTransaction;
+
+            string tranName = null;
+            int startIndex = 0;
+            if (hasTryCatch)
+            {
+                if (hasTransaction)
                 {
-                    if (batchParameter.OutputValue != null)
+                    string isoLevel = GetIsolationLevelStr(_isolationLevel);
+                    if (isoLevel == null)
+                        throw new ArgumentOutOfRangeException(
+                            nameof(IsolationLevel),
+                            _isolationLevel,
+                            string.Format(Resources.SqlBatch_Process_IsolationLevelNotSupported, _isolationLevel));
+                    
+                    // Set the isolation level and begin or save a transaction for the batch
+                    tranName = "[" + ID.ToString("N") + "]";
+                    args.SqlBuilder
+                        .AppendLine()
+                        .Append("SET TRANSACTION ISOLATION LEVEL ")
+                        .Append(isoLevel)
+                        .AppendLine(";")
+
+                        .Append(args.InTransaction ? "SAVE" : "BEGIN")
+                        .Append(" TRANSACTION ")
+                        .Append(tranName)
+                        .AppendLine(";");
+                    args.TransactionStack.Push(tranName, isoLevel);
+                }
+
+                // Wrap the contents of the batch in a TRY ... CATCH block
+                args.SqlBuilder
+                    .AppendLine()
+                    .AppendLine("BEGIN TRY")
+                    .AppendLine()
+                    .GetLength(out startIndex);
+            }
+
+            // Process the items in this batch
+            foreach (IBatchItem item in _items)
+                item.Process(uid, connectionString, args);
+
+            if (hasTryCatch)
+            {
+                if (hasTransaction)
+                {
+                    args.TransactionStack.Pop(out string name, out _);
+                    Debug.Assert(name == tranName);
+                }
+
+                // If the transaction type is Commit and this is a root transaction, commit it
+                if (_transaction == TransactionType.Commit && !args.InTransaction)
+                {
+                    args.SqlBuilder
+                        .AppendLine()
+                        .Append("COMMIT TRANSACTION ")
+                        .Append(tranName)
+                        .AppendLine(";");
+                }
+                // If the transaction is Rollback, always roll it back
+                else if (_transaction == TransactionType.Rollback)
+                    args.SqlBuilder
+                        .Append("ROLLBACK TRANSACTION ")
+                        .Append(tranName)
+                        .AppendLine(";");
+                
+                // End the TRY block and start the CATCH block
+                args.SqlBuilder
+                    .IndentRegion(startIndex)
+                    .AppendLine()
+                    .AppendLine("END TRY")
+                    .AppendLine("BEGIN CATCH")
+                    .GetLength(out startIndex);
+
+                // If there is a transaction, roll it back if possible
+                if (hasTransaction)
+                {
+                    if (args.InTransaction)
+                        args.SqlBuilder
+                            .AppendLine("IF XACT_STATE() <> -1 ")
+                            .Append("\t");
+                    
+                    args.SqlBuilder
+                            .Append("ROLLBACK TRANSACTION ")
+                            .Append(tranName)
+                            .AppendLine(";");
+                }
+                
+                // Output an Error info message then select the error information
+                AppendInfo(args.SqlBuilder, uid, Constants.ExecuteState.Error, "%d", null, "@CmdIndex")
+                    .AppendLine(
+                        "SELECT\tERROR_NUMBER(),\r\n\tERROR_SEVERITY(),\r\n\tERROR_STATE(),\r\n\tERROR_LINE(),\r\n\tISNULL(QUOTENAME(ERROR_PROCEDURE()),'NULL'),\r\n\tERROR_MESSAGE();");
+
+                // If the error isnt being suppressed, rethrow it for any outer catches to handle it
+                if (!_suppressErrors)
+                {
+                    if (args.ServerVersion.Major < 11)
                     {
-                        if (!outParameters.TryGetValue(batchParameter.OutputValue, out DbParameter dbParameter))
-                            throw new NotImplementedException("proper error");
-                        batchParameter.BaseParameter = dbParameter;
+                        // Cant rethrow the actual error, so raise a special error message
+                        args.SqlBuilder
+                            .Append("RAISERROR(")
+                            .AppendVarChar($"{uid}{Constants.ExecuteState.ReThrow}:%d:")
+                            .AppendLine(",16,0,@CmdIndex);");
                     }
                     else
                     {
-                        allParameters.Add(batchParameter.BaseParameter);
+                        args.SqlBuilder.AppendLine("THROW;");
                     }
                 }
 
-                // Add any output parameters to the dictionary for passing into following commands
-                if (parameters.OutputParameters != null)
+                // End the CATCH block
+                args.SqlBuilder
+                    .IndentRegion(startIndex)
+                    .AppendLine()
+                    .AppendLine("END CATCH")
+                    .AppendLine();
+
+                // Reset the isolation level
+                if (!IsRoot && hasTransaction)
                 {
-                    foreach ((DbBatchParameter batchParameter, IOut outValue) in parameters.OutputParameters)
-                    {
-                        if (outParameters.ContainsKey(outValue))
-                            throw new NotImplementedException("proper error");
+                    if (!args.TransactionStack.TryPeek(out _, out string isoLevel))
+                        isoLevel = GetIsolationLevelStr(IsolationLevel.Unspecified);
 
-                        outParameters.Add(outValue, (SqlParameter)batchParameter.BaseParameter);
-                    }
-
-                    commandOutParams.Add(command, parameters.OutputParameters);
+                    if (isoLevel != null)
+                        args.SqlBuilder
+                            .AppendLine()
+                            .Append("SET TRANSACTION ISOLATION LEVEL ")
+                            .Append(isoLevel)
+                            .AppendLine(";");
                 }
-
-                SqlProgramMapping mapping = parameters.Mapping;
-                SqlProgram program = command.Program;
-                LoadBalancedConnection loadBalancedConnection = program.Connection;
-                Connection connection = mapping.Connection;
-
-                // Need to wait on the semaphores for all the connections and databases
-                if (connection.Semaphore != null)
-                    connectionSemaphores.Add(connection.Semaphore);
-                if (loadBalancedConnection.ConnectionSemaphore != null)
-                    loadBalConnectionSemaphores.Add(loadBalancedConnection.ConnectionSemaphore);
-                if (loadBalancedConnection.DatabaseSemaphore != null)
-                    databaseSemaphores.Add(loadBalancedConnection.DatabaseSemaphore);
-
-                // The mask the behavior with this commands behavior
-                allBehavior &= command.CommandBehavior;
-
-                // Build batch SQL
-                sqlBuilder
-                    .Append("-- ")
-                    .AppendLine(command.Program.Name);
-
-                command.AppendExecuteSql(sqlBuilder, parameters);
-
-                if (parameters.OutputParameters != null)
-                {
-                    AppendInfo(sqlBuilder, uid, OutputState, commandIndex)
-                        .Append("SELECT ");
-
-                    bool firstParam = true;
-                    foreach ((DbBatchParameter batchParameter, IOut outValue) in parameters.OutputParameters)
-                    {
-                        if (firstParam) firstParam = false;
-                        else sqlBuilder.Append(", ");
-
-                        sqlBuilder.Append(batchParameter.BaseParameter.ParameterName);
-                    }
-                    sqlBuilder.AppendLine(";");
-                }
-
-                AppendInfo(sqlBuilder, uid, EndState, commandIndex).AppendLine();
-
-                commandIndex++;
             }
+            
+            args.SqlBuilder
+                .AppendLine()
+                .AppendLine("/*")
+                .Append(" * Ending batch ")
+                .AppendLine(ID.ToString("D"))
+                .AppendLine(" */");
+        }
 
-            // Concat the semaphores to a single array
-            int semaphoreCount =
-                connectionSemaphores.Count + loadBalConnectionSemaphores.Count + databaseSemaphores.Count;
-            if (semaphoreCount < 1)
-                semaphores = Array<AsyncSemaphore>.Empty;
-            else
+        private static string GetIsolationLevelStr(IsolationLevel isoLevel)
+        {
+            switch (isoLevel)
             {
-                semaphores = new AsyncSemaphore[semaphoreCount];
-                int i = 0;
-
-                // NOTE! Do NOT reorder these without also reordering the semaphores in SqlProgramCommand.WaitSemaphoresAsync
-                foreach (AsyncSemaphore semaphore in connectionSemaphores)
-                    semaphores[i++] = semaphore;
-                foreach (AsyncSemaphore semaphore in loadBalConnectionSemaphores)
-                    semaphores[i++] = semaphore;
-                foreach (AsyncSemaphore semaphore in databaseSemaphores)
-                    semaphores[i++] = semaphore;
+                case IsolationLevel.ReadUncommitted:
+                    return "READ UNCOMMITTED";
+                case IsolationLevel.ReadCommitted:
+                case IsolationLevel.Unspecified:
+                    return "READ COMMITTED";
+                case IsolationLevel.RepeatableRead:
+                    return "REPEATABLE READ";
+                case IsolationLevel.Serializable:
+                    return "SERIALIZABLE";
+                case IsolationLevel.Snapshot:
+                    return "SNAPSHOT";
+                case IsolationLevel.Chaos:
+                default:
+                    return null;
             }
         }
 
-        // this would be provider specific
+        /// <summary>
+        /// Appends an info message to the SQL builder.
+        /// </summary>
+        /// <param name="sqlBuilder">The SQL builder.</param>
+        /// <param name="uid">The uid.</param>
+        /// <param name="state">The state.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="args">The arguments.</param>
+        /// <param name="formatArgs">The format arguments.</param>
+        /// <returns>
+        /// The <paramref name="sqlBuilder" />
+        /// </returns>
         [NotNull]
-        private static SqlStringBuilder AppendInfo(
+        internal static SqlStringBuilder AppendInfo(
             [NotNull] SqlStringBuilder sqlBuilder,
             [NotNull] string uid,
             [NotNull] string state,
-            int index)
+            int index,
+            string args = null,
+            string formatArgs = null)
         {
+            return AppendInfo(
+                sqlBuilder,
+                uid,
+                state,
+                index.ToString(),
+                args,
+                formatArgs);
+        }
+
+        /// <summary>
+        /// Appends an info message to the SQL builder.
+        /// </summary>
+        /// <param name="sqlBuilder">The SQL builder.</param>
+        /// <param name="uid">The uid.</param>
+        /// <param name="state">The state.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="args">The arguments.</param>
+        /// <param name="formatArgs">The format arguments.</param>
+        /// <returns>
+        /// The <paramref name="sqlBuilder" />
+        /// </returns>
+        [NotNull]
+        internal static SqlStringBuilder AppendInfo(
+            [NotNull] SqlStringBuilder sqlBuilder,
+            [NotNull] string uid,
+            [NotNull] string state,
+            string index,
+            string args = null,
+            string formatArgs = null)
+        {
+            // TODO this would be provider specific
+
             Debug.Assert(!state.Contains(":"));
-            return sqlBuilder
+            sqlBuilder
                 .Append("RAISERROR(")
-                .AppendVarChar($"{uid}{state}:{index}")
-                .Append(",4,")
-                .Append(unchecked((byte)index))
+                .AppendVarChar($"{uid}{state}:{index}:{args ?? string.Empty}")
+                .Append(",4,0");
+            if (formatArgs != null)
+                sqlBuilder
+                    .Append(',')
+                    .Append(formatArgs);
+            return sqlBuilder
                 .AppendLine(");");
         }
 
-        private static bool TryParseInfoMessage([NotNull] string message, out (string state, int index) info)
+        /// <summary>
+        /// Attempts to parse an information message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="state">The state.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="args">The arguments.</param>
+        /// <returns></returns>
+        private static bool TryParseInfoMessage([NotNull] string message, ref string state, ref int index, ref string args)
         {
-            int ind = message.IndexOf(':');
-            if (ind < 0 || !ushort.TryParse(message.Substring(ind + 1), out ushort index))
-            {
-                info = (null, -1);
+            int ind1 = message.IndexOf(':');
+            int ind1p1 = ind1 + 1;
+            int ind2 = message.IndexOf(':', ind1p1);
+            if (ind1 < 0 || ind2 < 0 || !ushort.TryParse(message.Substring(ind1p1, ind2 - ind1p1), out ushort parsedIndex))
                 return false;
-            }
 
-            info = (message.Substring(0, ind), index);
+            state = message.Substring(0, ind1);
+            index = parsedIndex;
+            args = (ind2 + 1 >= message.Length) ? null : message.Substring(ind2 + 1);
             return true;
         }
 
+        /// <summary>
+        /// Registers an information message handler.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
+        /// <param name="uid">The uid.</param>
+        /// <param name="handler">The handler.</param>
+        /// <exception cref="System.NotSupportedException"></exception>
         private void RegisterInfoMessageHandler(
             [NotNull] DbConnection connection,
             [NotNull] string uid,
@@ -877,6 +1499,10 @@ namespace WebApplications.Utilities.Database
             {
                 Debug.Assert(command.Connection == connection);
 
+#if DEBUG
+                _sql = text;
+#endif
+
                 command.CommandText = text;
                 command.CommandType = CommandType.Text;
                 command.CommandTimeout = (int)BatchTimeout.TotalSeconds();
@@ -911,18 +1537,28 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// An equality comparer that compares only the connection string for a connection.
+        /// </summary>
+        [NotNull]
+        private static readonly EqualityBuilder<Connection> _connectionStringEquality =
+            new EqualityBuilder<Connection>(
+                (a, b) => a.ConnectionString == b.ConnectionString,
+                c => c.ConnectionString.GetHashCode());
+
+        /// <summary>
         /// Determines the connection string to use.
         /// </summary>
         /// <returns></returns>
         /// <exception cref="System.InvalidOperationException">
         /// </exception>
         [NotNull]
-        private string DetermineConnection()
+        private Connection DetermineConnection()
         {
-            Debug.Assert(_commands.Count > 0);
+            Debug.Assert(IsRoot);
+            Debug.Assert(_state.CommandCount > 0);
 
             // Get the connection strings which are common to each program
-            HashSet<string> commonConnections = _commonConnectionStrings.Value;
+            HashSet<Connection> commonConnections = GetCommonConnections();
 
             // If there is a single common connection string, just use that
             if (commonConnections.Count == 1)
@@ -930,23 +1566,23 @@ namespace WebApplications.Utilities.Database
 
             Debug.Assert(commonConnections != null);
 
-            Dictionary<string, WeightCounter> connWeightCounts =
-                new Dictionary<string, WeightCounter>();
+            Dictionary<Connection, WeightCounter> connWeightCounts =
+                new Dictionary<Connection, WeightCounter>(_connectionStringEquality);
 
-            foreach (SqlBatchCommand command in _commands)
+            foreach (SqlBatchCommand command in this)
             {
                 SqlProgramMapping[] mappings = command.Program.Mappings
-                    .Where(m => commonConnections.Contains(m.Connection.ConnectionString))
+                    .Where(m => commonConnections.Contains(m.Connection))
                     .ToArray();
 
                 double totWeight = mappings.Sum(m => m.Connection.Weight);
 
                 foreach (SqlProgramMapping mapping in mappings)
                 {
-                    if (!connWeightCounts.TryGetValue(mapping.Connection.ConnectionString, out var counter))
+                    if (!connWeightCounts.TryGetValue(mapping.Connection, out var counter))
                     {
                         counter = new WeightCounter();
-                        connWeightCounts.Add(mapping.Connection.ConnectionString, counter);
+                        connWeightCounts.Add(mapping.Connection, counter);
                     }
 
                     counter.Increment(mapping.Connection.Weight / totWeight);
@@ -964,29 +1600,30 @@ namespace WebApplications.Utilities.Database
         /// </exception>
         [NotNull]
         [ItemNotNull]
-        private HashSet<string> GetCommonConnections()
+        private HashSet<Connection> GetCommonConnections()
         {
-            string commonConnectionStr = null;
-            HashSet<string> commonConnections = null;
-            foreach (SqlBatchCommand command in _commands)
+            Connection commonConnection = null;
+            HashSet<Connection> commonConnections = null;
+            foreach (SqlBatchCommand command in this)
             {
                 if (commonConnections == null)
                 {
-                    commonConnections = new HashSet<string>(
+                    commonConnections = new HashSet<Connection>(
                         command.Program.Mappings
                             .Where(m => m.Connection.Weight > 0)
-                            .Select(m => m.Connection.ConnectionString));
+                            .Select(m => m.Connection),
+                        _connectionStringEquality);
                 }
                 else
                 {
                     // If there's a single common connection, just check if any mapping has that connection.
-                    if (commonConnectionStr != null)
+                    if (commonConnection != null)
                     {
                         bool contains = false;
                         foreach (SqlProgramMapping mapping in command.Program.Mappings)
                         {
                             if (mapping.Connection.Weight > 0 &&
-                                mapping.Connection.ConnectionString == commonConnectionStr)
+                                mapping.Connection.ConnectionString == commonConnection.ConnectionString)
                             {
                                 contains = true;
                                 break;
@@ -1001,14 +1638,14 @@ namespace WebApplications.Utilities.Database
                     commonConnections.IntersectWith(
                         command.Program.Mappings
                             .Where(m => m.Connection.Weight > 0)
-                            .Select(m => m.Connection.ConnectionString));
+                            .Select(m => m.Connection));
                 }
 
                 if (commonConnections.Count < 1)
                     throw new InvalidOperationException(Resources.SqlBatch_AddCommand_NoCommonConnections);
 
                 if (commonConnections.Count == 1)
-                    commonConnectionStr = commonConnections.Single();
+                    commonConnection = commonConnections.Single();
             }
             Debug.Assert(commonConnections != null, "commonConnections != null");
             return commonConnections;

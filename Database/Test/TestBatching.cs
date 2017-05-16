@@ -28,7 +28,9 @@
 // ReSharper disable ConsiderUsingConfigureAwait,UseConfigureAwait
 
 using System;
+using System.Data;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -41,6 +43,29 @@ namespace WebApplications.Utilities.Database.Test
     [TestClass]
     public class TestBatching : DatabaseTestBase
     {
+        private static int _count = 0;
+        private static double _nonQueryTime;
+        private static double _scalarTime;
+        private static double _outputTime;
+        private static double _tableTime;
+        private static double _xmlTime;
+        private static double _doneTime;
+
+        private static double _batchedNonQueryTime;
+        private static double _batchedScalarTime;
+        private static double _batchedOutputTime;
+        private static double _batchedTableTime;
+        private static double _batchedXmlTime;
+        private static double _batchedDoneTime;
+
+        private static void AddTime(Stopwatch sw, ref double counter)
+        {
+            var elapsed = sw.Elapsed.TotalMilliseconds;
+
+            if (_count > 0)
+                counter += elapsed;
+        }
+
         private static void Setup(
             out SqlProgram<string, int> nonQueryProg,
             out SqlProgram<string, int, decimal, bool> returnsScalarProg,
@@ -88,7 +113,7 @@ namespace WebApplications.Utilities.Database.Test
 
             returnsXmlProg = database.GetSqlProgram("spReturnsXml").Result;
 
-            randomString = Random.RandomString(Encoding.GetEncoding(1252), maxLength: 20);
+            randomString = Random.RandomString(Encoding.ASCII, maxLength: 20);
             randomInt = Random.RandomInt32();
             randomDecimal = Math.Round(Random.RandomDecimal() % 1_000_000_000m, 2);
             randomBool = Random.RandomBoolean();
@@ -102,10 +127,28 @@ namespace WebApplications.Utilities.Database.Test
         {
             for (int i = 0; i < 100; i++)
             {
+                Trace.WriteLine("Run " + i);
                 await TestBatchEverything();
                 await TestNotBatchEverything();
-                Trace.WriteLine("");
+                _count++;
             }
+            _count = 0;
+
+            Trace.WriteLine($"B spNonQuery in {_batchedNonQueryTime / _count}ms");
+            Trace.WriteLine($"B spWithParametersReturnsScalar in {_batchedScalarTime / _count}ms");
+            Trace.WriteLine($"B spOutputParameters in {_batchedOutputTime / _count}ms");
+            Trace.WriteLine($"B spReturnsTable in {_batchedTableTime / _count}ms");
+            Trace.WriteLine($"B spReturnsXml in {_batchedXmlTime / _count}ms");
+            Trace.WriteLine($"B Done in {_batchedDoneTime / _count}ms");
+
+            Trace.WriteLine("");
+
+            Trace.WriteLine($"N spNonQuery in {_nonQueryTime / _count}ms");
+            Trace.WriteLine($"N spWithParametersReturnsScalar in {_scalarTime / _count}ms");
+            Trace.WriteLine($"N spOutputParameters in {_outputTime / _count}ms");
+            Trace.WriteLine($"N spReturnsTable in {_tableTime / _count}ms");
+            Trace.WriteLine($"N spReturnsXml in {_xmlTime / _count}ms");
+            Trace.WriteLine($"N Done in {_doneTime / _count}ms");
         }
 
         [TestMethod]
@@ -124,7 +167,10 @@ namespace WebApplications.Utilities.Database.Test
                 out Out<int> output,
                 out Out<int> inputOutput);
 
-            SqlBatch batch = new SqlBatch()
+            SqlBatchResult<string> outputResult = null;
+            SqlBatchResult tableResult = null;
+
+            SqlBatch batch = SqlBatch.CreateTransaction(IsolationLevel.ReadUncommitted)
                 .AddExecuteNonQuery(
                     nonQueryProg,
                     out SqlBatchResult<int> nonQueryResult,
@@ -137,29 +183,31 @@ namespace WebApplications.Utilities.Database.Test
                     randomInt,
                     randomDecimal,
                     randomBool)
-                .AddExecuteScalar(
-                    outputParametersProg,
-                    out SqlBatchResult<string> outputResult,
-                    randomInt,
-                    inputOutput,
-                    output)
-                .AddExecuteReader(
-                    returnsTableProg,
-                    async (reader, token) =>
-                    {
-                        Assert.IsTrue(await reader.ReadAsync(token));
+                .AddTransaction(
+                    b => b.AddExecuteScalar(
+                            outputParametersProg,
+                            out outputResult,
+                            randomInt,
+                            inputOutput,
+                            output)
+                        .AddExecuteReader(
+                            returnsTableProg,
+                            async (reader, token) =>
+                            {
+                                Assert.IsTrue(await reader.ReadAsync(token));
 
-                        Assert.AreEqual(randomString, reader.GetValue(0));
-                        Assert.AreEqual(output.Value, reader.GetValue(1));
-                        Assert.AreEqual(randomDecimal, reader.GetValue(2));
-                        Assert.AreEqual(randomBool, reader.GetValue(3));
-                    },
-                    out SqlBatchResult tableResult,
-                    randomString,
-                    // Using output of previous program as input
-                    output,
-                    randomDecimal,
-                    randomBool)
+                                Assert.AreEqual(randomString, reader.GetValue(0));
+                                Assert.AreEqual(output.Value, reader.GetValue(1));
+                                Assert.AreEqual(randomDecimal, reader.GetValue(2));
+                                Assert.AreEqual(randomBool, reader.GetValue(3));
+                            },
+                            out tableResult,
+                            randomString,
+                            // Using output of previous program as input
+                            output,
+                            randomDecimal,
+                            randomBool),
+                    IsolationLevel.Serializable)
                 .AddExecuteXmlReader(
                     returnsXmlProg,
                     (reader, token) =>
@@ -175,15 +223,26 @@ namespace WebApplications.Utilities.Database.Test
 
             // ReSharper disable ConsiderUsingConfigureAwait,UseConfigureAwait
 #pragma warning disable 4014
-            nonQueryResult.GetResultAsync().ContinueWith(_ => Trace.WriteLine($"B spNonQuery @ {sw.Elapsed.TotalMilliseconds}ms"));
-            scalarResult.GetResultAsync().ContinueWith(_ => Trace.WriteLine($"B spWithParametersReturnsScalar @ {sw.Elapsed.TotalMilliseconds}ms"));
-            outputResult.GetResultAsync().ContinueWith(_ => Trace.WriteLine($"B spOutputParameters @ {sw.Elapsed.TotalMilliseconds}ms"));
-            tableResult.GetResultAsync().ContinueWith(_ => Trace.WriteLine($"B spReturnsTable @ {sw.Elapsed.TotalMilliseconds}ms"));
-            xmlResult.GetResultAsync().ContinueWith(_ => Trace.WriteLine($"B spReturnsXml @ {sw.Elapsed.TotalMilliseconds}ms"));
+            nonQueryResult.GetResultAsync().ContinueWith(_ => AddTime(sw, ref _batchedNonQueryTime));
+            scalarResult.GetResultAsync().ContinueWith(_ => AddTime(sw, ref _batchedScalarTime));
+            outputResult.GetResultAsync().ContinueWith(_ => AddTime(sw, ref _batchedOutputTime));
+            tableResult.GetResultAsync().ContinueWith(_ => AddTime(sw, ref _batchedTableTime));
+            xmlResult.GetResultAsync().ContinueWith(_ => AddTime(sw, ref _batchedXmlTime));
 #pragma warning restore 4014
 
-            await batch.ExecuteAsync();
-            Trace.WriteLine($"B Done @ {sw.Elapsed.TotalMilliseconds}ms");
+            try
+            {
+                await batch.ExecuteAsync();
+                AddTime(sw, ref _batchedDoneTime);
+            }
+            finally
+            {
+                if (_count == 0)
+                {
+                    Trace.WriteLine("SQL:");
+                    Trace.WriteLine(GetSql(batch) ?? "<not available>");
+                }
+            }
         }
 
         [TestMethod]
@@ -204,12 +263,12 @@ namespace WebApplications.Utilities.Database.Test
 
             Stopwatch sw = Stopwatch.StartNew();
 
-            await nonQueryProg.ExecuteNonQueryAsync(randomString, randomInt)
-                .ContinueWith(_ => Trace.WriteLine($"N spNonQuery @ {sw.Elapsed.TotalMilliseconds}ms"));
-            await returnsScalarProg.ExecuteScalarAsync<string>(randomString, randomInt, randomDecimal, randomBool)
-                .ContinueWith(_ => Trace.WriteLine($"N spWithParametersReturnsScalar @ {sw.Elapsed.TotalMilliseconds}ms"));
-            await outputParametersProg.ExecuteScalarAsync<string>(randomInt, inputOutput, output)
-                .ContinueWith(_ => Trace.WriteLine($"N spOutputParameters @ {sw.Elapsed.TotalMilliseconds}ms"));
+            await nonQueryProg.ExecuteNonQueryAsync(randomString, randomInt);
+            AddTime(sw, ref _nonQueryTime);
+            await returnsScalarProg.ExecuteScalarAsync<string>(randomString, randomInt, randomDecimal, randomBool);
+            AddTime(sw, ref _scalarTime);
+            await outputParametersProg.ExecuteScalarAsync<string>(randomInt, inputOutput, output);
+            AddTime(sw, ref _outputTime);
             await returnsTableProg.ExecuteReaderAsync(
                 async (reader, token) =>
                 {
@@ -224,15 +283,25 @@ namespace WebApplications.Utilities.Database.Test
                 // Using output of previous program as input
                 output.Value,
                 randomDecimal,
-                randomBool).ContinueWith(_ => Trace.WriteLine($"N spReturnsTable @ {sw.Elapsed.TotalMilliseconds}ms"));
+                randomBool);
+            AddTime(sw, ref _tableTime);
             await returnsXmlProg.ExecuteXmlReaderAsync(
                 (reader, token) =>
                 {
                     string xml = XElement.Load(reader).ToString();
                     Assert.AreEqual("<foo>bar</foo>", xml);
                     return TaskResult.Completed;
-                }).ContinueWith(_ => Trace.WriteLine($"N spReturnsXml @ {sw.Elapsed.TotalMilliseconds}ms"));
-            Trace.WriteLine($"N Done @ {sw.Elapsed.TotalMilliseconds}ms");
+                });
+            AddTime(sw, ref _xmlTime);
+            AddTime(sw, ref _doneTime);
+        }
+
+        private static string GetSql(SqlBatch batch)
+        {
+            FieldInfo field = typeof(SqlBatch).GetField("_sql", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (field == null) return null;
+
+            return (string)field.GetValue(batch);
         }
     }
 }

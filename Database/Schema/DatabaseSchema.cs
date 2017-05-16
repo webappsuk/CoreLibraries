@@ -50,6 +50,12 @@ namespace WebApplications.Utilities.Database.Schema
     public partial class DatabaseSchema : ISchema
     {
         /// <summary>
+        /// The minimum supported server version.
+        /// </summary>
+        [NotNull]
+        public static readonly Version MinimumSupportedServerVersion = new Version(9, 0);
+
+        /// <summary>
         ///   Holds schemas against connections strings.
         /// </summary>
         [NotNull]
@@ -377,6 +383,14 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Unique identity of the schema.
         /// </summary>
         public Guid Guid => Current.Guid;
+
+        /// <summary>
+        /// Gets the server version.
+        /// </summary>
+        /// <value>
+        /// The server version.
+        /// </value>
+        public Version ServerVersion => Current.ServerVersion;
         #endregion
 
         /// <summary>
@@ -394,12 +408,15 @@ namespace WebApplications.Utilities.Database.Schema
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
 
-            // ReSharper disable PossibleNullReferenceException
-            return _databaseSchemas.GetOrAdd(
-                connection.ConnectionString,
-                cs => new DatabaseSchema(connection.ConnectionString))
-                .Load(forceReload, cancellationToken);
-            // ReSharper restore PossibleNullReferenceException
+            if (connection.CachedSchema == null)
+            {
+                connection.CachedSchema = _databaseSchemas.GetOrAdd(
+                    connection.ConnectionString,
+                    cs => new DatabaseSchema(connection.ConnectionString));
+                Debug.Assert(connection.CachedSchema != null);
+            }
+
+            return connection.CachedSchema.Load(forceReload, cancellationToken);
         }
 
         /// <summary>
@@ -457,18 +474,20 @@ namespace WebApplications.Utilities.Database.Schema
                     SqlCollation serverCollation;
                     SqlCollation databaseCollation;
 
+                    Version version;
+
                     // Open a connection
                     using (SqlConnection sqlConnection = new SqlConnection(ConnectionString))
                     {
                         // ReSharper disable once PossibleNullReferenceException
                         await sqlConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-                        if (!Version.TryParse(sqlConnection.ServerVersion, out Version version))
+                        if (!Version.TryParse(sqlConnection.ServerVersion, out version))
                             throw new DatabaseSchemaException(
                                 () => Resources.DatabaseSchema_Load_CouldNotParseVersionInformation);
                         Debug.Assert(version != null);
 
-                        if (version.Major < 9)
+                        if (version < MinimumSupportedServerVersion)
                             throw new DatabaseSchemaException(
                                 () => Resources.DatabaseSchema_Load_VersionNotSupported,
                                 version);
@@ -862,6 +881,7 @@ namespace WebApplications.Utilities.Database.Schema
                     // Update the current schema.
                     _current = new CurrentSchema(
                         Schema.GetOrAdd(
+                            version,
                             sqlSchemas,
                             programDefinitions,
                             tables,

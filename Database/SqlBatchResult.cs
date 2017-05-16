@@ -68,16 +68,31 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// The command that this is the result of.
         /// </summary>
-        [NotNull]
-        protected readonly SqlBatchCommand Command;
+        [CanBeNull]
+        private SqlBatchCommand _command;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlBatchResult"/> class.
         /// </summary>
-        /// <param name="command">The command that this is the result of.</param>
-        internal SqlBatchResult([NotNull] SqlBatchCommand command)
+        internal SqlBatchResult()
         {
-            Command = command ?? throw new ArgumentNullException(nameof(command));
+        }
+
+        /// <summary>
+        /// The command that this is the result of.
+        /// </summary>
+        protected internal SqlBatchCommand Command
+        {
+            get
+            {
+                Debug.Assert(_command != null);
+                return _command;
+            }
+            internal set
+            {
+                Debug.Assert(_command == null);
+                _command = value;
+            }
         }
 
         /// <summary>
@@ -139,9 +154,7 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlBatchResult"/> class.
         /// </summary>
-        /// <param name="command">The command that this is the result of.</param>
-        internal SqlBatchResult([NotNull] SqlBatchCommand command)
-            : base(command)
+        internal SqlBatchResult()
         {
         }
 
@@ -278,7 +291,6 @@ namespace WebApplications.Utilities.Database
         /// Gets the results for all connections asynchronously.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
-        /// <remarks>The order of the results is based on the order of the connections in the <see cref="SqlBatch.CommonConnectionStrings"/> property.</remarks>
         /// <returns>An awaitable task which returns the results for all connections.</returns>
         public async Task<IEnumerable<T>> GetResultsAsync(CancellationToken cancellationToken = default(CancellationToken))
         {

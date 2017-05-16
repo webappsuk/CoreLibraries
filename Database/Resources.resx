@@ -384,4 +384,25 @@
   <data name="SqlBatchDataTextReader_Closed" xml:space="preserve">
     <value>The reader is closed.</value>
   </data>
+  <data name="SqlBatchParametersCollection_GetOrAddParameter_OnlyAllowed65536" xml:space="preserve">
+    <value>Only allowed 65536 parameters per command.</value>
+  </data>
+  <data name="SqlBatch_AddCommand_OnlyAllowed65536" xml:space="preserve">
+    <value>Only allowed 65536 commands per batch.</value>
+  </data>
+  <data name="SqlBatch_RootBatch_Executing" xml:space="preserve">
+    <value>Cannot add a batch which is executing.</value>
+  </data>
+  <data name="SqlBatch_RootBatch_Completed" xml:space="preserve">
+    <value>Cannot add a batch which is completed.</value>
+  </data>
+  <data name="SqlBatch_RootBatch_AlreadyAdded" xml:space="preserve">
+    <value>The batch has already been added to another batch.</value>
+  </data>
+  <data name="SqlBatch_CreateTransaction_UnspecifiedIsoLvl" xml:space="preserve">
+    <value>Cannot have an isolation level of Unspecified.</value>
+  </data>
+  <data name="SqlBatch_Process_IsolationLevelNotSupported" xml:space="preserve">
+    <value>The IsolationLevel enumeration value, {0}, is not supported.</value>
+  </data>
 </root>

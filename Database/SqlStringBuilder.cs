@@ -101,6 +101,37 @@ namespace WebApplications.Utilities.Database
             return this;
         }
 
+        /// <summary>
+        /// Indents a region of the builder from the start index given to the end.
+        /// </summary>
+        /// <param name="start">The start.</param>
+        [NotNull]
+        public SqlStringBuilder IndentRegion(int start)
+        {
+            int newLineLength = Environment.NewLine.Length;
+            if (start >= newLineLength)
+            {
+                if (_builder.ToString(start - newLineLength, newLineLength) == Environment.NewLine)
+                    start -= newLineLength;
+            }
+
+            _builder.Replace(Environment.NewLine, Environment.NewLine + "\t", start, _builder.Length - start);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Gets the length of the builder.
+        /// </summary>
+        /// <param name="length">The length.</param>
+        /// <returns></returns>
+        [NotNull]
+        public SqlStringBuilder GetLength(out int length)
+        {
+            length = _builder.Length;
+            return this;
+        }
+
         #region StringBuilder methods
         /// <summary>Appends the string representation of a specified 8-bit unsigned integer to this instance.</summary>
         /// <returns>A reference to this instance after the append operation has completed.</returns>
@@ -415,7 +446,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public SqlStringBuilder AppendLine(string value)
         {
-            _builder.AppendLine(value);
+            _builder.Append(value).Append(Environment.NewLine);
             return this;
         }
 
@@ -425,7 +456,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public SqlStringBuilder AppendLine()
         {
-            _builder.AppendLine();
+            _builder.Append(Environment.NewLine);
             return this;
         }
 
@@ -514,7 +545,7 @@ namespace WebApplications.Utilities.Database
         /// <returns>A string that represents the current object.</returns>
         public override string ToString() => _builder.ToString();
         #endregion
-
+        
         /// <summary>
         /// Performs an implicit conversion from <see cref="StringBuilder"/> to <see cref="SqlStringBuilder"/>.
         /// </summary>
