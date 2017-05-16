@@ -60,7 +60,7 @@ namespace WebApplications.Utilities.Database.Test
 
         private static void AddTime(Stopwatch sw, ref double counter)
         {
-            var elapsed = sw.Elapsed.TotalMilliseconds;
+            double elapsed = sw.Elapsed.TotalMilliseconds;
 
             if (_count > 0)
                 counter += elapsed;
@@ -123,35 +123,6 @@ namespace WebApplications.Utilities.Database.Test
         }
 
         [TestMethod]
-        public async Task PerfTest()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                Trace.WriteLine("Run " + i);
-                await TestBatchEverything();
-                await TestNotBatchEverything();
-                _count++;
-            }
-            _count = 0;
-
-            Trace.WriteLine($"B spNonQuery in {_batchedNonQueryTime / _count}ms");
-            Trace.WriteLine($"B spWithParametersReturnsScalar in {_batchedScalarTime / _count}ms");
-            Trace.WriteLine($"B spOutputParameters in {_batchedOutputTime / _count}ms");
-            Trace.WriteLine($"B spReturnsTable in {_batchedTableTime / _count}ms");
-            Trace.WriteLine($"B spReturnsXml in {_batchedXmlTime / _count}ms");
-            Trace.WriteLine($"B Done in {_batchedDoneTime / _count}ms");
-
-            Trace.WriteLine("");
-
-            Trace.WriteLine($"N spNonQuery in {_nonQueryTime / _count}ms");
-            Trace.WriteLine($"N spWithParametersReturnsScalar in {_scalarTime / _count}ms");
-            Trace.WriteLine($"N spOutputParameters in {_outputTime / _count}ms");
-            Trace.WriteLine($"N spReturnsTable in {_tableTime / _count}ms");
-            Trace.WriteLine($"N spReturnsXml in {_xmlTime / _count}ms");
-            Trace.WriteLine($"N Done in {_doneTime / _count}ms");
-        }
-
-        [TestMethod]
         public async Task TestBatchEverything()
         {
             Setup(
@@ -166,6 +137,8 @@ namespace WebApplications.Utilities.Database.Test
                 out bool randomBool,
                 out Out<int> output,
                 out Out<int> inputOutput);
+
+            int inputOutputVal = inputOutput.Value;
 
             SqlBatchResult<string> outputResult = null;
             SqlBatchResult tableResult = null;
@@ -183,7 +156,7 @@ namespace WebApplications.Utilities.Database.Test
                     randomInt,
                     randomDecimal,
                     randomBool)
-                .AddTransaction(
+                .AddTransactionBatch(
                     b => b.AddExecuteScalar(
                             outputParametersProg,
                             out outputResult,
@@ -221,13 +194,151 @@ namespace WebApplications.Utilities.Database.Test
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            // ReSharper disable ConsiderUsingConfigureAwait,UseConfigureAwait
 #pragma warning disable 4014
-            nonQueryResult.GetResultAsync().ContinueWith(_ => AddTime(sw, ref _batchedNonQueryTime));
-            scalarResult.GetResultAsync().ContinueWith(_ => AddTime(sw, ref _batchedScalarTime));
-            outputResult.GetResultAsync().ContinueWith(_ => AddTime(sw, ref _batchedOutputTime));
-            tableResult.GetResultAsync().ContinueWith(_ => AddTime(sw, ref _batchedTableTime));
-            xmlResult.GetResultAsync().ContinueWith(_ => AddTime(sw, ref _batchedXmlTime));
+            Task<int> task1 = nonQueryResult.GetResultAsync();
+            Task<string> task2 = scalarResult.GetResultAsync();
+            Task<string> task3 = outputResult.GetResultAsync();
+            Task task4 = tableResult.GetResultAsync();
+            Task task5 = xmlResult.GetResultAsync();
+#pragma warning restore 4014
+
+            try
+            {
+                await batch.ExecuteAsync();
+                AddTime(sw, ref _batchedDoneTime);
+            }
+            finally
+            {
+                Trace.WriteLine("SQL:");
+                Trace.WriteLine(GetSql(batch) ?? "<not available>");
+            }
+
+            Assert.IsTrue(task1.IsCompleted);
+            Assert.IsTrue(task2.IsCompleted);
+            Assert.IsTrue(task3.IsCompleted);
+            Assert.IsTrue(task4.IsCompleted);
+            Assert.IsTrue(task5.IsCompleted);
+
+            Assert.AreEqual(-1, task1.Result);
+
+            Assert.AreEqual(
+                $"{randomString.Substring(0, randomString.Length)} - {randomInt} - {randomDecimal} - {(randomBool ? "1" : "0")}",
+                task2.Result);
+
+
+            Assert.AreEqual("<foo>bar</foo>", task3.Result);
+
+            Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
+            Assert.IsNull(output.OutputError, output.OutputError?.Message);
+
+            Assert.AreEqual(inputOutputVal * 2, inputOutput.OutputValue.Value);
+            Assert.AreEqual(randomInt, output.OutputValue.Value);
+        }
+
+        [TestMethod]
+        public async Task PerfTest()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                Trace.WriteLine("Run " + i);
+                await RunBatched();
+                await RunNotBatched();
+                _count++;
+            }
+
+            Trace.WriteLine($"B spNonQuery in {_batchedNonQueryTime / _count}ms");
+            Trace.WriteLine($"B spWithParametersReturnsScalar in {_batchedScalarTime / _count}ms");
+            Trace.WriteLine($"B spOutputParameters in {_batchedOutputTime / _count}ms");
+            Trace.WriteLine($"B spReturnsTable in {_batchedTableTime / _count}ms");
+            Trace.WriteLine($"B spReturnsXml in {_batchedXmlTime / _count}ms");
+            Trace.WriteLine($"B Done in {_batchedDoneTime / _count}ms");
+
+            Trace.WriteLine("");
+
+            Trace.WriteLine($"N spNonQuery in {_nonQueryTime / _count}ms");
+            Trace.WriteLine($"N spWithParametersReturnsScalar in {_scalarTime / _count}ms");
+            Trace.WriteLine($"N spOutputParameters in {_outputTime / _count}ms");
+            Trace.WriteLine($"N spReturnsTable in {_tableTime / _count}ms");
+            Trace.WriteLine($"N spReturnsXml in {_xmlTime / _count}ms");
+            Trace.WriteLine($"N Done in {_doneTime / _count}ms");
+
+            _count = 0;
+        }
+
+        [TestMethod]
+        private async Task RunBatched()
+        {
+            Setup(
+                out SqlProgram<string, int> nonQueryProg,
+                out SqlProgram<string, int, decimal, bool> returnsScalarProg,
+                out SqlProgram<int, Out<int>, Out<int>> outputParametersProg,
+                out SqlProgram<string, int, decimal, bool> returnsTableProg,
+                out SqlProgram returnsXmlProg,
+                out string randomString,
+                out int randomInt,
+                out decimal randomDecimal,
+                out bool randomBool,
+                out Out<int> output,
+                out Out<int> inputOutput);
+
+            SqlBatchResult<string> outputResult = null;
+            SqlBatchResult tableResult = null;
+
+            SqlBatch batch = SqlBatch.Create()
+                .AddExecuteNonQuery(
+                    nonQueryProg,
+                    out SqlBatchResult<int> nonQueryResult,
+                    randomString,
+                    randomInt)
+                .AddExecuteScalar(
+                    returnsScalarProg,
+                    out SqlBatchResult<string> scalarResult,
+                    randomString,
+                    randomInt,
+                    randomDecimal,
+                    randomBool)
+                .AddExecuteScalar(
+                    outputParametersProg,
+                    out outputResult,
+                    randomInt,
+                    inputOutput,
+                    output)
+                .AddExecuteReader(
+                    returnsTableProg,
+                    async (reader, token) =>
+                    {
+                        Assert.IsTrue(await reader.ReadAsync(token));
+
+                        Assert.AreEqual(randomString, reader.GetValue(0));
+                        Assert.AreEqual(output.Value, reader.GetValue(1));
+                        Assert.AreEqual(randomDecimal, reader.GetValue(2));
+                        Assert.AreEqual(randomBool, reader.GetValue(3));
+                    },
+                    out tableResult,
+                    randomString,
+                    // Using output of previous program as input
+                    output,
+                    randomDecimal,
+                    randomBool)
+                .AddExecuteXmlReader(
+                    returnsXmlProg,
+                    (reader, token) =>
+                    {
+                        string xml = XElement.Load(reader).ToString();
+                        Assert.AreEqual("<foo>bar</foo>", xml);
+                        return TaskResult.Completed;
+                    },
+                    out SqlBatchResult xmlResult);
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+#pragma warning disable 4014
+            Task<int> task1 = nonQueryResult.GetResultAsync(); task1.ContinueWith(_ => AddTime(sw, ref _batchedNonQueryTime));
+            Task<string> task2 = scalarResult.GetResultAsync(); task2.ContinueWith(_ => AddTime(sw, ref _batchedScalarTime));
+            Task<string> task3 = outputResult.GetResultAsync(); task3.ContinueWith(_ => AddTime(sw, ref _batchedOutputTime));
+            Task task4 = tableResult.GetResultAsync(); task4.ContinueWith(_ => AddTime(sw, ref _batchedTableTime));
+            Task task5 = xmlResult.GetResultAsync(); task5.ContinueWith(_ => AddTime(sw, ref _batchedXmlTime));
 #pragma warning restore 4014
 
             try
@@ -243,10 +354,16 @@ namespace WebApplications.Utilities.Database.Test
                     Trace.WriteLine(GetSql(batch) ?? "<not available>");
                 }
             }
+
+            Assert.IsTrue(task1.IsCompleted);
+            Assert.IsTrue(task2.IsCompleted);
+            Assert.IsTrue(task3.IsCompleted);
+            Assert.IsTrue(task4.IsCompleted);
+            Assert.IsTrue(task5.IsCompleted);
         }
 
         [TestMethod]
-        public async Task TestNotBatchEverything()
+        private async Task RunNotBatched()
         {
             Setup(
                 out SqlProgram<string, int> nonQueryProg,

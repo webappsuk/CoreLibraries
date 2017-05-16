@@ -268,29 +268,19 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Creates a new batch.
         /// </summary>
-        /// <param name="batchTimeout">The batch timeout. Defaults to 30 seconds.</param>
-        /// <returns>The new <see cref="SqlBatch"/>.</returns>
-        [NotNull]
-        public static SqlBatch Create(Duration? batchTimeout = null)
-        {
-            return new SqlBatch(batchTimeout);
-        }
-
-        /// <summary>
-        /// Creates a new batch which is wrapped in a try ... catch block. 
-        /// Any errors that occur within this batch wont cause an exception to be thrown for the whole batch, 
-        /// unless an <paramref name="exceptionHandler"/> is specified and doesn't suppress the error.
-        /// The command that failed will still throw an exception.
-        /// </summary>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this batch
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The command that failed will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <param name="batchTimeout">The batch timeout. Defaults to 30 seconds.</param>
         /// <returns>The new <see cref="SqlBatch"/>.</returns>
         [NotNull]
-        public static SqlBatch CreateTryCatch(
+        public static SqlBatch Create(
+            bool suppressErrors = false,
             ExceptionHandler<DbException> exceptionHandler = null,
             Duration? batchTimeout = null)
         {
-            return new SqlBatch(batchTimeout, suppressErrors: true, exceptionHandler: exceptionHandler);
+            return new SqlBatch(batchTimeout, suppressErrors: suppressErrors, exceptionHandler: exceptionHandler);
         }
 
         /// <summary>
@@ -300,7 +290,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="isolationLevel">The isolation level of the transaction.</param>
         /// <param name="rollback">if set to <see langword="true" /> the transaction will always be rolled back.</param>
         /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this batch
-        /// wont cause an exception to be thrown for the whole batch. See <see cref="CreateTryCatch" />.</param>
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The command that failed will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <param name="batchTimeout">The batch timeout. Defaults to 30 seconds.</param>
         /// <returns>
@@ -466,7 +457,7 @@ namespace WebApplications.Utilities.Database
                 _items.Add(command);
             }
         }
-        
+
         /// <summary>
         /// Adds the specified program to the batch.
         /// The first column of the first row in the result set returned by the query will be returned from the <see cref="SqlBatchResult{T}" />.
@@ -476,17 +467,28 @@ namespace WebApplications.Utilities.Database
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
         public SqlBatch AddExecuteScalar<TOut>(
             [NotNull] SqlProgram program,
             [NotNull] out SqlBatchResult<TOut> result,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null)
+            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             CheckBuildingStateQuick();
 
-            SqlBatchCommand.Scalar<TOut> command = new SqlBatchCommand.Scalar<TOut>(this, program, setParameters);
+            SqlBatchCommand.Scalar<TOut> command = new SqlBatchCommand.Scalar<TOut>(
+                this,
+                program,
+                setParameters,
+                exceptionHandler,
+                suppressErrors);
             AddCommand(command);
             result = command.Result;
 
@@ -500,17 +502,28 @@ namespace WebApplications.Utilities.Database
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to get the number of records affected by the program.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
         public SqlBatch AddExecuteNonQuery(
             [NotNull] SqlProgram program,
             [NotNull] out SqlBatchResult<int> result,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null)
+            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             CheckBuildingStateQuick();
 
-            SqlBatchCommand.NonQuery command = new SqlBatchCommand.NonQuery(this, program, setParameters);
+            SqlBatchCommand.NonQuery command = new SqlBatchCommand.NonQuery(
+                this,
+                program,
+                setParameters,
+                exceptionHandler,
+                suppressErrors);
             AddCommand(command);
             result = command.Result;
 
@@ -525,6 +538,10 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior">The query's effect on the database.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
         public SqlBatch AddExecuteReader(
@@ -532,7 +549,9 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegateAsync resultAction,
             [NotNull] out SqlBatchResult result,
             CommandBehavior behavior = CommandBehavior.Default,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null)
+            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
@@ -547,7 +566,9 @@ namespace WebApplications.Utilities.Database
                 program,
                 resultAction,
                 behavior,
-                setParameters);
+                setParameters,
+                exceptionHandler,
+                suppressErrors);
             AddCommand(command);
             result = command.Result;
 
@@ -565,6 +586,10 @@ namespace WebApplications.Utilities.Database
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
         /// and get the value returned by <paramref name="resultFunc"/>.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
         public SqlBatch AddExecuteReader<TOut>(
@@ -572,7 +597,9 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegateAsync<TOut> resultFunc,
             [NotNull] out SqlBatchResult<TOut> result,
             CommandBehavior behavior = CommandBehavior.Default,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null)
+            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
@@ -587,7 +614,9 @@ namespace WebApplications.Utilities.Database
                 program,
                 resultFunc,
                 behavior,
-                setParameters);
+                setParameters,
+                exceptionHandler,
+                suppressErrors);
             AddCommand(command);
             result = command.Result;
 
@@ -601,13 +630,19 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The action used to process the result.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
         public SqlBatch AddExecuteXmlReader(
             [NotNull] SqlProgram program,
             [NotNull] XmlResultDelegateAsync resultAction,
             [NotNull] out SqlBatchResult result,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null)
+            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
@@ -617,7 +652,9 @@ namespace WebApplications.Utilities.Database
                 this,
                 program,
                 resultAction,
-                setParameters);
+                setParameters,
+                exceptionHandler,
+                suppressErrors);
             AddCommand(command);
             result = command.Result;
 
@@ -625,22 +662,30 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        /// Adds the specified program to the batch. 
-        /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
+        /// Adds the specified program to the batch.
+        /// The value returned by the <paramref name="resultFunc" /> will be returned by the <see cref="SqlBatchResult{T}" />.
         /// </summary>
         /// <typeparam name="TOut">The type of the result.</typeparam>
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="resultFunc">The function used to process the result.</param>
-        /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
-        /// and get the value returned by <paramref name="resultFunc"/>.</param>
-        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        /// and get the value returned by <paramref name="resultFunc" />.</param>
+        /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler" />
+        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <returns>
+        /// This <see cref="SqlBatch" /> instance.
+        /// </returns>
         [NotNull]
         public SqlBatch AddExecuteXmlReader<TOut>(
             [NotNull] SqlProgram program,
             [NotNull] XmlResultDelegateAsync<TOut> resultFunc,
             [NotNull] out SqlBatchResult<TOut> result,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null)
+            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
@@ -650,7 +695,9 @@ namespace WebApplications.Utilities.Database
                 this,
                 program,
                 resultFunc,
-                setParameters);
+                setParameters,
+                exceptionHandler,
+                suppressErrors);
             AddCommand(command);
             result = command.Result;
 
@@ -743,38 +790,21 @@ namespace WebApplications.Utilities.Database
         /// Adds a new batch to this batch.
         /// </summary>
         /// <param name="addToBatch">A delegate to the method to use to add commands to the new batch.</param>
-        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
-        [NotNull]
-        public SqlBatch AddBatch([NotNull] Action<SqlBatch> addToBatch)
-        {
-            if (addToBatch == null) throw new ArgumentNullException(nameof(addToBatch));
-            CheckBuildingStateQuick();
-
-            SqlBatch newBatch = new SqlBatch(this);
-
-            AddBatchQuick(newBatch);
-
-            addToBatch(newBatch);
-
-            return this;
-        }
-
-        /// <summary>
-        /// Adds a new batch to this batch.
-        /// Any errors that occur within the new batch wont cause an exception to be thrown for the whole batch, 
-        /// unless an <paramref name="exceptionHandler"/> is specified and doesn't suppress the error.
-        /// The command that failed will still throw an exception.
-        /// </summary>
-        /// <param name="addToBatch">A delegate to the method to use to add commands to the new batch.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this batch
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The command that failed will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
-        public SqlBatch AddTryCatch(Action<SqlBatch> addToBatch, ExceptionHandler<DbException> exceptionHandler = null)
+        public SqlBatch AddBatch(
+            [NotNull] Action<SqlBatch> addToBatch,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null)
         {
             if (addToBatch == null) throw new ArgumentNullException(nameof(addToBatch));
             CheckBuildingStateQuick();
 
-            SqlBatch newBatch = new SqlBatch(this, suppressErrors: true, exceptionHandler: exceptionHandler);
+            SqlBatch newBatch = new SqlBatch(this, suppressErrors: suppressErrors, exceptionHandler: exceptionHandler);
 
             AddBatchQuick(newBatch);
 
@@ -791,11 +821,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="isolationLevel">The isolation level of the transaction.</param>
         /// <param name="rollback">if set to <see langword="true" /> the transaction will always be rolled back.</param>
         /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this batch
-        /// wont cause an exception to be thrown for the whole batch. See <see cref="CreateTryCatch" />.</param>
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The command that failed will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
-        public SqlBatch AddTransaction(
+        public SqlBatch AddTransactionBatch(
             Action<SqlBatch> addToBatch,
             IsolationLevel isolationLevel,
             bool rollback = false,
@@ -1288,18 +1319,24 @@ namespace WebApplications.Utilities.Database
                             .AppendLine()
                             .Append("SET TRANSACTION ISOLATION LEVEL ")
                             .Append(isoLevel)
-                            .AppendLine(";");
+                            .AppendLine(";")
+                            .AppendLine();
                 }
             }
             
             args.SqlBuilder
-                .AppendLine()
                 .AppendLine("/*")
                 .Append(" * Ending batch ")
                 .AppendLine(ID.ToString("D"))
-                .AppendLine(" */");
+                .AppendLine(" */")
+                .AppendLine();
         }
 
+        /// <summary>
+        /// Gets the isolation level string.
+        /// </summary>
+        /// <param name="isoLevel">The isolation level.</param>
+        /// <returns></returns>
         private static string GetIsolationLevelStr(IsolationLevel isoLevel)
         {
             switch (isoLevel)
