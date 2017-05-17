@@ -1,12 +1,37 @@
+#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
-using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -125,7 +150,7 @@ namespace WebApplications.Utilities.Database
         /// <returns>
         ///   <see langword="true" /> if the behavior applies; otherwise, <see langword="false" />.
         /// </returns>
-        protected bool IsCommandBehavior(CommandBehavior condition) 
+        protected bool IsCommandBehavior(CommandBehavior condition)
             => condition == (condition & CommandBehavior);
 
         /// <summary>
@@ -356,7 +381,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="bufferOffset">The index with the buffer to which the data will be copied.</param>
         /// <param name="length">The maximum number of characters to read.</param>
         /// <exception cref="T:System.InvalidCastException">The specified cast is not valid. </exception>
-        public override long GetBytes(int ordinal, long dataOffset, byte[] buffer, int bufferOffset, int length) 
+        public override long GetBytes(int ordinal, long dataOffset, byte[] buffer, int bufferOffset, int length)
             => BaseReaderOpen().GetBytes(ordinal, dataOffset, buffer, bufferOffset, length);
 
         /// <summary>Gets the value of the specified column as a single character.</summary>
@@ -372,7 +397,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="buffer">The buffer into which to copy the data.</param>
         /// <param name="bufferOffset">The index with the buffer to which the data will be copied.</param>
         /// <param name="length">The maximum number of characters to read.</param>
-        public override long GetChars(int ordinal, long dataOffset, char[] buffer, int bufferOffset, int length) 
+        public override long GetChars(int ordinal, long dataOffset, char[] buffer, int bufferOffset, int length)
             => BaseReaderOpen().GetChars(ordinal, dataOffset, buffer, bufferOffset, length);
 
         /// <summary>Gets the value of the specified column as a globally-unique identifier (GUID).</summary>
@@ -476,17 +501,20 @@ namespace WebApplications.Utilities.Database
         /// <summary>Returns the provider-specific field type of the specified column.</summary>
         /// <returns>The <see cref="T:System.Type" /> object that describes the data type of the specified column.</returns>
         /// <param name="ordinal">The zero-based column ordinal.</param>
-        public override Type GetProviderSpecificFieldType(int ordinal) => BaseReaderOpen().GetProviderSpecificFieldType(ordinal);
+        public override Type GetProviderSpecificFieldType(int ordinal) => BaseReaderOpen()
+            .GetProviderSpecificFieldType(ordinal);
 
         /// <summary>Gets the value of the specified column as an instance of <see cref="T:System.Object" />.</summary>
         /// <returns>The value of the specified column.</returns>
         /// <param name="ordinal">The zero-based column ordinal.</param>
-        public override object GetProviderSpecificValue(int ordinal) => BaseReaderOpen().GetProviderSpecificValue(ordinal);
+        public override object GetProviderSpecificValue(int ordinal) => BaseReaderOpen()
+            .GetProviderSpecificValue(ordinal);
 
         /// <summary>Gets all provider-specific attribute columns in the collection for the current row.</summary>
         /// <returns>The number of instances of <see cref="T:System.Object" /> in the array.</returns>
         /// <param name="values">An array of <see cref="T:System.Object" /> into which to copy the attribute columns.</param>
-        public override int GetProviderSpecificValues(object[] values) => BaseReaderOpen().GetProviderSpecificValues(values);
+        public override int GetProviderSpecificValues(object[] values) => BaseReaderOpen()
+            .GetProviderSpecificValues(values);
 
         /// <summary>Retrieves data as a <see cref="T:System.IO.Stream" />.</summary>
         /// <returns>The returned object.</returns>

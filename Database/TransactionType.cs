@@ -1,4 +1,4 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+#region � Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
 // Copyright (c) 2017, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -25,43 +25,29 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
+
 namespace WebApplications.Utilities.Database
 {
-    internal static class Constants
+    /// <summary>
+    /// The type of a transaction.
+    /// </summary>
+    [Flags]
+    internal enum TransactionType : byte
     {
-        internal static class BatchState
-        {
-            internal const int Building = 0;
-            internal const int Executing = 1;
-            internal const int Completed = 2;
-        }
+        /// <summary>
+        /// No transaction
+        /// </summary>
+        None,
 
-        internal static class ExecuteState
-        {
-            /// <summary>
-            /// Indicates the start of a command. The next record set will be a "pause" set to allow the command to start the actual processing.
-            /// </summary>
-            internal const string Start = "Start";
+        /// <summary>
+        /// A transaction which commits if successfully executed
+        /// </summary>
+        Commit,
 
-            /// <summary>
-            /// Indicates the next record set will be for the output parameters for the command.
-            /// </summary>
-            internal const string Output = "Output";
-
-            /// <summary>
-            /// Indicates an error has occurred.
-            /// </summary>
-            internal const string Error = "Error";
-
-            /// <summary>
-            /// Indicates the last Error should be re-thrown.
-            /// </summary>
-            internal const string ReThrow = "ReThrow";
-
-            /// <summary>
-            /// Indicates the command has ended.
-            /// </summary>
-            internal const string End = "End";
-        }
+        /// <summary>
+        /// A transaction which always rolls back
+        /// </summary>
+        Rollback
     }
 }

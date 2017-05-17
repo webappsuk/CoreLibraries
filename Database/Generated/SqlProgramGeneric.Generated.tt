@@ -411,7 +411,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public TOut ExecuteScalar<TOut>(<#=Strings.ParametersTypedDefault#>, TypeConstraintMode? constraintMode = null)
         {
-            return this.ExecuteScalar<TOut>(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteScalar<TOut>(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode));
         }
 
         /// <summary>
@@ -427,7 +427,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<TOut> ExecuteScalarAsync<TOut>(<#=Strings.ParametersTypedDefault#>, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ExecuteScalarAsync<TOut>(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteScalarAsync<TOut>(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), cancellationToken);
         }
 
         /// <summary>
@@ -444,7 +444,7 @@ namespace WebApplications.Utilities.Database
         public IEnumerable<TOut> ExecuteScalarAll<TOut>(<#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteScalarAll<TOut>(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteScalarAll<TOut>(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode));
         } 
 
         /// <summary>
@@ -462,7 +462,7 @@ namespace WebApplications.Utilities.Database
         public Task<IEnumerable<TOut>> ExecuteScalarAllAsync<TOut>(<#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteScalarAllAsync<TOut>(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteScalarAllAsync<TOut>(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), cancellationToken);
         }
 
         /// <summary>
@@ -475,7 +475,7 @@ namespace WebApplications.Utilities.Database
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         public int ExecuteNonQuery(<#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
-            return this.ExecuteNonQuery(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteNonQuery(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode));
         }
 
         /// <summary>
@@ -490,7 +490,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<int> ExecuteNonQueryAsync(<#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return this.ExecuteNonQueryAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteNonQueryAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), cancellationToken);
         }
 
         /// <summary>
@@ -506,7 +506,7 @@ namespace WebApplications.Utilities.Database
         public IEnumerable<int> ExecuteNonQueryAll(<#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteNonQueryAll(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)));
+            return this.ExecuteNonQueryAll(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode));
         }
 
         /// <summary>
@@ -523,7 +523,7 @@ namespace WebApplications.Utilities.Database
         public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(<#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteNonQueryAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), cancellationToken);
+            return this.ExecuteNonQueryAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), cancellationToken);
         }
 
         /// <summary>
@@ -538,7 +538,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteReader([NotNull] ResultDelegate resultAction, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
-            ExecuteReader(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
+            ExecuteReader(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, behavior);
         }
 
         /// <summary>
@@ -553,7 +553,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteReader([NotNull] ResultDisposableDelegate resultAction, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
-            ExecuteReader(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
+            ExecuteReader(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, behavior);
         }
 
         /// <summary>
@@ -570,7 +570,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteReaderAsync([NotNull] ResultDelegateAsync resultAction, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
-            return this.ExecuteReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
+            return this.ExecuteReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -587,7 +587,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteReaderAsync([NotNull] ResultDisposableDelegateAsync resultAction, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
-            return this.ExecuteReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
+            return this.ExecuteReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -604,7 +604,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            this.ExecuteReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
+            this.ExecuteReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, behavior);
         }
 
         /// <summary>
@@ -621,7 +621,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            this.ExecuteReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior);
+            this.ExecuteReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, behavior);
         }
 
         /// <summary>
@@ -640,7 +640,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
+            return this.ExecuteReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -659,7 +659,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, behavior, cancellationToken);
+            return this.ExecuteReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -676,7 +676,7 @@ namespace WebApplications.Utilities.Database
         public TOut ExecuteReader<TOut>([NotNull] ResultDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
-            return this.ExecuteReader(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
+            return this.ExecuteReader(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, behavior);
         }
 
         /// <summary>
@@ -693,7 +693,7 @@ namespace WebApplications.Utilities.Database
         public TOut ExecuteReader<TOut>([NotNull] ResultDisposableDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
-            return this.ExecuteReader(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
+            return this.ExecuteReader(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, behavior);
         }
 
         /// <summary>
@@ -712,7 +712,7 @@ namespace WebApplications.Utilities.Database
         public Task<TOut> ExecuteReaderAsync<TOut>([NotNull] ResultDelegateAsync<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
-            return this.ExecuteReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
+            return this.ExecuteReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -731,7 +731,7 @@ namespace WebApplications.Utilities.Database
         public Task<TOut> ExecuteReaderAsync<TOut>([NotNull] ResultDisposableDelegateAsync<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
-            return this.ExecuteReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
+            return this.ExecuteReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -751,7 +751,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
+            return this.ExecuteReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, behavior);
         }
 
         /// <summary>
@@ -771,7 +771,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior);
+            return this.ExecuteReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, behavior);
         }
 
         /// <summary>
@@ -792,7 +792,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
+            return this.ExecuteReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -813,7 +813,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, behavior, cancellationToken);
+            return this.ExecuteReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, behavior, cancellationToken);
         }
 
         /// <summary>
@@ -827,7 +827,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteXmlReader([NotNull] XmlResultDelegate resultAction, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
-            this.ExecuteXmlReader(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
+            this.ExecuteXmlReader(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction);
         }
 
         /// <summary>
@@ -841,7 +841,7 @@ namespace WebApplications.Utilities.Database
         public void ExecuteXmlReader([NotNull] XmlResultDisposableDelegate resultAction, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
-            this.ExecuteXmlReader(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
+            this.ExecuteXmlReader(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction);
         }
 
         /// <summary>
@@ -857,7 +857,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteXmlReaderAsync([NotNull] XmlResultDelegateAsync resultAction, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
-            return this.ExecuteXmlReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
+            return this.ExecuteXmlReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, cancellationToken);
         }
 
         /// <summary>
@@ -873,7 +873,7 @@ namespace WebApplications.Utilities.Database
         public Task ExecuteXmlReaderAsync([NotNull] XmlResultDisposableDelegateAsync resultAction, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
-            return this.ExecuteXmlReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
+            return this.ExecuteXmlReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, cancellationToken);
         }
 
         /// <summary>
@@ -889,7 +889,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            this.ExecuteXmlReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
+            this.ExecuteXmlReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction);
         }
 
         /// <summary>
@@ -905,7 +905,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            this.ExecuteXmlReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction);
+            this.ExecuteXmlReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction);
         }
 
         /// <summary>
@@ -923,7 +923,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
+            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, cancellationToken);
         }
 
         /// <summary>
@@ -941,7 +941,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultAction, cancellationToken);
+            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultAction, cancellationToken);
         }
 
         /// <summary>
@@ -957,7 +957,7 @@ namespace WebApplications.Utilities.Database
         public TOut ExecuteXmlReader<TOut>([NotNull] XmlResultDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
-            return this.ExecuteXmlReader(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
+            return this.ExecuteXmlReader(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc);
         }
 
         /// <summary>
@@ -973,7 +973,7 @@ namespace WebApplications.Utilities.Database
         public TOut ExecuteXmlReader<TOut>([NotNull] XmlResultDisposableDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
-            return this.ExecuteXmlReader(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
+            return this.ExecuteXmlReader(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc);
         }
 
         /// <summary>
@@ -991,7 +991,7 @@ namespace WebApplications.Utilities.Database
         public Task<TOut> ExecuteXmlReaderAsync<TOut>([NotNull] XmlResultDelegateAsync<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
-            return this.ExecuteXmlReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
+            return this.ExecuteXmlReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, cancellationToken);
         }
 
         /// <summary>
@@ -1009,7 +1009,7 @@ namespace WebApplications.Utilities.Database
         public Task<TOut> ExecuteXmlReaderAsync<TOut>([NotNull] XmlResultDisposableDelegateAsync<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
-            return this.ExecuteXmlReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
+            return this.ExecuteXmlReaderAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, cancellationToken);
         }
 
         /// <summary>
@@ -1028,7 +1028,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteXmlReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
+            return this.ExecuteXmlReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc);
         }
 
         /// <summary>
@@ -1047,7 +1047,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteXmlReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc);
+            return this.ExecuteXmlReaderAll(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc);
         }
 
         /// <summary>
@@ -1067,7 +1067,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
+            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, cancellationToken);
         }
 
         /// <summary>
@@ -1087,7 +1087,7 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
-            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? ConstraintMode)), resultFunc, cancellationToken);
+            return this.ExecuteXmlReaderAllAsync(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode), resultFunc, cancellationToken);
         }
         
         /// <summary>
@@ -1127,6 +1127,10 @@ namespace WebApplications.Utilities.Database
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</param>
         <#= Strings.ParameterComments #>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <param name="constraintMode">The constraint mode. Overrides the configured default for the program.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -1134,9 +1138,11 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
             [NotNull] out SqlBatchResult<TOut> result,
             <#= Strings.InputParametersTypedDefault #>,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteScalar<TOut>(program, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode));
+            return this.AddExecuteScalar<TOut>(program, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
         } 
 
         /// <summary>
@@ -1146,6 +1152,10 @@ namespace WebApplications.Utilities.Database
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the number of rows affected.</param>
         <#= Strings.ParameterComments #>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -1153,9 +1163,11 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
             [NotNull] out SqlBatchResult<int> result,
             <#= Strings.InputParametersTypedDefault #>,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteNonQuery(program, out result, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteNonQuery(program, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
         }
 
         /// <summary>
@@ -1167,6 +1179,10 @@ namespace WebApplications.Utilities.Database
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
         <#= Strings.ParameterComments #>
         /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -1176,9 +1192,11 @@ namespace WebApplications.Utilities.Database
             [NotNull] out SqlBatchResult result,
             <#= Strings.InputParametersTypedDefault #>,
             CommandBehavior behavior = CommandBehavior.Default,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteReader(program, resultAction, out result, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteReader(program, resultAction, out result, behavior, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
         }
 
         /// <summary>
@@ -1192,6 +1210,10 @@ namespace WebApplications.Utilities.Database
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.</param>
         <#= Strings.ParameterComments #>
         /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -1201,9 +1223,67 @@ namespace WebApplications.Utilities.Database
             [NotNull] out SqlBatchResult<TOut> result,
             <#= Strings.InputParametersTypedDefault #>,
             CommandBehavior behavior = CommandBehavior.Default,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null,
             TypeConstraintMode? constraintMode = null)
         {
-            return this.AddExecuteReader<TOut>(program, resultFunc, out result, behavior, c => c.SetParameters(<#= Strings.Parameters #>, (TypeConstraintMode)(constraintMode ?? program.ConstraintMode)));
+            return this.AddExecuteReader<TOut>(program, resultFunc, out result, behavior, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteXmlReader<<#= Strings.TypeParams#>>(
+            [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
+            [NotNull] XmlResultDelegateAsync resultAction,
+            [NotNull] out SqlBatchResult result,
+            <#= Strings.InputParametersTypedDefault #>,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null,
+            TypeConstraintMode? constraintMode = null)
+        {
+            return this.AddExecuteXmlReader(program, resultAction, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch. 
+        /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <typeparam name="TOut">The type of the result.</typeparam>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteXmlReader<<#= Strings.TypeParams#>, TOut>(
+            [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
+            [NotNull] XmlResultDelegateAsync<TOut> resultFunc,
+            [NotNull] out SqlBatchResult<TOut> result,
+            <#= Strings.InputParametersTypedDefault #>,
+            bool suppressErrors = false,
+            ExceptionHandler<DbException> exceptionHandler = null,
+            TypeConstraintMode? constraintMode = null)
+        {
+            return this.AddExecuteXmlReader<TOut>(program, resultFunc, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
         }
     }
     #endregion

@@ -81,6 +81,7 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// The command that this is the result of.
         /// </summary>
+        [NotNull]
         protected internal SqlBatchCommand Command
         {
             get

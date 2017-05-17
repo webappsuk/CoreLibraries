@@ -25,6 +25,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System.Data;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database
@@ -35,14 +36,32 @@ namespace WebApplications.Utilities.Database
     internal interface IBatchItem
     {
         /// <summary>
+        /// Gets the transaction for this item.
+        /// </summary>
+        TransactionType Transaction { get; }
+
+        /// <summary>
+        /// Gets the isolation level of the transaction for this item.
+        /// </summary>
+        IsolationLevel IsolationLevel { get; }
+
+        /// <summary>
+        /// Gets the name of the transaction, if there is one.
+        /// </summary>
+        string TransactionName { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether errors are suppressed in the batch for this item.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true" /> if errors should be suppressed; otherwise, <see langword="false" />.
+        /// </value>
+        bool SuppressErrors { get; }
+
+        /// <summary>
         /// Processes the item to be executed.
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        /// <param name="connectionString">The connection string.</param>
         /// <param name="args">The arguments.</param>
-        void Process(
-            [NotNull] string uid,
-            [NotNull] string connectionString,
-            BatchProcessArgs args);
+        void Process([NotNull] BatchProcessArgs args);
     }
 }

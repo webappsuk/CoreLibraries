@@ -14,6 +14,12 @@ namespace WebApplications.Utilities.Database
     {
         [NotNull]
         public readonly Version ServerVersion;
+        
+        [NotNull]
+        public readonly string InfoMessagePrefix;
+
+        [NotNull]
+        public readonly string ConnectionString;
 
         [NotNull]
         public readonly SqlStringBuilder SqlBuilder = new SqlStringBuilder();
@@ -49,9 +55,11 @@ namespace WebApplications.Utilities.Database
 
         public ushort CommandIndex;
 
-        public BatchProcessArgs([NotNull] Version serverVersion)
+        public BatchProcessArgs([NotNull] Version serverVersion, [NotNull] string infoMessagePrefix, string connectionString)
         {
             ServerVersion = serverVersion;
+            InfoMessagePrefix = infoMessagePrefix;
+            ConnectionString = connectionString;
         }
 
         [NotNull]

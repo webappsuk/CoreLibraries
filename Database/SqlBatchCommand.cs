@@ -31,6 +31,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -91,7 +92,7 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// The index of the command in the root batch.
         /// </summary>
-        private int _index;
+        internal int Index;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlBatchCommand" /> class.
@@ -125,20 +126,38 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// Gets the transaction for this item.
+        /// </summary>
+        TransactionType IBatchItem.Transaction => TransactionType.None;
+
+        /// <summary>
+        /// Gets the isolation level of the transaction for this item.
+        /// </summary>
+        IsolationLevel IBatchItem.IsolationLevel => IsolationLevel.Unspecified;
+
+        /// <summary>
+        /// Gets the name of the transaction, if there is one.
+        /// </summary>
+        string IBatchItem.TransactionName => null;
+
+        /// <summary>
+        /// Gets a value indicating whether errors are suppressed in the batch for this item.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true" /> if errors should be suppressed; otherwise, <see langword="false" />.
+        /// </value>
+        bool IBatchItem.SuppressErrors => _suppressErrors;
+
+        /// <summary>
         /// Processes the command to be executed.
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        /// <param name="connectionString">The connection string.</param>
         /// <param name="args">The arguments.</param>
-        void IBatchItem.Process(
-            string uid,
-            string connectionString,
-            BatchProcessArgs args)
+        void IBatchItem.Process(BatchProcessArgs args)
         {
-            _index = args.CommandIndex;
+            Index = args.CommandIndex;
 
             // Get the parameters for the command
-            SqlBatchParametersCollection parameters = GetParametersForConnection(connectionString, args.CommandIndex);
+            SqlBatchParametersCollection parameters = GetParametersForConnection(args.ConnectionString, args.CommandIndex);
 
             List<DbBatchParameter> dependentParams = null;
 
@@ -181,13 +200,16 @@ namespace WebApplications.Utilities.Database
             // Build command SQL
             args.SqlBuilder
                 .Append("-- ")
-                .AppendLine(Program.Name)
+                .AppendLine(Program.Name);
 
-                // Used in CATCH statements to know which command failed
+            this.BeginTry(args, out int startIndex);
+
+            // Used in CATCH statements to know which command failed
+            args.SqlBuilder
                 .Append("SET @CmdIndex = ")
                 .Append(args.CommandIndex)
                 .AppendLine(";");
-
+            
             // If any of the parameters come from output parameters of previous commands, 
             // we need to make sure the commands executed successfully
             if (dependentParams != null)
@@ -203,7 +225,7 @@ namespace WebApplications.Utilities.Database
 
                     args.SqlBuilder
                         .Append("IF (ISNULL(@Cmd")
-                        .Append(cmd.Key._index)
+                        .Append(cmd.Key.Index)
                         .AppendLine("Success,0) <> 1)")
                         .Append("\tRAISERROR(")
                         .AppendNVarChar(message)
@@ -212,14 +234,19 @@ namespace WebApplications.Utilities.Database
                 args.SqlBuilder.AppendLine();
             }
 
-            // TODO Need to add a SELECT statement
+            // Indicate the start of the command. The select is used to wait for the 
+            // command to be ready before actually executing the programs SQL.
+            SqlBatch.AppendInfo(args, Constants.ExecuteState.Start)
+                .AppendLine("SELECT NULL;");
 
+            // Output the sql for actually executing the commands program
             AppendExecuteSql(args.SqlBuilder, parameters);
 
             if (parameters.OutputParameters != null)
             {
                 // Sets a flag indicating that this command executed successfully,
                 // so any command using the output parameters can check
+                // HAVE_TODO If this command is inside a transaction, this flag needs to be set to 0 if the transaction is rolled back
                 args.SqlBuilder
                     .Append("DECLARE @Cmd")
                     .Append(args.CommandIndex)
@@ -230,7 +257,7 @@ namespace WebApplications.Utilities.Database
                             : $"; SET @Cmd{args.CommandIndex}Success = 1;");
 
                 SqlBatch
-                    .AppendInfo(args.SqlBuilder, uid, Constants.ExecuteState.Output, args.CommandIndex)
+                    .AppendInfo(args, Constants.ExecuteState.Output)
                     .Append("SELECT ");
 
                 bool firstParam = true;
@@ -244,7 +271,9 @@ namespace WebApplications.Utilities.Database
                 args.SqlBuilder.AppendLine(";");
             }
 
-            SqlBatch.AppendInfo(args.SqlBuilder, uid, Constants.ExecuteState.End, args.CommandIndex).AppendLine();
+            this.EndTry(args, startIndex);
+
+            SqlBatch.AppendInfo(args, Constants.ExecuteState.End).AppendLine();
 
             SqlProgramMapping mapping = parameters.Mapping;
             SqlProgram program = Program;
@@ -338,6 +367,18 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// Starts the reader.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        protected async Task StartReader(DbBatchDataReader reader, CancellationToken cancellationToken)
+        {
+            if (!await reader.NextResultAsync(cancellationToken).ConfigureAwait(false))
+                throw new InvalidDataException("Missing start record set.");
+        }
+
+        /// <summary>
         /// Handles the command asynchronously.
         /// </summary>
         /// <param name="reader">The reader.</param>
@@ -409,6 +450,7 @@ namespace WebApplications.Utilities.Database
                 int connectionIndex,
                 CancellationToken cancellationToken)
             {
+                await StartReader(reader, cancellationToken).ConfigureAwait(false);
                 if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                 {
                     object value = (reader.FieldCount < 1 || reader.IsDBNull(0)) ? null : reader.GetValue(0);
@@ -502,7 +544,7 @@ namespace WebApplications.Utilities.Database
                 int initialCount = 0;
 
                 // If this isn't the first command
-                if (_index > 0)
+                if (Index > 0)
                 {
                     // If we can set the records affected field, reset it to -1
                     if (_setRecordsAffected != null)
@@ -516,6 +558,7 @@ namespace WebApplications.Utilities.Database
                 }
 
                 // Read all the rows
+                await StartReader(reader, cancellationToken).ConfigureAwait(false);
                 do
                 {
                     while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
@@ -525,7 +568,7 @@ namespace WebApplications.Utilities.Database
 
                 // If this is the first command, or we have a _setRecordsAffected method, we can just return the property directly
                 // Otherwise we need to subtract the initial count from the current count
-                int count = _index == 0 || _setRecordsAffected != null
+                int count = Index == 0 || _setRecordsAffected != null
                     ? reader.RecordsAffected
                     : reader.RecordsAffected - initialCount;
 
@@ -599,6 +642,7 @@ namespace WebApplications.Utilities.Database
                 int connectionIndex,
                 CancellationToken cancellationToken)
             {
+                await StartReader(reader, cancellationToken).ConfigureAwait(false);
                 Task task = ExecuteResultDelegate(reader, cancellationToken);
                 await task.ConfigureAwait(false);
                 SetResult(task, connectionIndex);
@@ -804,6 +848,7 @@ namespace WebApplications.Utilities.Database
                 int connectionIndex,
                 CancellationToken cancellationToken)
             {
+                await StartReader(reader, cancellationToken).ConfigureAwait(false);
                 Task task = ExecuteResultDelegate(reader.GetXmlReader(), cancellationToken);
                 await task.ConfigureAwait(false);
                 SetResult(task, connectionIndex);

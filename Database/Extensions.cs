@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
@@ -102,5 +103,186 @@ namespace WebApplications.Utilities.Database
             }
             return -1;
         }
+
+        /// <summary>
+        /// Begins a TRY block in the <paramref name="args"/> <see cref="BatchProcessArgs.SqlBuilder"/>.
+        /// </summary>
+        /// <param name="item">The item the block is for.</param>
+        /// <param name="args">The arguments.</param>
+        /// <param name="startIndex">The start index.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">IsolationLevel</exception>
+        internal static void BeginTry([NotNull] this IBatchItem item, [NotNull] BatchProcessArgs args, out int startIndex)
+        {
+            bool hasTransaction = item.Transaction != TransactionType.None;
+            bool hasTryCatch = item.SuppressErrors || hasTransaction;
+
+            if (hasTryCatch)
+            {
+                if (hasTransaction)
+                {
+                    string isoLevel = GetIsolationLevelStr(item.IsolationLevel);
+                    if (isoLevel == null)
+                        throw new ArgumentOutOfRangeException(
+                            nameof(IsolationLevel),
+                            item.IsolationLevel,
+                            string.Format(Resources.IsolationLevelNotSupported, item.IsolationLevel));
+
+                    string transactionName = item.TransactionName;
+                    Debug.Assert(transactionName != null);
+
+                    // Set the isolation level and begin or save a transaction for the batch
+                    args.SqlBuilder
+                        .AppendLine()
+                        .Append("SET TRANSACTION ISOLATION LEVEL ")
+                        .Append(isoLevel)
+                        .AppendLine(";")
+
+                        .Append(args.InTransaction ? "SAVE" : "BEGIN")
+                        .Append(" TRANSACTION ")
+                        .AppendIdentifier(transactionName)
+                        .AppendLine(";");
+                    args.TransactionStack.Push(transactionName, isoLevel);
+                }
+
+                // Wrap the contents of the batch in a TRY ... CATCH block
+                args.SqlBuilder
+                    .AppendLine()
+                    .AppendLine("BEGIN TRY")
+                    .AppendLine()
+                    .GetLength(out startIndex);
+            }
+            else
+                startIndex = -1;
+        }
+
+        /// <summary>
+        /// Ends a TRY block started with <see cref="BeginTry"/>.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="args">The arguments.</param>
+        /// <param name="startIndex">The start index.</param>
+        internal static void EndTry([NotNull] this IBatchItem item, [NotNull] BatchProcessArgs args, int startIndex)
+        {
+            TransactionType transaction = item.Transaction;
+            bool hasTransaction = transaction != TransactionType.None;
+            bool hasTryCatch = item.SuppressErrors || hasTransaction;
+
+            if (hasTryCatch)
+            {
+                string tranName = item.TransactionName;
+                if (hasTransaction)
+                {
+                    args.TransactionStack.Pop(out string name, out _);
+                    Debug.Assert(name == tranName);
+                    Debug.Assert(tranName != null);
+                }
+
+                // If the transaction type is Commit and this is a root transaction, commit it
+                if (transaction == TransactionType.Commit && !args.InTransaction)
+                {
+                    args.SqlBuilder
+                        .AppendLine()
+                        .Append("COMMIT TRANSACTION ")
+                        .AppendIdentifier(tranName)
+                        .AppendLine(";");
+                }
+                // If the transaction is Rollback, always roll it back
+                else if (transaction == TransactionType.Rollback)
+                    args.SqlBuilder
+                        .Append("ROLLBACK TRANSACTION ")
+                        .AppendIdentifier(tranName)
+                        .AppendLine(";");
+
+                // End the TRY block and start the CATCH block
+                args.SqlBuilder
+                    .IndentRegion(startIndex)
+                    .AppendLine()
+                    .AppendLine("END TRY")
+                    .AppendLine("BEGIN CATCH")
+                    .GetLength(out startIndex);
+
+                // If there is a transaction, roll it back if possible
+                if (hasTransaction)
+                {
+                    if (args.InTransaction)
+                        args.SqlBuilder
+                            .AppendLine("IF XACT_STATE() <> -1 ")
+                            .Append("\t");
+
+                    args.SqlBuilder
+                        .Append("ROLLBACK TRANSACTION ")
+                        .AppendIdentifier(tranName)
+                        .AppendLine(";");
+                }
+
+                // Output an Error info message then select the error information
+                SqlBatch.AppendInfo(args, Constants.ExecuteState.Error, "%d", "@CmdIndex")
+                    .AppendLine(
+                        "SELECT\tERROR_NUMBER(),\r\n\tERROR_SEVERITY(),\r\n\tERROR_STATE(),\r\n\tERROR_LINE(),\r\n\tISNULL(QUOTENAME(ERROR_PROCEDURE()),'NULL'),\r\n\tERROR_MESSAGE();");
+
+                // If the error isnt being suppressed, rethrow it for any outer catches to handle it
+                if (!item.SuppressErrors)
+                {
+                    if (args.ServerVersion.Major < 11)
+                    {
+                        // Cant rethrow the actual error, so raise a special error message
+                        SqlBatch.AppendInfo(args, Constants.ExecuteState.ReThrow, "%d", "@CmdIndex", true);
+                    }
+                    else
+                    {
+                        args.SqlBuilder.AppendLine("THROW;");
+                    }
+                }
+
+                // End the CATCH block
+                args.SqlBuilder
+                    .IndentRegion(startIndex)
+                    .AppendLine()
+                    .AppendLine("END CATCH")
+                    .AppendLine();
+
+                // Reset the isolation level
+                if (hasTransaction)
+                {
+                    if (!args.TransactionStack.TryPeek(out _, out string isoLevel))
+                        isoLevel = GetIsolationLevelStr(IsolationLevel.Unspecified);
+
+                    if (isoLevel != null)
+                        args.SqlBuilder
+                            .AppendLine()
+                            .Append("SET TRANSACTION ISOLATION LEVEL ")
+                            .Append(isoLevel)
+                            .AppendLine(";")
+                            .AppendLine();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the isolation level string.
+        /// </summary>
+        /// <param name="isoLevel">The isolation level.</param>
+        /// <returns></returns>
+        private static string GetIsolationLevelStr(IsolationLevel isoLevel)
+        {
+            switch (isoLevel)
+            {
+                case IsolationLevel.ReadUncommitted:
+                    return "READ UNCOMMITTED";
+                case IsolationLevel.ReadCommitted:
+                case IsolationLevel.Unspecified:
+                    return "READ COMMITTED";
+                case IsolationLevel.RepeatableRead:
+                    return "REPEATABLE READ";
+                case IsolationLevel.Serializable:
+                    return "SERIALIZABLE";
+                case IsolationLevel.Snapshot:
+                    return "SNAPSHOT";
+                case IsolationLevel.Chaos:
+                default:
+                    return null;
+            }
+        }
+
     }
 }

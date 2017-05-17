@@ -32,6 +32,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -58,11 +59,18 @@ namespace WebApplications.Utilities.Database.Test
         private static double _batchedXmlTime;
         private static double _batchedDoneTime;
 
+        private static SqlProgram<string, int> _nonQueryProg;
+        private static SqlProgram<string, int, decimal, bool> _returnsScalarProg;
+        private static SqlProgram<int, Out<int>, Out<int>> _outputParametersProg;
+        private static SqlProgram<string, int, decimal, bool> _returnsTableProg;
+        private static SqlProgram _returnsXmlProg;
+        private static SqlProgram<string, int, int> _raiserrorProg;
+
         private static void AddTime(Stopwatch sw, ref double counter)
         {
             double elapsed = sw.Elapsed.TotalMilliseconds;
 
-            if (_count > 0)
+            if (_count >= 0)
                 counter += elapsed;
         }
 
@@ -72,6 +80,7 @@ namespace WebApplications.Utilities.Database.Test
             out SqlProgram<int, Out<int>, Out<int>> outputParametersProg,
             out SqlProgram<string, int, decimal, bool> returnsTableProg,
             out SqlProgram returnsXmlProg,
+            out SqlProgram<string, int, int> raiserrorProg,
             out string randomString,
             out int randomInt,
             out decimal randomDecimal,
@@ -82,36 +91,50 @@ namespace WebApplications.Utilities.Database.Test
             DatabaseElement database = DatabasesConfiguration.Active.Databases["test"];
             Assert.IsNotNull(database);
 
-            nonQueryProg = database.GetSqlProgram<string, int>(
-                    "spNonQuery",
-                    "@stringParam",
-                    "@intParam")
-                .Result;
+            nonQueryProg =
+                _nonQueryProg ?? (_nonQueryProg = database.GetSqlProgram<string, int>(
+                        "spNonQuery",
+                        "@stringParam",
+                        "@intParam")
+                    .Result);
 
-            returnsScalarProg = database.GetSqlProgram<string, int, decimal, bool>(
-                    "spWithParametersReturnsScalar",
-                    "@stringParam",
-                    "@intParam",
-                    "@decimalParam",
-                    "@boolParam")
-                .Result;
+            returnsScalarProg =
+                _returnsScalarProg ?? (_returnsScalarProg = database.GetSqlProgram<string, int, decimal, bool>(
+                        "spWithParametersReturnsScalar",
+                        "@stringParam",
+                        "@intParam",
+                        "@decimalParam",
+                        "@boolParam")
+                    .Result);
 
-            outputParametersProg = database.GetSqlProgram<int, Out<int>, Out<int>>(
-                    "spOutputParameters",
-                    "@inputParam",
-                    "@inputOutputParam",
-                    "@outputParam")
-                .Result;
+            outputParametersProg =
+                _outputParametersProg ?? (_outputParametersProg = database
+                    .GetSqlProgram<int, Out<int>, Out<int>>(
+                        "spOutputParameters",
+                        "@inputParam",
+                        "@inputOutputParam",
+                        "@outputParam")
+                    .Result);
 
-            returnsTableProg = database.GetSqlProgram<string, int, decimal, bool>(
-                    "spReturnsTable",
-                    "@stringParam",
-                    "@intParam",
-                    "@decimalParam",
-                    "@boolParam")
-                .Result;
+            returnsTableProg =
+                _returnsTableProg ?? (_returnsTableProg = database
+                    .GetSqlProgram<string, int, decimal, bool>(
+                        "spReturnsTable",
+                        "@stringParam",
+                        "@intParam",
+                        "@decimalParam",
+                        "@boolParam")
+                    .Result);
 
-            returnsXmlProg = database.GetSqlProgram("spReturnsXml").Result;
+            raiserrorProg =
+                _raiserrorProg ?? (_raiserrorProg = database.GetSqlProgram<string, int, int>(
+                        "spRaiserror",
+                        "@message",
+                        "@severity",
+                        "@state")
+                    .Result);
+
+            returnsXmlProg = _returnsXmlProg ?? (_returnsXmlProg = database.GetSqlProgram("spReturnsXml").Result);
 
             randomString = Random.RandomString(Encoding.ASCII, maxLength: 20);
             randomInt = Random.RandomInt32();
@@ -131,6 +154,7 @@ namespace WebApplications.Utilities.Database.Test
                 out SqlProgram<int, Out<int>, Out<int>> outputParametersProg,
                 out SqlProgram<string, int, decimal, bool> returnsTableProg,
                 out SqlProgram returnsXmlProg,
+                out SqlProgram<string, int, int> raiserrorProg,
                 out string randomString,
                 out int randomInt,
                 out decimal randomDecimal,
@@ -157,30 +181,37 @@ namespace WebApplications.Utilities.Database.Test
                     randomDecimal,
                     randomBool)
                 .AddTransactionBatch(
-                    b => b.AddExecuteScalar(
+                    b => b
+                        .AddExecuteNonQuery(
+                            raiserrorProg,
+                            out _,
+                            "Error!",
+                            16,
+                            0)
+                        .AddExecuteScalar(
                             outputParametersProg,
                             out outputResult,
                             randomInt,
                             inputOutput,
-                            output)
-                        .AddExecuteReader(
-                            returnsTableProg,
-                            async (reader, token) =>
-                            {
-                                Assert.IsTrue(await reader.ReadAsync(token));
-
-                                Assert.AreEqual(randomString, reader.GetValue(0));
-                                Assert.AreEqual(output.Value, reader.GetValue(1));
-                                Assert.AreEqual(randomDecimal, reader.GetValue(2));
-                                Assert.AreEqual(randomBool, reader.GetValue(3));
-                            },
-                            out tableResult,
-                            randomString,
-                            // Using output of previous program as input
-                            output,
-                            randomDecimal,
-                            randomBool),
+                            output),
                     IsolationLevel.Serializable)
+                .AddExecuteReader(
+                    returnsTableProg,
+                    async (reader, token) =>
+                    {
+                        Assert.IsTrue(await reader.ReadAsync(token));
+
+                        Assert.AreEqual(randomString, reader.GetValue(0));
+                        Assert.AreEqual(output.Value, reader.GetValue(1));
+                        Assert.AreEqual(randomDecimal, reader.GetValue(2));
+                        Assert.AreEqual(randomBool, reader.GetValue(3));
+                    },
+                    out tableResult,
+                    randomString,
+                    // Using output of previous program as input
+                    output,
+                    randomDecimal,
+                    randomBool)
                 .AddExecuteXmlReader(
                     returnsXmlProg,
                     (reader, token) =>
@@ -190,9 +221,6 @@ namespace WebApplications.Utilities.Database.Test
                         return TaskResult.Completed;
                     },
                     out SqlBatchResult xmlResult);
-
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
 
 #pragma warning disable 4014
             Task<int> task1 = nonQueryResult.GetResultAsync();
@@ -205,7 +233,16 @@ namespace WebApplications.Utilities.Database.Test
             try
             {
                 await batch.ExecuteAsync();
-                AddTime(sw, ref _batchedDoneTime);
+
+                using (CancellationTokenSource cts = new CancellationTokenSource(5000))
+                {
+                    CancellationToken token = cts.Token;
+                    await task1.WithCancellation(token);
+                    await task2.WithCancellation(token);
+                    await task3.WithCancellation(token);
+                    await task4.WithCancellation(token);
+                    await task5.WithCancellation(token);
+                }
             }
             finally
             {
@@ -213,19 +250,12 @@ namespace WebApplications.Utilities.Database.Test
                 Trace.WriteLine(GetSql(batch) ?? "<not available>");
             }
 
-            Assert.IsTrue(task1.IsCompleted);
-            Assert.IsTrue(task2.IsCompleted);
-            Assert.IsTrue(task3.IsCompleted);
-            Assert.IsTrue(task4.IsCompleted);
-            Assert.IsTrue(task5.IsCompleted);
-
             Assert.AreEqual(-1, task1.Result);
 
             Assert.AreEqual(
-                $"{randomString.Substring(0, randomString.Length)} - {randomInt} - {randomDecimal} - {(randomBool ? "1" : "0")}",
+                $"{randomString.Substring(0, randomString.Length)} - {randomInt} - {randomDecimal:F2} - {(randomBool ? "1" : "0")}",
                 task2.Result);
-
-
+            
             Assert.AreEqual("<foo>bar</foo>", task3.Result);
 
             Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
@@ -238,13 +268,28 @@ namespace WebApplications.Utilities.Database.Test
         [TestMethod]
         public async Task PerfTest()
         {
-            for (int i = 0; i < 100; i++)
+            // In a separate method so they can be filtered out of performance traces
+            async Task JIT()
             {
-                Trace.WriteLine("Run " + i);
+                _count = -1;
                 await RunBatched();
                 await RunNotBatched();
-                _count++;
+                await RunBatched();
+                await RunNotBatched();
             }
+
+            await JIT();
+
+            for (_count = 0; _count < 500; _count++)
+            {
+                Trace.Write(_count);
+                await RunBatched();
+                Trace.Write(".");
+                await RunNotBatched();
+                Trace.Write(".");
+            }
+            Trace.WriteLine("");
+            Trace.WriteLine("");
 
             Trace.WriteLine($"B spNonQuery in {_batchedNonQueryTime / _count}ms");
             Trace.WriteLine($"B spWithParametersReturnsScalar in {_batchedScalarTime / _count}ms");
@@ -274,6 +319,7 @@ namespace WebApplications.Utilities.Database.Test
                 out SqlProgram<int, Out<int>, Out<int>> outputParametersProg,
                 out SqlProgram<string, int, decimal, bool> returnsTableProg,
                 out SqlProgram returnsXmlProg,
+                out _,
                 out string randomString,
                 out int randomInt,
                 out decimal randomDecimal,
@@ -333,17 +379,27 @@ namespace WebApplications.Utilities.Database.Test
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-#pragma warning disable 4014
-            Task<int> task1 = nonQueryResult.GetResultAsync(); task1.ContinueWith(_ => AddTime(sw, ref _batchedNonQueryTime));
-            Task<string> task2 = scalarResult.GetResultAsync(); task2.ContinueWith(_ => AddTime(sw, ref _batchedScalarTime));
-            Task<string> task3 = outputResult.GetResultAsync(); task3.ContinueWith(_ => AddTime(sw, ref _batchedOutputTime));
-            Task task4 = tableResult.GetResultAsync(); task4.ContinueWith(_ => AddTime(sw, ref _batchedTableTime));
-            Task task5 = xmlResult.GetResultAsync(); task5.ContinueWith(_ => AddTime(sw, ref _batchedXmlTime));
-#pragma warning restore 4014
-
+            using (CancellationTokenSource cts = new CancellationTokenSource(5000))
             try
             {
-                await batch.ExecuteAsync();
+                CancellationToken token = cts.Token;
+
+                await nonQueryResult.GetResultAsync(token);
+                AddTime(sw, ref _batchedNonQueryTime);
+
+                await scalarResult.GetResultAsync(token);
+                AddTime(sw, ref _batchedScalarTime);
+
+                await outputResult.GetResultAsync(token);
+                AddTime(sw, ref _batchedOutputTime);
+
+                await tableResult.GetResultAsync(token);
+                AddTime(sw, ref _batchedTableTime);
+
+                await xmlResult.GetResultAsync(token);
+                AddTime(sw, ref _batchedXmlTime);
+
+                await batch.ExecuteAsync(token);
                 AddTime(sw, ref _batchedDoneTime);
             }
             finally
@@ -354,12 +410,6 @@ namespace WebApplications.Utilities.Database.Test
                     Trace.WriteLine(GetSql(batch) ?? "<not available>");
                 }
             }
-
-            Assert.IsTrue(task1.IsCompleted);
-            Assert.IsTrue(task2.IsCompleted);
-            Assert.IsTrue(task3.IsCompleted);
-            Assert.IsTrue(task4.IsCompleted);
-            Assert.IsTrue(task5.IsCompleted);
         }
 
         [TestMethod]
@@ -371,6 +421,7 @@ namespace WebApplications.Utilities.Database.Test
                 out SqlProgram<int, Out<int>, Out<int>> outputParametersProg,
                 out SqlProgram<string, int, decimal, bool> returnsTableProg,
                 out SqlProgram returnsXmlProg,
+                out _,
                 out string randomString,
                 out int randomInt,
                 out decimal randomDecimal,
@@ -380,37 +431,58 @@ namespace WebApplications.Utilities.Database.Test
 
             Stopwatch sw = Stopwatch.StartNew();
 
-            await nonQueryProg.ExecuteNonQueryAsync(randomString, randomInt);
-            AddTime(sw, ref _nonQueryTime);
-            await returnsScalarProg.ExecuteScalarAsync<string>(randomString, randomInt, randomDecimal, randomBool);
-            AddTime(sw, ref _scalarTime);
-            await outputParametersProg.ExecuteScalarAsync<string>(randomInt, inputOutput, output);
-            AddTime(sw, ref _outputTime);
-            await returnsTableProg.ExecuteReaderAsync(
-                async (reader, token) =>
-                {
-                    Assert.IsTrue(await reader.ReadAsync(token));
+            using (CancellationTokenSource cts = new CancellationTokenSource(5000))
+            {
+                CancellationToken token = cts.Token;
 
-                    Assert.AreEqual(randomString, reader.GetValue(0));
-                    Assert.AreEqual(output.Value, reader.GetValue(1));
-                    Assert.AreEqual(randomDecimal, reader.GetValue(2));
-                    Assert.AreEqual(randomBool, reader.GetValue(3));
-                },
-                randomString,
-                // Using output of previous program as input
-                output.Value,
-                randomDecimal,
-                randomBool);
-            AddTime(sw, ref _tableTime);
-            await returnsXmlProg.ExecuteXmlReaderAsync(
-                (reader, token) =>
-                {
-                    string xml = XElement.Load(reader).ToString();
-                    Assert.AreEqual("<foo>bar</foo>", xml);
-                    return TaskResult.Completed;
-                });
-            AddTime(sw, ref _xmlTime);
-            AddTime(sw, ref _doneTime);
+                await nonQueryProg.ExecuteNonQueryAsync(randomString, randomInt, cancellationToken: token);
+                AddTime(sw, ref _nonQueryTime);
+
+                await returnsScalarProg.ExecuteScalarAsync<string>(
+                    randomString,
+                    randomInt,
+                    randomDecimal,
+                    randomBool,
+                    cancellationToken: token);
+                AddTime(sw, ref _scalarTime);
+
+                await outputParametersProg.ExecuteScalarAsync<string>(
+                    randomInt,
+                    inputOutput,
+                    output,
+                    cancellationToken: token);
+                AddTime(sw, ref _outputTime);
+
+                await returnsTableProg.ExecuteReaderAsync(
+                    async (reader, tk) =>
+                    {
+                        Assert.IsTrue(await reader.ReadAsync(tk));
+
+                        Assert.AreEqual(randomString, reader.GetValue(0));
+                        Assert.AreEqual(output.Value, reader.GetValue(1));
+                        Assert.AreEqual(randomDecimal, reader.GetValue(2));
+                        Assert.AreEqual(randomBool, reader.GetValue(3));
+                    },
+                    randomString,
+                    // Using output of previous program as input
+                    output.Value,
+                    randomDecimal,
+                    randomBool,
+                    cancellationToken: token);
+                AddTime(sw, ref _tableTime);
+
+                await returnsXmlProg.ExecuteXmlReaderAsync(
+                    (reader, tk) =>
+                    {
+                        string xml = XElement.Load(reader).ToString();
+                        Assert.AreEqual("<foo>bar</foo>", xml);
+                        return TaskResult.Completed;
+                    },
+                    cancellationToken: token);
+                AddTime(sw, ref _xmlTime);
+
+                AddTime(sw, ref _doneTime);
+            }
         }
 
         private static string GetSql(SqlBatch batch)

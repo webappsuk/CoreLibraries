@@ -322,6 +322,15 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The IsolationLevel enumeration value, {0}, is not supported..
+        /// </summary>
+        internal static string IsolationLevelNotSupported {
+            get {
+                return ResourceManager.GetString("IsolationLevelNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Must specify at least one connection string, with a weight greater than zero..
         /// </summary>
         internal static string LoadBalancedConnection_AllStringsZeroWeighted {
@@ -462,15 +471,6 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlBatch_ExecuteAsync_Empty {
             get {
                 return ResourceManager.GetString("SqlBatch_ExecuteAsync_Empty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The IsolationLevel enumeration value, {0}, is not supported..
-        /// </summary>
-        internal static string SqlBatch_Process_IsolationLevelNotSupported {
-            get {
-                return ResourceManager.GetString("SqlBatch_Process_IsolationLevelNotSupported", resourceCulture);
             }
         }
         

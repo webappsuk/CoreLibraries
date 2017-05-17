@@ -35,7 +35,11 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
@@ -60,28 +64,6 @@ namespace WebApplications.Utilities.Database
     public partial class SqlBatch : IEnumerable<SqlBatchCommand>, IBatchItem
     {
         /// <summary>
-        /// The type of a transaction.
-        /// </summary>
-        [Flags]
-        private enum TransactionType : byte
-        {
-            /// <summary>
-            /// No transaction
-            /// </summary>
-            None,
-            
-            /// <summary>
-            /// A transaction which commits if successfully executed
-            /// </summary>
-            Commit,
-
-            /// <summary>
-            /// A transaction which always rolls back
-            /// </summary>
-            Rollback
-        }
-
-        /// <summary>
         /// Holds the state of a batch
         /// </summary>
         /// <seealso cref="System.IDisposable" />
@@ -102,7 +84,7 @@ namespace WebApplications.Utilities.Database
             /// </summary>
             public int Value = Constants.BatchState.Building;
             /// <summary>
-            /// The command count.
+            /// The program count.
             /// </summary>
             public int CommandCount;
 
@@ -248,7 +230,7 @@ namespace WebApplications.Utilities.Database
 
         /// <summary>
         /// If <see langword="true" /> then any errors that occur within this batch wont cause an exception to be thrown for the whole batch.
-        /// The command that failed will still throw an exception.
+        /// The program that failed will still throw an exception.
         /// </summary>
         private readonly bool _suppressErrors;
 
@@ -258,10 +240,34 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         private readonly ExceptionHandler<DbException> _exceptionHandler;
 
+        /// <summary>
+        /// Gets the transaction for this item.
+        /// </summary>
+        TransactionType IBatchItem.Transaction => _transaction;
+
+        /// <summary>
+        /// Gets the isolation level of the transaction for this item.
+        /// </summary>
+        IsolationLevel IBatchItem.IsolationLevel => _isolationLevel;
+
+        /// <summary>
+        /// Gets the name of the transaction, if there is one.
+        /// </summary>
+        string IBatchItem.TransactionName => ID.ToString("N");
+
+        /// <summary>
+        /// Gets a value indicating whether errors are suppressed in the batch for this item.
+        /// </summary>
+        /// <value>
+        ///   <see langword="true" /> if errors should be suppressed; otherwise, <see langword="false" />.
+        /// </value>
+        bool IBatchItem.SuppressErrors => _suppressErrors;
+
 #if DEBUG
         /// <summary>
         /// The SQL for the batch. For debugging purposes.
         /// </summary>
+        [UsedImplicitly]
         private string _sql;
 #endif
 
@@ -270,7 +276,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this batch
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
-        /// is specified and doesn't suppress the error. The command that failed will still throw an exception.</param>
+        /// is specified and doesn't suppress the error. The program that failed will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <param name="batchTimeout">The batch timeout. Defaults to 30 seconds.</param>
         /// <returns>The new <see cref="SqlBatch"/>.</returns>
@@ -291,7 +297,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="rollback">if set to <see langword="true" /> the transaction will always be rolled back.</param>
         /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this batch
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
-        /// is specified and doesn't suppress the error. The command that failed will still throw an exception.</param>
+        /// is specified and doesn't suppress the error. The program that failed will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <param name="batchTimeout">The batch timeout. Defaults to 30 seconds.</param>
         /// <returns>
@@ -443,7 +449,7 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Adds the command given to the batch.
         /// </summary>
-        /// <param name="command">The command.</param>
+        /// <param name="command">The program.</param>
         private void AddCommand([NotNull] SqlBatchCommand command)
         {
             using (State state = GetState())
@@ -467,9 +473,9 @@ namespace WebApplications.Utilities.Database
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}"/> which can be used to get the scalar value returned by the program.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
-        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
-        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -502,9 +508,9 @@ namespace WebApplications.Utilities.Database
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to get the number of records affected by the program.</param>
-        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
-        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -538,9 +544,9 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior">The query's effect on the database.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
-        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
-        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -586,9 +592,9 @@ namespace WebApplications.Utilities.Database
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
         /// and get the value returned by <paramref name="resultFunc"/>.</param>
-        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
-        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -630,9 +636,9 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The action used to process the result.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
-        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
-        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -671,9 +677,9 @@ namespace WebApplications.Utilities.Database
         /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
         /// and get the value returned by <paramref name="resultFunc" />.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
-        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this command
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler" />
-        /// is specified and doesn't suppress the error. The command itself will still throw an exception.</param>
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>
         /// This <see cref="SqlBatch" /> instance.
@@ -792,7 +798,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="addToBatch">A delegate to the method to use to add commands to the new batch.</param>
         /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this batch
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
-        /// is specified and doesn't suppress the error. The command that failed will still throw an exception.</param>
+        /// is specified and doesn't suppress the error. The program that failed will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -822,7 +828,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="rollback">if set to <see langword="true" /> the transaction will always be rolled back.</param>
         /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this batch
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
-        /// is specified and doesn't suppress the error. The command that failed will still throw an exception.</param>
+        /// is specified and doesn't suppress the error. The program that failed will still throw an exception.</param>
         /// <param name="exceptionHandler">The optional exception handler.</param>
         /// <returns>This <see cref="SqlBatch"/> instance.</returns>
         [NotNull]
@@ -986,17 +992,20 @@ namespace WebApplications.Utilities.Database
             int connectionIndex,
             CancellationToken cancellationToken)
         {
-            string uid = $"{ID:B} @ {DateTime.UtcNow:O}:";
+            string infoMessagePrefix = $"{ID:B} @ {DateTime.UtcNow:O}:";
 
             DatabaseSchema schema = connection.CachedSchema;
             // TODO Do we care enough? // ?? await connection.GetSchema(false, cancellationToken).ConfigureAwait(false);
 
             BatchProcessArgs args =
-                new BatchProcessArgs(schema?.ServerVersion ?? DatabaseSchema.MinimumSupportedServerVersion);
+                new BatchProcessArgs(
+                    schema?.ServerVersion ?? DatabaseSchema.MinimumSupportedServerVersion,
+                    infoMessagePrefix,
+                    connection.ConnectionString);
 
             // Build the batch SQL and get the parameters to the commands
             PreProcess(
-                uid,
+                infoMessagePrefix,
                 connection,
                 args,
                 out CommandBehavior allBehavior);
@@ -1005,21 +1014,20 @@ namespace WebApplications.Utilities.Database
 
             string state = null;
             int index = -1;
-            string stateArgs = null;
             int actualIndex = 0;
             DbBatchDataReader commandReader = null;
 
             void MessageHandler(string message)
             {
-                if (!TryParseInfoMessage(message, ref state, ref index, ref stateArgs)) return;
+                if (!TryParseInfoMessage(message, ref state, ref index)) return;
 
-                if (commandReader != null)
+                if (commandReader != null && (index > actualIndex || state != Constants.ExecuteState.Start))
                     commandReader.State = BatchReaderState.Finished;
             }
 
             // Wait the semaphores and setup the connection, command and reader
             using (await AsyncSemaphore.WaitAllAsync(cancellationToken, semaphores).ConfigureAwait(false))
-            using (DbConnection dbConnection = await CreateOpenConnectionAsync(connection, uid, MessageHandler, cancellationToken)
+            using (DbConnection dbConnection = await CreateOpenConnectionAsync(connection, infoMessagePrefix, MessageHandler, cancellationToken)
                     .ConfigureAwait(false))
             using (DbCommand dbCommand = CreateCommand(args.SqlBuilder.ToString(), dbConnection, args.AllParameters.ToArray()))
             using (DbDataReader reader = await dbCommand.ExecuteReaderAsync(allBehavior, cancellationToken)
@@ -1039,7 +1047,7 @@ namespace WebApplications.Utilities.Database
                     {
                         using (commandReader = CreateReader(reader, command.CommandBehavior))
                         {
-                            if (index >= actualIndex)
+                            if (index > actualIndex || index == actualIndex && state != Constants.ExecuteState.Start)
                                 commandReader.State = BatchReaderState.Finished;
 
                             await command.HandleCommandAsync(
@@ -1156,8 +1164,6 @@ namespace WebApplications.Utilities.Database
             out CommandBehavior allBehavior)
         {
             ((IBatchItem)this).Process(
-                uid,
-                connectionString,
                 args);
 
             allBehavior = args.Behavior;
@@ -1166,13 +1172,8 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Processes the batch to be executed.
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        /// <param name="connectionString">The connection string.</param>
         /// <param name="args">The arguments.</param>
-        void IBatchItem.Process(
-            string uid,
-            string connectionString,
-            BatchProcessArgs args)
+        void IBatchItem.Process(BatchProcessArgs args)
         {
             args.SqlBuilder
                 .AppendLine()
@@ -1190,139 +1191,13 @@ namespace WebApplications.Utilities.Database
 
             args.SqlBuilder.AppendLine();
 
-            bool hasTransaction = _transaction != TransactionType.None;
-            bool hasTryCatch = _suppressErrors || hasTransaction;
-
-            string tranName = null;
-            int startIndex = 0;
-            if (hasTryCatch)
-            {
-                if (hasTransaction)
-                {
-                    string isoLevel = GetIsolationLevelStr(_isolationLevel);
-                    if (isoLevel == null)
-                        throw new ArgumentOutOfRangeException(
-                            nameof(IsolationLevel),
-                            _isolationLevel,
-                            string.Format(Resources.SqlBatch_Process_IsolationLevelNotSupported, _isolationLevel));
-                    
-                    // Set the isolation level and begin or save a transaction for the batch
-                    tranName = "[" + ID.ToString("N") + "]";
-                    args.SqlBuilder
-                        .AppendLine()
-                        .Append("SET TRANSACTION ISOLATION LEVEL ")
-                        .Append(isoLevel)
-                        .AppendLine(";")
-
-                        .Append(args.InTransaction ? "SAVE" : "BEGIN")
-                        .Append(" TRANSACTION ")
-                        .Append(tranName)
-                        .AppendLine(";");
-                    args.TransactionStack.Push(tranName, isoLevel);
-                }
-
-                // Wrap the contents of the batch in a TRY ... CATCH block
-                args.SqlBuilder
-                    .AppendLine()
-                    .AppendLine("BEGIN TRY")
-                    .AppendLine()
-                    .GetLength(out startIndex);
-            }
+            this.BeginTry(args, out int startIndex);
 
             // Process the items in this batch
             foreach (IBatchItem item in _items)
-                item.Process(uid, connectionString, args);
+                item.Process(args);
 
-            if (hasTryCatch)
-            {
-                if (hasTransaction)
-                {
-                    args.TransactionStack.Pop(out string name, out _);
-                    Debug.Assert(name == tranName);
-                }
-
-                // If the transaction type is Commit and this is a root transaction, commit it
-                if (_transaction == TransactionType.Commit && !args.InTransaction)
-                {
-                    args.SqlBuilder
-                        .AppendLine()
-                        .Append("COMMIT TRANSACTION ")
-                        .Append(tranName)
-                        .AppendLine(";");
-                }
-                // If the transaction is Rollback, always roll it back
-                else if (_transaction == TransactionType.Rollback)
-                    args.SqlBuilder
-                        .Append("ROLLBACK TRANSACTION ")
-                        .Append(tranName)
-                        .AppendLine(";");
-                
-                // End the TRY block and start the CATCH block
-                args.SqlBuilder
-                    .IndentRegion(startIndex)
-                    .AppendLine()
-                    .AppendLine("END TRY")
-                    .AppendLine("BEGIN CATCH")
-                    .GetLength(out startIndex);
-
-                // If there is a transaction, roll it back if possible
-                if (hasTransaction)
-                {
-                    if (args.InTransaction)
-                        args.SqlBuilder
-                            .AppendLine("IF XACT_STATE() <> -1 ")
-                            .Append("\t");
-                    
-                    args.SqlBuilder
-                            .Append("ROLLBACK TRANSACTION ")
-                            .Append(tranName)
-                            .AppendLine(";");
-                }
-                
-                // Output an Error info message then select the error information
-                AppendInfo(args.SqlBuilder, uid, Constants.ExecuteState.Error, "%d", null, "@CmdIndex")
-                    .AppendLine(
-                        "SELECT\tERROR_NUMBER(),\r\n\tERROR_SEVERITY(),\r\n\tERROR_STATE(),\r\n\tERROR_LINE(),\r\n\tISNULL(QUOTENAME(ERROR_PROCEDURE()),'NULL'),\r\n\tERROR_MESSAGE();");
-
-                // If the error isnt being suppressed, rethrow it for any outer catches to handle it
-                if (!_suppressErrors)
-                {
-                    if (args.ServerVersion.Major < 11)
-                    {
-                        // Cant rethrow the actual error, so raise a special error message
-                        args.SqlBuilder
-                            .Append("RAISERROR(")
-                            .AppendVarChar($"{uid}{Constants.ExecuteState.ReThrow}:%d:")
-                            .AppendLine(",16,0,@CmdIndex);");
-                    }
-                    else
-                    {
-                        args.SqlBuilder.AppendLine("THROW;");
-                    }
-                }
-
-                // End the CATCH block
-                args.SqlBuilder
-                    .IndentRegion(startIndex)
-                    .AppendLine()
-                    .AppendLine("END CATCH")
-                    .AppendLine();
-
-                // Reset the isolation level
-                if (!IsRoot && hasTransaction)
-                {
-                    if (!args.TransactionStack.TryPeek(out _, out string isoLevel))
-                        isoLevel = GetIsolationLevelStr(IsolationLevel.Unspecified);
-
-                    if (isoLevel != null)
-                        args.SqlBuilder
-                            .AppendLine()
-                            .Append("SET TRANSACTION ISOLATION LEVEL ")
-                            .Append(isoLevel)
-                            .AppendLine(";")
-                            .AppendLine();
-                }
-            }
+            this.EndTry(args, startIndex);
             
             args.SqlBuilder
                 .AppendLine("/*")
@@ -1361,66 +1236,34 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Appends an info message to the SQL builder.
         /// </summary>
-        /// <param name="sqlBuilder">The SQL builder.</param>
-        /// <param name="uid">The uid.</param>
-        /// <param name="state">The state.</param>
-        /// <param name="index">The index.</param>
         /// <param name="args">The arguments.</param>
+        /// <param name="state">The state.</param>
+        /// <param name="commandIndex">Override the index.</param>
         /// <param name="formatArgs">The format arguments.</param>
         /// <returns>
-        /// The <paramref name="sqlBuilder" />
+        /// The <see cref="BatchProcessArgs.SqlBuilder" />
         /// </returns>
         [NotNull]
         internal static SqlStringBuilder AppendInfo(
-            [NotNull] SqlStringBuilder sqlBuilder,
-            [NotNull] string uid,
+            [NotNull] BatchProcessArgs args,
             [NotNull] string state,
-            int index,
-            string args = null,
-            string formatArgs = null)
-        {
-            return AppendInfo(
-                sqlBuilder,
-                uid,
-                state,
-                index.ToString(),
-                args,
-                formatArgs);
-        }
-
-        /// <summary>
-        /// Appends an info message to the SQL builder.
-        /// </summary>
-        /// <param name="sqlBuilder">The SQL builder.</param>
-        /// <param name="uid">The uid.</param>
-        /// <param name="state">The state.</param>
-        /// <param name="index">The index.</param>
-        /// <param name="args">The arguments.</param>
-        /// <param name="formatArgs">The format arguments.</param>
-        /// <returns>
-        /// The <paramref name="sqlBuilder" />
-        /// </returns>
-        [NotNull]
-        internal static SqlStringBuilder AppendInfo(
-            [NotNull] SqlStringBuilder sqlBuilder,
-            [NotNull] string uid,
-            [NotNull] string state,
-            string index,
-            string args = null,
-            string formatArgs = null)
+            [CanBeNull] string commandIndex = null,
+            [CanBeNull] string formatArgs = null,
+            bool error = false)
         {
             // TODO this would be provider specific
 
             Debug.Assert(!state.Contains(":"));
-            sqlBuilder
+            if (commandIndex == null) commandIndex = args.CommandIndex.ToString();
+            args.SqlBuilder
                 .Append("RAISERROR(")
-                .AppendVarChar($"{uid}{state}:{index}:{args ?? string.Empty}")
-                .Append(",4,0");
+                .AppendVarChar($"{args.InfoMessagePrefix}{state}:{commandIndex}")
+                .Append(error ? ",16,0" : ",4,0");
             if (formatArgs != null)
-                sqlBuilder
+                args.SqlBuilder
                     .Append(',')
                     .Append(formatArgs);
-            return sqlBuilder
+            return args.SqlBuilder
                 .AppendLine(");");
         }
 
@@ -1430,19 +1273,15 @@ namespace WebApplications.Utilities.Database
         /// <param name="message">The message.</param>
         /// <param name="state">The state.</param>
         /// <param name="index">The index.</param>
-        /// <param name="args">The arguments.</param>
         /// <returns></returns>
-        private static bool TryParseInfoMessage([NotNull] string message, ref string state, ref int index, ref string args)
+        private static bool TryParseInfoMessage([NotNull] string message, ref string state, ref int index)
         {
             int ind1 = message.IndexOf(':');
-            int ind1p1 = ind1 + 1;
-            int ind2 = message.IndexOf(':', ind1p1);
-            if (ind1 < 0 || ind2 < 0 || !ushort.TryParse(message.Substring(ind1p1, ind2 - ind1p1), out ushort parsedIndex))
+            if (ind1 < 0 || !ushort.TryParse(message.Substring(ind1 + 1), out ushort parsedIndex))
                 return false;
 
             state = message.Substring(0, ind1);
             index = parsedIndex;
-            args = (ind2 + 1 >= message.Length) ? null : message.Substring(ind2 + 1);
             return true;
         }
 
@@ -1558,7 +1397,7 @@ namespace WebApplications.Utilities.Database
         /// Creates the <see cref="DbBatchDataReader" /> for the underlying reader given.
         /// </summary>
         /// <param name="reader">The base reader.</param>
-        /// <param name="commandBehavior">The command behavior.</param>
+        /// <param name="commandBehavior">The program behavior.</param>
         /// <returns></returns>
         [NotNull]
         private DbBatchDataReader CreateReader([NotNull] DbDataReader reader, CommandBehavior commandBehavior)

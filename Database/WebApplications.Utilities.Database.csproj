@@ -199,6 +199,7 @@
     <Compile Include="Schema\SqlTypeSize.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="SqlStringBuilder.cs" />
+    <Compile Include="TransactionType.cs" />
     <Compile Include="ValidationFailMode.cs" />
   </ItemGroup>
   <ItemGroup>

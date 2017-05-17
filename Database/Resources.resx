@@ -402,7 +402,7 @@
   <data name="SqlBatch_CreateTransaction_UnspecifiedIsoLvl" xml:space="preserve">
     <value>Cannot have an isolation level of Unspecified.</value>
   </data>
-  <data name="SqlBatch_Process_IsolationLevelNotSupported" xml:space="preserve">
+  <data name="IsolationLevelNotSupported" xml:space="preserve">
     <value>The IsolationLevel enumeration value, {0}, is not supported.</value>
   </data>
 </root>
