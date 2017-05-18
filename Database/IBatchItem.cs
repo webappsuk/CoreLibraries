@@ -36,6 +36,17 @@ namespace WebApplications.Utilities.Database
     internal interface IBatchItem
     {
         /// <summary>
+        /// Gets the result for the batch item.
+        /// </summary>
+        [NotNull]
+        SqlBatchResult Result { get; }
+
+        /// <summary>
+        /// Gets the batch that owns this item.
+        /// </summary>
+        SqlBatch Owner { get; }
+
+        /// <summary>
         /// Gets the transaction for this item.
         /// </summary>
         TransactionType Transaction { get; }

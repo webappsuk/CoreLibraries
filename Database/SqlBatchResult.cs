@@ -97,6 +97,23 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// Determines whether this instance is completed.
+        /// </summary>
+        /// <returns>
+        ///   <see langword="true" /> if this instance is completed; otherwise, <see langword="false" />.
+        /// </returns>
+        internal abstract bool IsCompleted();
+
+        /// <summary>
+        /// Determines whether the specified index is completed.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the specified index is completed; otherwise, <see langword="false" />.
+        /// </returns>
+        internal abstract bool IsCompleted(int index);
+
+        /// <summary>
         /// Sets the result count.
         /// </summary>
         /// <param name="count">The count.</param>
@@ -122,21 +139,39 @@ namespace WebApplications.Utilities.Database
         internal abstract void SetCanceled(int index);
 
         /// <summary>
+        /// Sets the result to canceled if it is not yet completed.
+        /// </summary>
+        internal abstract void CancelIfNotComplete();
+
+        /// <summary>
         /// Gets the result asynchronously.
         /// </summary>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
         /// <returns>An awaitable task.</returns>
         [NotNull]
         public Task GetResultAsync(CancellationToken cancellationToken = default(CancellationToken))
-            => GetResultInternalAsync(cancellationToken);
+            => GetResultInternalAsync(false, cancellationToken);
+
+        /// <summary>
+        /// Gets the result asynchronously.
+        /// </summary>
+        /// <param name="startExecuting">If set to <see langword="true" /> the batch will start executing if it hasn't already.</param>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
+        /// <returns>An awaitable task.</returns>
+        [NotNull]
+        public Task GetResultAsync(bool startExecuting, CancellationToken cancellationToken = default(CancellationToken))
+            => GetResultInternalAsync(startExecuting, cancellationToken);
 
         /// <summary>
         /// When overridden, gets the result asynchronously.
         /// </summary>
+        /// <param name="startExecuting">If set to <see langword="true" /> the batch will start executing if it hasn't already.</param>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
-        /// <returns>An awaitable task.</returns>
+        /// <returns>
+        /// An awaitable task.
+        /// </returns>
         [NotNull]
-        protected abstract Task GetResultInternalAsync(CancellationToken cancellationToken);
+        protected abstract Task GetResultInternalAsync(bool startExecuting, CancellationToken cancellationToken);
     }
 
     /// <summary>
@@ -158,6 +193,23 @@ namespace WebApplications.Utilities.Database
         internal SqlBatchResult()
         {
         }
+
+        /// <summary>
+        /// Determines whether this instance is completed.
+        /// </summary>
+        /// <returns>
+        ///   <see langword="true" /> if this instance is completed; otherwise, <see langword="false" />.
+        /// </returns>
+        internal override bool IsCompleted() => _completionSource.Task.IsCompleted;
+
+        /// <summary>
+        /// Determines whether the specified index is completed.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the specified index is completed; otherwise, <see langword="false" />.
+        /// </returns>
+        internal override bool IsCompleted(int index) => _results != null && _results[index].completed;
 
         /// <summary>
         /// Sets the result count.
@@ -186,6 +238,8 @@ namespace WebApplications.Utilities.Database
         /// <param name="index">The index.</param>
         internal override void SetCompleted(int index)
         {
+            Debug.Assert(_results != null, "_results != null");
+
             // Set the result to completed
             _results[index].completed = true;
 
@@ -193,7 +247,8 @@ namespace WebApplications.Utilities.Database
 
             // If all the results are completed, we need to complete the task
             foreach ((_, bool completed, _) in _results)
-                if (!completed) return;
+                if (!completed)
+                    return;
 
             // If there are any exceptions, set the result to faulted
             if (_results.Any(r => r.exception != null))
@@ -258,12 +313,18 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// Sets the result to canceled if it is not yet completed.
+        /// </summary>
+        internal override void CancelIfNotComplete() => _completionSource.TrySetCanceled();
+
+        /// <summary>
         /// Gets the result asynchronously.
         /// </summary>
+        /// <param name="startExecuting">If set to <see langword="true" /> the batch will start executing if it hasn't already.</param>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
         /// <returns>An awaitable task.</returns>
-        protected override Task GetResultInternalAsync(CancellationToken cancellationToken) 
-            => GetResultAsync(cancellationToken);
+        protected override Task GetResultInternalAsync(bool startExecuting, CancellationToken cancellationToken) 
+            => GetResultAsync(startExecuting, cancellationToken);
 
         /// <summary>
         /// Gets the result asynchronously.
@@ -271,10 +332,21 @@ namespace WebApplications.Utilities.Database
         /// <remarks>If the batch was executed against all connections, this will return the result of a single connection.</remarks>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
         /// <returns>An awaitable task which returns the result.</returns>
-        public new async Task<T> GetResultAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public new Task<T> GetResultAsync(CancellationToken cancellationToken = default(CancellationToken)) 
+            => GetResultAsync(false, cancellationToken);
+
+        /// <summary>
+        /// Gets the result asynchronously.
+        /// </summary>
+        /// <remarks>If the batch was executed against all connections, this will return the result of a single connection.</remarks>
+        /// <param name="startExecuting">If set to <see langword="true" /> the batch will start executing if it hasn't already.</param>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
+        /// <returns>An awaitable task which returns the result.</returns>
+        public new async Task<T> GetResultAsync(bool startExecuting, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // Execute the command if its not already running
-            Command.Batch.BeginExecute(false);
+            // Execute the command if its not already running, if requested
+            if (startExecuting)
+                Command.Owner.BeginExecute(false);
 
             await _completionSource.Task.WithCancellation(cancellationToken).ConfigureAwait(false);
 
@@ -293,10 +365,20 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
         /// <returns>An awaitable task which returns the results for all connections.</returns>
-        public async Task<IEnumerable<T>> GetResultsAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public Task<IEnumerable<T>> GetResultsAsync(CancellationToken cancellationToken = default(CancellationToken))
+            => GetResultsAsync(false, cancellationToken);
+
+        /// <summary>
+        /// Gets the results for all connections asynchronously.
+        /// </summary>
+        /// <param name="startExecuting">If set to <see langword="true" /> the batch will start executing if it hasn't already.</param>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
+        /// <returns>An awaitable task which returns the results for all connections.</returns>
+        public async Task<IEnumerable<T>> GetResultsAsync(bool startExecuting, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Execute the command for all connections if its not already running
-            Command.Batch.BeginExecute(true);
+            if (startExecuting)
+                Command.Owner.BeginExecute(true);
 
             await _completionSource.Task.WithCancellation(cancellationToken).ConfigureAwait(false);
 

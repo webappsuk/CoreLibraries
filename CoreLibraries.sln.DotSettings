@@ -1351,11 +1351,13 @@ $END$&#xD;
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/FormatAfterReplace/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/IsReplacePattern/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/LanguageName/@EntryValue">CSHARP</s:String>
+	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/MatchCatchClauseWithoutExceptionFilter/@EntryValue">False</s:Boolean>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/ReplaceComment/@EntryValue">Use 'ConfigureAwait(false)'</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/ReplacePattern/@EntryValue">await $task$.ConfigureAwait(false)</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/SearchPattern/@EntryValue">await $task$</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/Severity/@EntryValue">WARNING</s:String>
 	<s:Boolean x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/ShortenReferences/@EntryValue">False</s:Boolean>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=A235B8A7E6FA5049999C2A8E90BD04CF/SuppressionKey/@EntryValue">ConsiderUsingConfigureAwait</s:String>
 	
 	
 	

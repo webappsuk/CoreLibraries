@@ -206,16 +206,28 @@ namespace WebApplications.Utilities.Database
                 throw;
             }
         }
-        
+
+        /// <summary>
+        /// The state of the batch.
+        /// </summary>
         [NotNull]
         private State _state;
 
+        /// <summary>
+        /// The parent batch.
+        /// </summary>
         private SqlBatch _parent;
 
+        /// <summary>
+        /// The items within this batch.
+        /// </summary>
         [NotNull]
         [ItemNotNull]
         private readonly List<IBatchItem> _items = new List<IBatchItem>();
 
+        /// <summary>
+        /// The batch timeout
+        /// </summary>
         private Duration _batchTimeout;
 
         /// <summary>
@@ -239,6 +251,24 @@ namespace WebApplications.Utilities.Database
         /// Only used if there is a transaction or errors are suppressed.
         /// </summary>
         private readonly ExceptionHandler<DbException> _exceptionHandler;
+
+        /// <summary>
+        /// The batch result. Used when this is not the root batch to know when this batch is completed.
+        /// </summary>
+        private SqlBatchResult<bool> _batchResult;
+
+        /// <summary>
+        /// Gets the result for the batch item.
+        /// </summary>
+        SqlBatchResult IBatchItem.Result
+        {
+            get
+            {
+                if (_batchResult == null)
+                    Interlocked.CompareExchange(ref _batchResult, new SqlBatchResult<bool>(), null);
+                return _batchResult;
+            }
+        }
 
         /// <summary>
         /// Gets the transaction for this item.
@@ -391,6 +421,11 @@ namespace WebApplications.Utilities.Database
         public bool IsRoot => _parent == null;
 
         /// <summary>
+        /// Gets the batch that owns this batch.
+        /// </summary>
+        public SqlBatch Owner => _parent;
+
+        /// <summary>
         ///   Gets or sets the batch timeout.
         ///   This is the time to wait for the batch to execute.
         /// </summary>
@@ -424,6 +459,19 @@ namespace WebApplications.Utilities.Database
         /// <returns>A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.</returns>
         public IEnumerator<SqlBatchCommand> GetEnumerator()
         {
+            foreach (IBatchItem item in EnumerateItems())
+                if (item is SqlBatchCommand command)
+                    yield return command;
+        }
+
+        /// <summary>
+        /// Enumerates the items in this batch and all child batches.
+        /// </summary>
+        /// <returns></returns>
+        [NotNull]
+        [ItemNotNull]
+        private IEnumerable<IBatchItem> EnumerateItems()
+        {
             Stack<List<IBatchItem>.Enumerator> stack = new Stack<List<IBatchItem>.Enumerator>();
             stack.Push(_items.GetEnumerator());
 
@@ -433,19 +481,18 @@ namespace WebApplications.Utilities.Database
                 {
                     IBatchItem item = enumerator.Current;
 
-                    if (item is SqlBatchCommand command) yield return command;
-                    else
-                    {
-                        Debug.Assert(item is SqlBatch);
+                    yield return item;
 
+                    if (item is SqlBatch batch)
+                    {
                         stack.Push(enumerator);
-                        stack.Push(((SqlBatch)item)._items.GetEnumerator());
+                        stack.Push(batch._items.GetEnumerator());
                         break;
                     }
                 }
             }
         }
-        
+
         /// <summary>
         /// Adds the command given to the batch.
         /// </summary>
@@ -864,16 +911,26 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
+            State state;
+
             // If this isnt the root batch, need to begin executing the root then wait for this batch to complete
             if (!IsRoot)
             {
-                throw new NotImplementedException();
+                using (state = GetState())
+                {
+#pragma warning disable 4014
+                    // Start but don't await it
+                    state.Batch.ExecuteAsync(cancellationToken);
+#pragma warning restore 4014
+                }
+
+                await ((IBatchItem)this).Result.GetResultAsync(cancellationToken).ConfigureAwait(false);
+                return;
             }
 
             // If we're already completed, just return
             if (_state.Value == Constants.BatchState.Completed) return;
 
-            State state;
             using (state = GetState())
             {
                 if (state.CommandCount < 1)
@@ -894,11 +951,19 @@ namespace WebApplications.Utilities.Database
                 {
                     Connection connection = DetermineConnection();
 
-                    // Set the result count for each command to the number of connections
-                    foreach (SqlBatchCommand command in this)
-                        command.Result.SetResultCount(1);
+                    // Set the result count for each item to the number of connections
+                    foreach (IBatchItem item in EnumerateItems())
+                        item.Result.SetResultCount(1);
 
                     await ExecuteInternal(connection, 0, cancellationToken).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Ensures all results get completed
+                    // TODO Set exception instead?
+                    foreach (IBatchItem item in EnumerateItems())
+                        item.Result.CancelIfNotComplete();
+                    throw;
                 }
                 finally
                 {
@@ -915,15 +980,24 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public async Task ExecuteAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
+            State state;
             if (!IsRoot)
             {
-                throw new NotImplementedException();
+                using (state = GetState())
+                {
+#pragma warning disable 4014
+                    // Start but dont await it
+                    state.Batch.ExecuteAllAsync(cancellationToken);
+#pragma warning restore 4014
+                }
+
+                await ((IBatchItem)this).Result.GetResultAsync(cancellationToken).ConfigureAwait(false);
+                return;
             }
 
             // If we're already completed, just return
             if (_state.Value == Constants.BatchState.Completed) return;
 
-            State state;
             using (state = GetState())
             {
                 if (state.CommandCount < 1)
@@ -940,26 +1014,38 @@ namespace WebApplications.Utilities.Database
             {
                 if (state.Value == Constants.BatchState.Completed) return;
 
-                try
-                {
-                    // Get the connection strings which are common to each program
-                    HashSet<Connection> commonConnections = GetCommonConnections();
-                    Debug.Assert(commonConnections != null, "commonConnections != null");
+                // CTS used to ensure all connections get cancelled if one of then throws an exception
+                using (ICancelableTokenSource cts = cancellationToken.ToCancelable())
+                    try
+                    {
+                        // Get the connection strings which are common to each program
+                        HashSet<Connection> commonConnections = GetCommonConnections();
+                        Debug.Assert(commonConnections != null, "commonConnections != null");
 
-                    // Set the result count for each command to the number of connections
-                    foreach (SqlBatchCommand command in this)
-                        command.Result.SetResultCount(commonConnections.Count);
+                        // Set the result count for each command to the number of connections
+                        foreach (IBatchItem item in EnumerateItems())
+                            item.Result.SetResultCount(commonConnections.Count);
 
-                    Task[] tasks = commonConnections
-                        .Select((con, i) => Task.Run(() => ExecuteInternal(con, i, cancellationToken)))
-                        .ToArray();
+                        Task[] tasks = commonConnections
+                            .Select((con, i) => Task.Run(() => ExecuteInternal(con, i, cts.Token)))
+                            .ToArray();
 
-                    await Task.WhenAll(tasks).ConfigureAwait(false);
-                }
-                finally
-                {
-                    state.Value = Constants.BatchState.Completed;
-                }
+                        await Task.WhenAll(tasks).ConfigureAwait(false);
+                    }
+                    catch
+                    {
+                        cts.Cancel();
+
+                        // Ensures all results get completed
+                        // TODO Set exception instead?
+                        foreach (IBatchItem item in EnumerateItems())
+                            item.Result.CancelIfNotComplete();
+                        throw;
+                    }
+                    finally
+                    {
+                        state.Value = Constants.BatchState.Completed;
+                    }
             }
         }
 
@@ -973,11 +1059,13 @@ namespace WebApplications.Utilities.Database
             if (_state.Value != Constants.BatchState.Building)
                 return;
 
+#pragma warning disable 4014
             // Execute the batch
             if (all)
-                Task.Run(() => ExecuteAllAsync());
+                ExecuteAllAsync();
             else
-                Task.Run(() => ExecuteAsync());
+                ExecuteAsync();
+#pragma warning restore 4014
         }
 
         /// <summary>
@@ -1004,12 +1092,9 @@ namespace WebApplications.Utilities.Database
                     connection.ConnectionString);
 
             // Build the batch SQL and get the parameters to the commands
-            PreProcess(
-                infoMessagePrefix,
-                connection,
-                args,
-                out CommandBehavior allBehavior);
+            PreProcess(args);
 
+            CommandBehavior allBehavior = args.Behavior;
             AsyncSemaphore[] semaphores = args.GetSemaphores();
 
             string state = null;
@@ -1019,7 +1104,8 @@ namespace WebApplications.Utilities.Database
 
             void MessageHandler(string message)
             {
-                if (!TryParseInfoMessage(message, ref state, ref index)) return;
+                if (!TryParseInfoMessage(message, ref state, ref index))
+                    return;
 
                 if (commandReader != null && (index > actualIndex || state != Constants.ExecuteState.Start))
                     commandReader.State = BatchReaderState.Finished;
@@ -1036,15 +1122,58 @@ namespace WebApplications.Utilities.Database
                 Debug.Assert(reader != null, "reader != null");
 
                 object[] values = null;
-                
-                IEnumerator<SqlBatchCommand> commandEnumerator = GetEnumerator();
-                while (commandEnumerator.MoveNext())
+
+                SqlBatchCommand command = null;
+                SqlBatch batch = null;
+
+                Stack<List<IBatchItem>.Enumerator> enumeratorStack = new Stack<List<IBatchItem>.Enumerator>();
+                List<IBatchItem>.Enumerator currentEnumerator = _items.GetEnumerator();
+
+                // Enumerates the batches and commands within this batch
+                bool NextCommand()
                 {
-                    SqlBatchCommand command = commandEnumerator.Current;
+                    if (enumeratorStack == null)
+                    {
+                        // All commands have finished executing, don't need to do anything
+                        return false;
+                    }
+
+                    do
+                    {
+                        while (!currentEnumerator.MoveNext())
+                        {
+                            // TODO Finished processing a batch, need to complete it if needed
+
+                            if (!enumeratorStack.TryPop(out currentEnumerator))
+                            {
+                                // TODO Finished processing the last command. Need to do anything?
+
+                                enumeratorStack = null;
+                                return false;
+                            }
+                        }
+
+                        if (currentEnumerator.Current is SqlBatch currBatch)
+                        {
+                            enumeratorStack.Push(currentEnumerator);
+                            enumeratorStack.Push(currentEnumerator = currBatch._items.GetEnumerator());
+                            batch = currBatch;
+                        }
+                        else
+                        {
+                            command = (SqlBatchCommand)currentEnumerator.Current;
+                            return true;
+                        }
+                    } while (true);
+                }
+                
+                while (NextCommand())
+                {
                     Debug.Assert(command != null, "command != null");
                     
                     try
                     {
+                        // Handle the commands response from the database
                         using (commandReader = CreateReader(reader, command.CommandBehavior))
                         {
                             if (index > actualIndex || index == actualIndex && state != Constants.ExecuteState.Start)
@@ -1107,12 +1236,12 @@ namespace WebApplications.Utilities.Database
                                     if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                                         throw new NotImplementedException("Proper exception, unexpected data");
 
-                                    // TODO Do something with this?
-                                    bool hasNext = await reader.NextResultAsync(cancellationToken)
-                                        .ConfigureAwait(false);
+                                    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
                                     break;
                                 }
                                 case Constants.ExecuteState.Error:
+                                    throw new NotImplementedException();
+                                case Constants.ExecuteState.ReThrow:
                                     throw new NotImplementedException();
                                 default:
                                     throw new NotImplementedException("Proper exception, unexpected state");
@@ -1124,20 +1253,12 @@ namespace WebApplications.Utilities.Database
                         Debug.Assert(cancellationToken.IsCancellationRequested);
                         command.Result.SetCanceled(connectionIndex);
 
-                        while (commandEnumerator.MoveNext())
-                            commandEnumerator.Current.Result.SetCanceled(connectionIndex);
-                        commandEnumerator.Dispose();
-
                         throw;
                     }
                     catch (Exception e)
                     {
                         command.Result.SetException(connectionIndex, e);
-
-                        while (commandEnumerator.MoveNext())
-                            commandEnumerator.Current.Result.SetCanceled(connectionIndex);
-                        commandEnumerator.Dispose();
-
+                        
                         throw;
                     }
                     finally
@@ -1153,21 +1274,8 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Pre-processes the commands to be executed
         /// </summary>
-        /// <param name="uid">The uid.</param>
-        /// <param name="connectionString">The connection string.</param>
         /// <param name="args">The arguments.</param>
-        /// <param name="allBehavior">All behavior.</param>
-        private void PreProcess(
-            [NotNull] string uid,
-            [NotNull] string connectionString,
-            [NotNull] BatchProcessArgs args,
-            out CommandBehavior allBehavior)
-        {
-            ((IBatchItem)this).Process(
-                args);
-
-            allBehavior = args.Behavior;
-        }
+        private void PreProcess([NotNull] BatchProcessArgs args) => ((IBatchItem)this).Process(args);
 
         /// <summary>
         /// Processes the batch to be executed.

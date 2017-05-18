@@ -262,7 +262,14 @@ namespace WebApplications.Utilities.Database
                     _skipRows = true;
                     return false;
                 }
-                return BaseReader.NextResult();
+
+                // Read the rest of the record set
+                while (BaseReader.Read()) { }
+
+                bool result = BaseReader.NextResult();
+                if (!result)
+                    return false;
+                if (IsOpen) return true;
             }
             if (IsFinished) return false;
             throw ClosedError();
@@ -282,10 +289,45 @@ namespace WebApplications.Utilities.Database
                     _skipRows = true;
                     return TaskResult.False;
                 }
-                return BaseReader.NextResultAsync(cancellationToken);
+
+                return Next();
             }
             if (IsFinished) return TaskResult.False;
             throw ClosedError();
+
+            async Task<bool> Next()
+            {
+                // Read the rest of the record set
+                while (await BaseReader.ReadAsync().ConfigureAwait(false)) { }
+
+                bool result = await BaseReader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+                if (!result)
+                    return false;
+
+                if (IsOpen) return true;
+                if (IsFinished) return false;
+                throw ClosedError();
+            }
+        }
+
+        /// <summary>
+        /// Starts the reader.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        internal async Task StartAsync(CancellationToken cancellationToken)
+        {
+            if (!await BaseReader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                throw new InvalidDataException("Missing start record set.");
+
+            if (BaseReader.FieldCount != 1
+                || !await BaseReader.IsDBNullAsync(0, cancellationToken).ConfigureAwait(false)
+                || await BaseReader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                throw new InvalidDataException("Start record set in the wrong format.");
+            }
+
+            await BaseReader.NextResultAsync(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

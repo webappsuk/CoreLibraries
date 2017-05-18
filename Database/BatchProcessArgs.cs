@@ -47,8 +47,8 @@ namespace WebApplications.Utilities.Database
         public readonly HashSet<AsyncSemaphore> DatabaseSemaphores = new HashSet<AsyncSemaphore>();
 
         [NotNull]
-        public readonly Stack<string, string> TransactionStack = new Stack<string, string>();
-        
+        public readonly Stack<string, string, List<ushort>> TransactionStack = new Stack<string, string, List<ushort>>();
+
         public bool InTransaction => TransactionStack.Count > 0;
 
         public CommandBehavior Behavior = CommandBehavior.SequentialAccess;

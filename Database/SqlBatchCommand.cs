@@ -48,11 +48,11 @@ namespace WebApplications.Utilities.Database
     public abstract class SqlBatchCommand : IBatchItem
     {
         /// <summary>
-        /// Gets the batch that this command belongs to.
+        /// Gets the batch that owns this command.
         /// </summary>
         /// <value>The batch.</value>
         [NotNull]
-        public SqlBatch Batch { get; }
+        public SqlBatch Owner { get; }
 
         /// <summary>
         /// Gets the program being batched.
@@ -92,12 +92,12 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// The index of the command in the root batch.
         /// </summary>
-        internal int Index;
+        private ushort _index;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlBatchCommand" /> class.
         /// </summary>
-        /// <param name="batch">The batch that this command belongs to.</param>
+        /// <param name="owner">The batch that owns this command.</param>
         /// <param name="program">The program to execute.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="commandBehavior">The preferred command behavior.</param>
@@ -105,7 +105,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="exceptionHandler"></param>
         /// <param name="result">The result object.</param>
         internal SqlBatchCommand(
-            [NotNull] SqlBatch batch,
+            [NotNull] SqlBatch owner,
             [NotNull] SqlProgram program,
             [CanBeNull] SetBatchParametersDelegate setParameters,
             CommandBehavior commandBehavior,
@@ -113,7 +113,7 @@ namespace WebApplications.Utilities.Database
             [CanBeNull] ExceptionHandler<DbException> exceptionHandler,
             [NotNull] SqlBatchResult result)
         {
-            Batch = batch;
+            Owner = owner;
             Program = program;
             _setParameters = setParameters;
             if ((commandBehavior & CommandBehavior.SingleRow) == CommandBehavior.SingleRow)
@@ -154,7 +154,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="args">The arguments.</param>
         void IBatchItem.Process(BatchProcessArgs args)
         {
-            Index = args.CommandIndex;
+            _index = args.CommandIndex;
 
             // Get the parameters for the command
             SqlBatchParametersCollection parameters = GetParametersForConnection(args.ConnectionString, args.CommandIndex);
@@ -225,7 +225,7 @@ namespace WebApplications.Utilities.Database
 
                     args.SqlBuilder
                         .Append("IF (ISNULL(@Cmd")
-                        .Append(cmd.Key.Index)
+                        .Append(cmd.Key._index)
                         .AppendLine("Success,0) <> 1)")
                         .Append("\tRAISERROR(")
                         .AppendNVarChar(message)
@@ -246,7 +246,6 @@ namespace WebApplications.Utilities.Database
             {
                 // Sets a flag indicating that this command executed successfully,
                 // so any command using the output parameters can check
-                // HAVE_TODO If this command is inside a transaction, this flag needs to be set to 0 if the transaction is rolled back
                 args.SqlBuilder
                     .Append("DECLARE @Cmd")
                     .Append(args.CommandIndex)
@@ -256,6 +255,11 @@ namespace WebApplications.Utilities.Database
                             ? " = 1;"
                             : $"; SET @Cmd{args.CommandIndex}Success = 1;");
 
+                // If this command is inside a transaction, this flag needs to be set to 0 if the transaction is rolled back
+                if (args.InTransaction)
+                    args.TransactionStack.Peek().Item3.Add(args.CommandIndex);
+
+                // Raise an info message indicating output parameters are being returned, and select the parameters out
                 SqlBatch
                     .AppendInfo(args, Constants.ExecuteState.Output)
                     .Append("SELECT ");
@@ -298,7 +302,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="commandIndex">Index of the command in the batch.</param>
         /// <returns>The collection of parameters.</returns>
         [NotNull]
-        internal SqlBatchParametersCollection GetParametersForConnection(
+        private SqlBatchParametersCollection GetParametersForConnection(
             [NotNull] string connectionString,
             ushort commandIndex)
         {
@@ -317,7 +321,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="builder">The <see cref="SqlStringBuilder" /> to append the SQL to.</param>
         /// <param name="parameters">The parameters to execute with.</param>
-        public virtual void AppendExecuteSql(
+        protected virtual void AppendExecuteSql(
             [NotNull] SqlStringBuilder builder,
             [NotNull] SqlBatchParametersCollection parameters)
         {
@@ -372,10 +376,9 @@ namespace WebApplications.Utilities.Database
         /// <param name="reader">The reader.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        protected async Task StartReader(DbBatchDataReader reader, CancellationToken cancellationToken)
+        protected Task StartReaderAsync(DbBatchDataReader reader, CancellationToken cancellationToken)
         {
-            if (!await reader.NextResultAsync(cancellationToken).ConfigureAwait(false))
-                throw new InvalidDataException("Missing start record set.");
+            return reader.StartAsync(cancellationToken);
         }
 
         /// <summary>
@@ -412,19 +415,19 @@ namespace WebApplications.Utilities.Database
             /// <summary>
             /// Initializes a new instance of the <see cref="SqlBatchCommand.Scalar{TResult}" /> class.
             /// </summary>
-            /// <param name="batch">The batch that this command belongs to.</param>
+            /// <param name="owner">The batch that owns this command.</param>
             /// <param name="program">The program to execute scalar.</param>
             /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
             /// <param name="exceptionHandler"></param>
             /// <param name="suppressErrors"></param>
             public Scalar(
-                [NotNull] SqlBatch batch,
+                [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 SetBatchParametersDelegate setParameters,
                 ExceptionHandler<DbException> exceptionHandler,
                 bool suppressErrors)
                 : base(
-                    batch,
+                    owner,
                     program,
                     setParameters,
                     CommandBehavior.SequentialAccess,
@@ -450,7 +453,7 @@ namespace WebApplications.Utilities.Database
                 int connectionIndex,
                 CancellationToken cancellationToken)
             {
-                await StartReader(reader, cancellationToken).ConfigureAwait(false);
+                await StartReaderAsync(reader, cancellationToken).ConfigureAwait(false);
                 if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                 {
                     object value = (reader.FieldCount < 1 || reader.IsDBNull(0)) ? null : reader.GetValue(0);
@@ -499,19 +502,19 @@ namespace WebApplications.Utilities.Database
             /// <summary>
             /// Initializes a new instance of the <see cref="SqlBatchCommand.NonQuery" /> class.
             /// </summary>
-            /// <param name="batch">The batch that this command belongs to.</param>
+            /// <param name="owner">The batch that owns this command.</param>
             /// <param name="program">The program to execute scalar.</param>
             /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
             /// <param name="exceptionHandler"></param>
             /// <param name="suppressErrors"></param>
             public NonQuery(
-                [NotNull] SqlBatch batch,
+                [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 SetBatchParametersDelegate setParameters,
                 ExceptionHandler<DbException> exceptionHandler,
                 bool suppressErrors)
                 : base(
-                    batch,
+                    owner,
                     program,
                     setParameters,
                     CommandBehavior.SequentialAccess,
@@ -544,7 +547,7 @@ namespace WebApplications.Utilities.Database
                 int initialCount = 0;
 
                 // If this isn't the first command
-                if (Index > 0)
+                if (_index > 0)
                 {
                     // If we can set the records affected field, reset it to -1
                     if (_setRecordsAffected != null)
@@ -558,7 +561,7 @@ namespace WebApplications.Utilities.Database
                 }
 
                 // Read all the rows
-                await StartReader(reader, cancellationToken).ConfigureAwait(false);
+                await StartReaderAsync(reader, cancellationToken).ConfigureAwait(false);
                 do
                 {
                     while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
@@ -568,7 +571,7 @@ namespace WebApplications.Utilities.Database
 
                 // If this is the first command, or we have a _setRecordsAffected method, we can just return the property directly
                 // Otherwise we need to subtract the initial count from the current count
-                int count = Index == 0 || _setRecordsAffected != null
+                int count = _index == 0 || _setRecordsAffected != null
                     ? reader.RecordsAffected
                     : reader.RecordsAffected - initialCount;
 
@@ -585,7 +588,7 @@ namespace WebApplications.Utilities.Database
             /// <summary>
             /// Initializes a new instance of the <see cref="SqlBatchCommand.BaseReader" /> class.
             /// </summary>
-            /// <param name="batch">The batch that this command belongs to.</param>
+            /// <param name="owner">The batch that owns this command.</param>
             /// <param name="program">The program to execute.</param>
             /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
             /// <param name="commandBehavior">The behavior.</param>
@@ -593,14 +596,14 @@ namespace WebApplications.Utilities.Database
             /// <param name="suppressErrors"></param>
             /// <param name="result">The result.</param>
             protected BaseReader(
-                [NotNull] SqlBatch batch,
+                [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
                 CommandBehavior commandBehavior,
                 ExceptionHandler<DbException> exceptionHandler,
                 bool suppressErrors,
                 [NotNull] SqlBatchResult result)
-                : base(batch, program, setParameters, commandBehavior, suppressErrors, exceptionHandler, result)
+                : base(owner, program, setParameters, commandBehavior, suppressErrors, exceptionHandler, result)
             {
             }
 
@@ -609,7 +612,7 @@ namespace WebApplications.Utilities.Database
             /// </summary>
             /// <param name="builder">The <see cref="SqlStringBuilder" /> to append the SQL to.</param>
             /// <param name="parameters">The parameters to execute with.</param>
-            public override void AppendExecuteSql(SqlStringBuilder builder, SqlBatchParametersCollection parameters)
+            protected override void AppendExecuteSql(SqlStringBuilder builder, SqlBatchParametersCollection parameters)
             {
                 // ReSharper disable StringLiteralTypo
                 if ((CommandBehavior & CommandBehavior.KeyInfo) == CommandBehavior.KeyInfo)
@@ -642,7 +645,7 @@ namespace WebApplications.Utilities.Database
                 int connectionIndex,
                 CancellationToken cancellationToken)
             {
-                await StartReader(reader, cancellationToken).ConfigureAwait(false);
+                await StartReaderAsync(reader, cancellationToken).ConfigureAwait(false);
                 Task task = ExecuteResultDelegate(reader, cancellationToken);
                 await task.ConfigureAwait(false);
                 SetResult(task, connectionIndex);
@@ -679,7 +682,7 @@ namespace WebApplications.Utilities.Database
             /// <summary>
             /// Initializes a new instance of the <see cref="SqlBatchCommand.Reader" /> class.
             /// </summary>
-            /// <param name="batch">The batch that this command belongs to.</param>
+            /// <param name="owner">The batch that owns this command.</param>
             /// <param name="program">The program to execute scalar.</param>
             /// <param name="resultAction">The result function.</param>
             /// <param name="commandBehavior">The behavior.</param>
@@ -687,7 +690,7 @@ namespace WebApplications.Utilities.Database
             /// <param name="exceptionHandler"></param>
             /// <param name="suppressErrors"></param>
             public Reader(
-                [NotNull] SqlBatch batch,
+                [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [NotNull] ResultDelegateAsync resultAction,
                 CommandBehavior commandBehavior,
@@ -695,7 +698,7 @@ namespace WebApplications.Utilities.Database
                 ExceptionHandler<DbException> exceptionHandler,
                 bool suppressErrors)
                 : base(
-                    batch,
+                    owner,
                     program,
                     setParameters,
                     commandBehavior,
@@ -748,7 +751,7 @@ namespace WebApplications.Utilities.Database
             /// <summary>
             /// Initializes a new instance of the <see cref="SqlBatchCommand.Reader{TResult}" /> class.
             /// </summary>
-            /// <param name="batch">The batch that this command belongs to.</param>
+            /// <param name="owner">The batch that owns this command.</param>
             /// <param name="program">The program to execute scalar.</param>
             /// <param name="resultFunc">The result function.</param>
             /// <param name="commandBehavior">The behavior.</param>
@@ -756,7 +759,7 @@ namespace WebApplications.Utilities.Database
             /// <param name="exceptionHandler"></param>
             /// <param name="suppressErrors"></param>
             public Reader(
-                [NotNull] SqlBatch batch,
+                [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [NotNull] ResultDelegateAsync<TResult> resultFunc,
                 CommandBehavior commandBehavior,
@@ -764,7 +767,7 @@ namespace WebApplications.Utilities.Database
                 ExceptionHandler<DbException> exceptionHandler,
                 bool suppressErrors)
                 : base(
-                    batch,
+                    owner,
                     program,
                     setParameters,
                     commandBehavior,
@@ -808,21 +811,21 @@ namespace WebApplications.Utilities.Database
             /// <summary>
             /// Initializes a new instance of the <see cref="SqlBatchCommand.BaseXmlReader" /> class.
             /// </summary>
-            /// <param name="batch">The batch that this command belongs to.</param>
+            /// <param name="owner">The batch that owns this command.</param>
             /// <param name="program">The program to execute.</param>
             /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
             /// <param name="exceptionHandler"></param>
             /// <param name="suppressErrors"></param>
             /// <param name="result">The result.</param>
             protected BaseXmlReader(
-                [NotNull] SqlBatch batch,
+                [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
                 ExceptionHandler<DbException> exceptionHandler,
                 bool suppressErrors,
                 [NotNull] SqlBatchResult result)
                 : base(
-                    batch,
+                    owner,
                     program,
                     setParameters,
                     CommandBehavior.SequentialAccess,
@@ -848,7 +851,7 @@ namespace WebApplications.Utilities.Database
                 int connectionIndex,
                 CancellationToken cancellationToken)
             {
-                await StartReader(reader, cancellationToken).ConfigureAwait(false);
+                await StartReaderAsync(reader, cancellationToken).ConfigureAwait(false);
                 Task task = ExecuteResultDelegate(reader.GetXmlReader(), cancellationToken);
                 await task.ConfigureAwait(false);
                 SetResult(task, connectionIndex);
@@ -885,20 +888,20 @@ namespace WebApplications.Utilities.Database
             /// <summary>
             /// Initializes a new instance of the <see cref="SqlBatchCommand.XmlReader" /> class.
             /// </summary>
-            /// <param name="batch">The batch that this command belongs to.</param>
+            /// <param name="owner">The batch that owns this command.</param>
             /// <param name="program">The program to execute scalar.</param>
             /// <param name="resultAction">The result function.</param>
             /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
             /// <param name="exceptionHandler"></param>
             /// <param name="suppressErrors"></param>
             public XmlReader(
-                [NotNull] SqlBatch batch,
+                [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [NotNull] XmlResultDelegateAsync resultAction,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
                 ExceptionHandler<DbException> exceptionHandler,
                 bool suppressErrors)
-                : base(batch, program, setParameters, exceptionHandler, suppressErrors, new SqlBatchResult<bool>())
+                : base(owner, program, setParameters, exceptionHandler, suppressErrors, new SqlBatchResult<bool>())
             {
                 _resultAction = resultAction;
             }
@@ -947,20 +950,20 @@ namespace WebApplications.Utilities.Database
             /// <summary>
             /// Initializes a new instance of the <see cref="SqlBatchCommand.XmlReader{TResult}" /> class.
             /// </summary>
-            /// <param name="batch">The batch that this command belongs to.</param>
+            /// <param name="owner">The batch that owns this command.</param>
             /// <param name="program">The program to execute scalar.</param>
             /// <param name="resultFunc">The result function.</param>
             /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
             /// <param name="exceptionHandler"></param>
             /// <param name="suppressErrors"></param>
             public XmlReader(
-                [NotNull] SqlBatch batch,
+                [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [NotNull] XmlResultDelegateAsync<TResult> resultFunc,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
                 ExceptionHandler<DbException> exceptionHandler,
                 bool suppressErrors)
-                : base(batch, program, setParameters, exceptionHandler, suppressErrors, new SqlBatchResult<TResult>())
+                : base(owner, program, setParameters, exceptionHandler, suppressErrors, new SqlBatchResult<TResult>())
             {
                 _resultFunc = resultFunc;
             }

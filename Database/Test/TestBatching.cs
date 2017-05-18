@@ -194,7 +194,8 @@ namespace WebApplications.Utilities.Database.Test
                             randomInt,
                             inputOutput,
                             output),
-                    IsolationLevel.Serializable)
+                    IsolationLevel.Serializable,
+                    suppressErrors: true)
                 .AddExecuteReader(
                     returnsTableProg,
                     async (reader, token) =>
@@ -205,13 +206,16 @@ namespace WebApplications.Utilities.Database.Test
                         Assert.AreEqual(output.Value, reader.GetValue(1));
                         Assert.AreEqual(randomDecimal, reader.GetValue(2));
                         Assert.AreEqual(randomBool, reader.GetValue(3));
+
+                        Assert.IsFalse(await reader.NextResultAsync(token));
                     },
                     out tableResult,
                     randomString,
                     // Using output of previous program as input
                     output,
                     randomDecimal,
-                    randomBool)
+                    randomBool,
+                    suppressErrors: true)
                 .AddExecuteXmlReader(
                     returnsXmlProg,
                     (reader, token) =>
@@ -359,6 +363,8 @@ namespace WebApplications.Utilities.Database.Test
                         Assert.AreEqual(output.Value, reader.GetValue(1));
                         Assert.AreEqual(randomDecimal, reader.GetValue(2));
                         Assert.AreEqual(randomBool, reader.GetValue(3));
+
+                        Assert.IsFalse(await reader.NextResultAsync(token));
                     },
                     out tableResult,
                     randomString,
@@ -379,24 +385,24 @@ namespace WebApplications.Utilities.Database.Test
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            using (CancellationTokenSource cts = new CancellationTokenSource(5000))
+            using (CancellationTokenSource cts = new CancellationTokenSource(Debugger.IsAttached ? -1 :  5000))
             try
             {
                 CancellationToken token = cts.Token;
 
-                await nonQueryResult.GetResultAsync(token);
+                await nonQueryResult.GetResultAsync(true, token);
                 AddTime(sw, ref _batchedNonQueryTime);
 
-                await scalarResult.GetResultAsync(token);
+                await scalarResult.GetResultAsync(true, token);
                 AddTime(sw, ref _batchedScalarTime);
 
-                await outputResult.GetResultAsync(token);
+                await outputResult.GetResultAsync(true, token);
                 AddTime(sw, ref _batchedOutputTime);
 
-                await tableResult.GetResultAsync(token);
+                await tableResult.GetResultAsync(true, token);
                 AddTime(sw, ref _batchedTableTime);
 
-                await xmlResult.GetResultAsync(token);
+                await xmlResult.GetResultAsync(true, token);
                 AddTime(sw, ref _batchedXmlTime);
 
                 await batch.ExecuteAsync(token);
@@ -462,6 +468,8 @@ namespace WebApplications.Utilities.Database.Test
                         Assert.AreEqual(output.Value, reader.GetValue(1));
                         Assert.AreEqual(randomDecimal, reader.GetValue(2));
                         Assert.AreEqual(randomBool, reader.GetValue(3));
+
+                        Assert.IsFalse(await reader.NextResultAsync(token));
                     },
                     randomString,
                     // Using output of previous program as input

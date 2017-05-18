@@ -141,7 +141,7 @@ namespace WebApplications.Utilities.Database
                         .Append(" TRANSACTION ")
                         .AppendIdentifier(transactionName)
                         .AppendLine(";");
-                    args.TransactionStack.Push(transactionName, isoLevel);
+                    args.TransactionStack.Push(transactionName, isoLevel, new List<ushort>());
                 }
 
                 // Wrap the contents of the batch in a TRY ... CATCH block
@@ -170,11 +170,14 @@ namespace WebApplications.Utilities.Database
             if (hasTryCatch)
             {
                 string tranName = item.TransactionName;
+                List<ushort> successFlagIndexes = null;
                 if (hasTransaction)
                 {
-                    args.TransactionStack.Pop(out string name, out _);
+                    args.TransactionStack.Pop(out string name, out _, out successFlagIndexes);
                     Debug.Assert(name == tranName);
                     Debug.Assert(tranName != null);
+                    if (args.TransactionStack.Count > 0)
+                        args.TransactionStack.Peek().Item3.AddRange(successFlagIndexes);
                 }
 
                 // If the transaction type is Commit and this is a root transaction, commit it
@@ -188,15 +191,30 @@ namespace WebApplications.Utilities.Database
                 }
                 // If the transaction is Rollback, always roll it back
                 else if (transaction == TransactionType.Rollback)
+                {
                     args.SqlBuilder
                         .Append("ROLLBACK TRANSACTION ")
                         .AppendIdentifier(tranName)
                         .AppendLine(";");
 
+                    // If there were any "@Cmd#Success" flags created within this transaction, their value needs to be set to 0
+                    if (successFlagIndexes?.Count > 0)
+                    {
+                        args.SqlBuilder.Append("SELECT ");
+                        bool first = true;
+                        foreach (ushort index in successFlagIndexes)
+                        {
+                            if (first) first = false;
+                            else args.SqlBuilder.AppendLine(",");
+                            args.SqlBuilder.Append("\t@Cmd").Append(index).Append("Success = 0");
+                        }
+                        args.SqlBuilder.AppendLine(";");
+                    }
+                }
+
                 // End the TRY block and start the CATCH block
                 args.SqlBuilder
                     .IndentRegion(startIndex)
-                    .AppendLine()
                     .AppendLine("END TRY")
                     .AppendLine("BEGIN CATCH")
                     .GetLength(out startIndex);
@@ -213,6 +231,20 @@ namespace WebApplications.Utilities.Database
                         .Append("ROLLBACK TRANSACTION ")
                         .AppendIdentifier(tranName)
                         .AppendLine(";");
+
+                    // If there were any "@Cmd#Success" flags created within this transaction, their value needs to be set to 0
+                    if (successFlagIndexes?.Count > 0)
+                    {
+                        args.SqlBuilder.Append("SELECT ");
+                        bool first = true;
+                        foreach (ushort index in successFlagIndexes)
+                        {
+                            if (first) first = false;
+                            else args.SqlBuilder.AppendLine(",");
+                            args.SqlBuilder.Append("\t@Cmd").Append(index).Append("Success = 0");
+                        }
+                        args.SqlBuilder.AppendLine(";");
+                    }
                 }
 
                 // Output an Error info message then select the error information
@@ -237,14 +269,13 @@ namespace WebApplications.Utilities.Database
                 // End the CATCH block
                 args.SqlBuilder
                     .IndentRegion(startIndex)
-                    .AppendLine()
                     .AppendLine("END CATCH")
                     .AppendLine();
 
                 // Reset the isolation level
                 if (hasTransaction)
                 {
-                    if (!args.TransactionStack.TryPeek(out _, out string isoLevel))
+                    if (!args.TransactionStack.TryPeek(out _, out string isoLevel, out _))
                         isoLevel = GetIsolationLevelStr(IsolationLevel.Unspecified);
 
                     if (isoLevel != null)

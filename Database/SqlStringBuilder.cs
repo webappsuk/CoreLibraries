@@ -40,6 +40,8 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         private readonly StringBuilder _builder;
 
+        private static readonly string _newLineIndent = Environment.NewLine + "\t";
+
         /// <summary>
         /// Gets the underlying string builder.
         /// </summary>
@@ -108,6 +110,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public SqlStringBuilder IndentRegion(int start)
         {
+            // If the region starts just after a new line, expand to include it
             int newLineLength = Environment.NewLine.Length;
             if (start >= newLineLength)
             {
@@ -115,7 +118,16 @@ namespace WebApplications.Utilities.Database
                     start -= newLineLength;
             }
 
-            _builder.Replace(Environment.NewLine, Environment.NewLine + "\t", start, _builder.Length - start);
+            // If the region ends just after a new line, contract to exclude it
+            int length = _builder.Length;
+            if (length >= newLineLength)
+            {
+                if (_builder.ToString(length - newLineLength, newLineLength) == Environment.NewLine)
+                    length -= newLineLength;
+            }
+
+            // Replace all new lines in the region with a new line followed by a tab
+            _builder.Replace(Environment.NewLine, _newLineIndent, start, length - start);
 
             return this;
         }
