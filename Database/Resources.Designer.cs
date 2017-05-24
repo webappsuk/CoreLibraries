@@ -322,6 +322,24 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid batch format. Missing start record set..
+        /// </summary>
+        internal static string DbBatchDataReader_StartAsync_MissingStart {
+            get {
+                return ResourceManager.GetString("DbBatchDataReader_StartAsync_MissingStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid batch format. Start record set in the wrong format..
+        /// </summary>
+        internal static string DbBatchDataReader_StartAsync_WrongFormat {
+            get {
+                return ResourceManager.GetString("DbBatchDataReader_StartAsync_WrongFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The IsolationLevel enumeration value, {0}, is not supported..
         /// </summary>
         internal static string IsolationLevelNotSupported {
@@ -475,6 +493,78 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid batch format. End record set in the wrong format..
+        /// </summary>
+        internal static string SqlBatch_ExecuteInternal_EndWrongFormat {
+            get {
+                return ResourceManager.GetString("SqlBatch_ExecuteInternal_EndWrongFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid batch format. Missing end record set..
+        /// </summary>
+        internal static string SqlBatch_ExecuteInternal_MissingEnd {
+            get {
+                return ResourceManager.GetString("SqlBatch_ExecuteInternal_MissingEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid batch format. Missing error data record set..
+        /// </summary>
+        internal static string SqlBatch_ExecuteInternal_MissingErrorData {
+            get {
+                return ResourceManager.GetString("SqlBatch_ExecuteInternal_MissingErrorData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid batch format. Missing output parameter data for the &apos;{0}&apos; program..
+        /// </summary>
+        internal static string SqlBatch_ExecuteInternal_MissingOutputParameters {
+            get {
+                return ResourceManager.GetString("SqlBatch_ExecuteInternal_MissingOutputParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid batch format. Unexpected output parameters returned for the &apos;{0}&apos; program..
+        /// </summary>
+        internal static string SqlBatch_ExecuteInternal_UnexpectedOutputParameters {
+            get {
+                return ResourceManager.GetString("SqlBatch_ExecuteInternal_UnexpectedOutputParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid batch format. Unexpected state &apos;{0}&apos; returned..
+        /// </summary>
+        internal static string SqlBatch_ExecuteInternal_UnexpectedState {
+            get {
+                return ResourceManager.GetString("SqlBatch_ExecuteInternal_UnexpectedState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid batch format. Incorrect number of output parameters returned for the &apos;{0}&apos; program..
+        /// </summary>
+        internal static string SqlBatch_ExecuteInternal_WrongOutputParameters {
+            get {
+                return ResourceManager.GetString("SqlBatch_ExecuteInternal_WrongOutputParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred while executing an event handler..
+        /// </summary>
+        internal static string SqlBatch_HandleException_Error {
+            get {
+                return ResourceManager.GetString("SqlBatch_HandleException_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The batch has already been added to another batch..
         /// </summary>
         internal static string SqlBatch_RootBatch_AlreadyAdded {
@@ -498,6 +588,42 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlBatch_RootBatch_Executing {
             get {
                 return ResourceManager.GetString("SqlBatch_RootBatch_Executing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The &apos;{1}&apos; parameter of the program &apos;{0}&apos; depends on an output parameters of another program which does not appear before this program in the batch..
+        /// </summary>
+        internal static string SqlBatchCommand_Process_DependsOnMissingOutput {
+            get {
+                return ResourceManager.GetString("SqlBatchCommand_Process_DependsOnMissingOutput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Out value specified for the &apos;{1}&apos; parameter of the &apos;{0}&apos; program is already in use by another program in the batch..
+        /// </summary>
+        internal static string SqlBatchCommand_Process_OutAlreadyInUse {
+            get {
+                return ResourceManager.GetString("SqlBatchCommand_Process_OutAlreadyInUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value of the parameters {0} depend on the output of a previous program which has not been executed successfully..
+        /// </summary>
+        internal static string SqlBatchCommand_Process_SQL_MultipleParametersDependOnFailedProgram {
+            get {
+                return ResourceManager.GetString("SqlBatchCommand_Process_SQL_MultipleParametersDependOnFailedProgram", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The value of the {0} parameter depends on the output of a previous program which has not been executed successfully..
+        /// </summary>
+        internal static string SqlBatchCommand_Process_SQL_SingleParameterDependsOnFailedProgram {
+            get {
+                return ResourceManager.GetString("SqlBatchCommand_Process_SQL_SingleParameterDependsOnFailedProgram", resourceCulture);
             }
         }
         
@@ -534,6 +660,24 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlBatchDataTextReader_Read_OffsetLengthInvalid {
             get {
                 return ResourceManager.GetString("SqlBatchDataTextReader_Read_OffsetLengthInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurred whilst executing the SqlBatch with the ID &apos;{0}&apos;.  {1}.
+        /// </summary>
+        internal static string SqlBatchExecutionException_ErrorOccurredDuringExecution {
+            get {
+                return ResourceManager.GetString("SqlBatchExecutionException_ErrorOccurredDuringExecution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The SqlBatch with the ID &apos;{0}&apos; was not run to completion due to an unhandled exception..
+        /// </summary>
+        internal static string SqlBatchNotRunException_BatchNotRun {
+            get {
+                return ResourceManager.GetString("SqlBatchNotRunException_BatchNotRun", resourceCulture);
             }
         }
         
@@ -732,6 +876,15 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlProgramExecutionException_ErrorOccurredDuringExecution {
             get {
                 return ResourceManager.GetString("SqlProgramExecutionException_ErrorOccurredDuringExecution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The SqlProgram &apos;{0}&apos; was not run due to an unhandled exception elsewhere in the batch that is executing the program..
+        /// </summary>
+        internal static string SqlProgramNotRunException_ProgramNotRun {
+            get {
+                return ResourceManager.GetString("SqlProgramNotRunException_ProgramNotRun", resourceCulture);
             }
         }
         

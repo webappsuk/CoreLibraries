@@ -53,7 +53,11 @@
     <Compile Include="Connection.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DbBatchDataReader.cs" />
+    <Compile Include="Exceptions\ContextReservations.cs" />
     <Compile Include="Exceptions\DatabaseSchemaException.cs" />
+    <Compile Include="Exceptions\SqlBatchExecutionException.cs" />
+    <Compile Include="Exceptions\SqlBatchNotRunException.cs" />
+    <Compile Include="Exceptions\SqlProgramNotRunException.cs" />
     <Compile Include="Exceptions\SqlProgramExecutionException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Generated\SqlProgramGeneric1.Generated.cs">
@@ -183,6 +187,9 @@
     <Compile Include="SqlBatchParameter.cs" />
     <Compile Include="SqlBatchParametersCollection.cs" />
     <Compile Include="SqlBatchResult.cs" />
+    <Compile Include="SqlErrorCollectionPrototype.cs" />
+    <Compile Include="SqlErrorPrototype.cs" />
+    <Compile Include="SqlExceptionPrototype.cs" />
     <Compile Include="SqlProgramCommand.cs" />
     <Compile Include="Generated\SqlProgramGeneric2.Generated.cs">
       <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>

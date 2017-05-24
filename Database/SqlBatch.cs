@@ -35,16 +35,16 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
+using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
@@ -52,11 +52,9 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     /// Delegate to a method for handling an exception.
     /// </summary>
-    /// <typeparam name="T">The type of the exception.</typeparam>
     /// <param name="exception">The exception to handle.</param>
-    /// <param name="suppress">Set to <see langword="true"/> to suppress the exception.</param>
-    public delegate void ExceptionHandler<in T>(T exception, ref bool suppress)
-        where T : Exception;
+    /// <returns><see langword="true"/> if the exception is handled, <see langword="false"/> to propagate to parent handlers.</returns>
+    public delegate bool ExceptionHandler(Exception exception);
 
     /// <summary>
     /// Allows multiple <see cref="SqlProgram">SqlPrograms</see> to be executed in a single database call.
@@ -250,25 +248,18 @@ namespace WebApplications.Utilities.Database
         /// The exception handler for any errors that occur in the database.
         /// Only used if there is a transaction or errors are suppressed.
         /// </summary>
-        private readonly ExceptionHandler<DbException> _exceptionHandler;
+        private readonly ExceptionHandler _exceptionHandler;
 
         /// <summary>
         /// The batch result. Used when this is not the root batch to know when this batch is completed.
         /// </summary>
-        private SqlBatchResult<bool> _batchResult;
-
+        [NotNull]
+        private readonly SqlBatchResult<bool> _batchResult = new SqlBatchResult<bool>();
+        
         /// <summary>
         /// Gets the result for the batch item.
         /// </summary>
-        SqlBatchResult IBatchItem.Result
-        {
-            get
-            {
-                if (_batchResult == null)
-                    Interlocked.CompareExchange(ref _batchResult, new SqlBatchResult<bool>(), null);
-                return _batchResult;
-            }
-        }
+        SqlBatchResult IBatchItem.Result => _batchResult;
 
         /// <summary>
         /// Gets the transaction for this item.
@@ -293,6 +284,14 @@ namespace WebApplications.Utilities.Database
         /// </value>
         bool IBatchItem.SuppressErrors => _suppressErrors;
 
+        /// <summary>
+        /// Gets the exception handler for this item.
+        /// </summary>
+        /// <value>
+        /// The exception handler.
+        /// </value>
+        ExceptionHandler IBatchItem.ExceptionHandler => _exceptionHandler;
+
 #if DEBUG
         /// <summary>
         /// The SQL for the batch. For debugging purposes.
@@ -313,7 +312,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public static SqlBatch Create(
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null,
+            ExceptionHandler exceptionHandler = null,
             Duration? batchTimeout = null)
         {
             return new SqlBatch(batchTimeout, suppressErrors: suppressErrors, exceptionHandler: exceptionHandler);
@@ -338,7 +337,7 @@ namespace WebApplications.Utilities.Database
             IsolationLevel isolationLevel,
             bool rollback = false,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null,
+            ExceptionHandler exceptionHandler = null,
             Duration? batchTimeout = null)
         {
             return new SqlBatch(
@@ -362,7 +361,7 @@ namespace WebApplications.Utilities.Database
             TransactionType transaction = TransactionType.None,
             IsolationLevel isolationLevel = IsolationLevel.Unspecified,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null)
+            ExceptionHandler exceptionHandler = null)
         {
             BatchTimeout = batchTimeout ?? Duration.FromSeconds(30);
             _state = new State(this);
@@ -385,7 +384,7 @@ namespace WebApplications.Utilities.Database
             TransactionType transaction = TransactionType.None,
             IsolationLevel isolationLevel = IsolationLevel.Unspecified,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null)
+            ExceptionHandler exceptionHandler = null)
         {
             BatchTimeout = parent._batchTimeout;
             _state = parent._state;
@@ -472,6 +471,8 @@ namespace WebApplications.Utilities.Database
         [ItemNotNull]
         private IEnumerable<IBatchItem> EnumerateItems()
         {
+            yield return this;
+
             Stack<List<IBatchItem>.Enumerator> stack = new Stack<List<IBatchItem>.Enumerator>();
             stack.Push(_items.GetEnumerator());
 
@@ -531,7 +532,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] out SqlBatchResult<TOut> result,
             [CanBeNull] SetBatchParametersDelegate setParameters = null,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null)
+            ExceptionHandler exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             CheckBuildingStateQuick();
@@ -566,7 +567,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] out SqlBatchResult<int> result,
             [CanBeNull] SetBatchParametersDelegate setParameters = null,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null)
+            ExceptionHandler exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             CheckBuildingStateQuick();
@@ -604,7 +605,7 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             [CanBeNull] SetBatchParametersDelegate setParameters = null,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null)
+            ExceptionHandler exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
@@ -652,7 +653,7 @@ namespace WebApplications.Utilities.Database
             CommandBehavior behavior = CommandBehavior.Default,
             [CanBeNull] SetBatchParametersDelegate setParameters = null,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null)
+            ExceptionHandler exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
@@ -695,7 +696,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] out SqlBatchResult result,
             [CanBeNull] SetBatchParametersDelegate setParameters = null,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null)
+            ExceptionHandler exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
@@ -738,7 +739,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] out SqlBatchResult<TOut> result,
             [CanBeNull] SetBatchParametersDelegate setParameters = null,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null)
+            ExceptionHandler exceptionHandler = null)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
@@ -852,7 +853,7 @@ namespace WebApplications.Utilities.Database
         public SqlBatch AddBatch(
             [NotNull] Action<SqlBatch> addToBatch,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null)
+            ExceptionHandler exceptionHandler = null)
         {
             if (addToBatch == null) throw new ArgumentNullException(nameof(addToBatch));
             CheckBuildingStateQuick();
@@ -884,7 +885,7 @@ namespace WebApplications.Utilities.Database
             IsolationLevel isolationLevel,
             bool rollback = false,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null)
+            ExceptionHandler exceptionHandler = null)
         {
             if (addToBatch == null) throw new ArgumentNullException(nameof(addToBatch));
             CheckBuildingStateQuick();
@@ -918,6 +919,7 @@ namespace WebApplications.Utilities.Database
             {
                 using (state = GetState())
                 {
+                    Debug.Assert(state.Batch.IsRoot);
 #pragma warning disable 4014
                     // Start but don't await it
                     state.Batch.ExecuteAsync(cancellationToken);
@@ -957,12 +959,18 @@ namespace WebApplications.Utilities.Database
 
                     await ExecuteInternal(connection, 0, cancellationToken).ConfigureAwait(false);
                 }
-                catch
+                catch (OperationCanceledException oce)
                 {
                     // Ensures all results get completed
-                    // TODO Set exception instead?
                     foreach (IBatchItem item in EnumerateItems())
-                        item.Result.CancelIfNotComplete();
+                        item.Result.SetCanceledIfNotComplete(oce.CancellationToken);
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    // Ensures all results get completed
+                    foreach (IBatchItem item in EnumerateItems())
+                        item.Result.SetExceptionIfNotComplete(() => item.GetNotRunException(e));
                     throw;
                 }
                 finally
@@ -985,6 +993,7 @@ namespace WebApplications.Utilities.Database
             {
                 using (state = GetState())
                 {
+                    Debug.Assert(state.Batch.IsRoot);
 #pragma warning disable 4014
                     // Start but dont await it
                     state.Batch.ExecuteAllAsync(cancellationToken);
@@ -1014,38 +1023,42 @@ namespace WebApplications.Utilities.Database
             {
                 if (state.Value == Constants.BatchState.Completed) return;
 
-                // CTS used to ensure all connections get cancelled if one of then throws an exception
-                using (ICancelableTokenSource cts = cancellationToken.ToCancelable())
-                    try
-                    {
-                        // Get the connection strings which are common to each program
-                        HashSet<Connection> commonConnections = GetCommonConnections();
-                        Debug.Assert(commonConnections != null, "commonConnections != null");
+                try
+                {
+                    // Get the connection strings which are common to each program
+                    HashSet<Connection> commonConnections = GetCommonConnections();
+                    Debug.Assert(commonConnections != null, "commonConnections != null");
 
-                        // Set the result count for each command to the number of connections
-                        foreach (IBatchItem item in EnumerateItems())
-                            item.Result.SetResultCount(commonConnections.Count);
+                    // Set the result count for each command to the number of connections
+                    foreach (IBatchItem item in EnumerateItems())
+                        item.Result.SetResultCount(commonConnections.Count);
 
-                        Task[] tasks = commonConnections
-                            .Select((con, i) => Task.Run(() => ExecuteInternal(con, i, cts.Token)))
-                            .ToArray();
+                    // Execute the batch on the connections
+                    Task[] tasks = commonConnections
+                        .Select((con, i) => Task.Run(() => ExecuteInternal(con, i, cancellationToken)))
+                        .ToArray();
 
-                        await Task.WhenAll(tasks).ConfigureAwait(false);
-                    }
-                    catch
-                    {
-                        cts.Cancel();
-
-                        // Ensures all results get completed
-                        // TODO Set exception instead?
-                        foreach (IBatchItem item in EnumerateItems())
-                            item.Result.CancelIfNotComplete();
-                        throw;
-                    }
-                    finally
-                    {
-                        state.Value = Constants.BatchState.Completed;
-                    }
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException oce)
+                {
+                    // Ensures all results get completed
+                    foreach (IBatchItem item in EnumerateItems())
+                        item.Result.SetCanceledIfNotComplete(oce.CancellationToken);
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    // Ensures all results get completed
+                    foreach (IBatchItem item in EnumerateItems())
+                        item.Result.SetExceptionIfNotComplete(() => item.GetNotRunException(e));
+                    throw;
+                }
+                finally
+                {
+                    state.Value = Constants.BatchState.Completed;
+                    Debug.Assert(EnumerateItems().All(i => i.Result.IsCompleted()));
+                }
             }
         }
 
@@ -1073,7 +1086,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="connectionIndex">Index of the connection.</param>
-        /// <param name="cancellationToken">A cancellation token.</param>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
         [NotNull]
         private async Task ExecuteInternal(
             [NotNull] Connection connection,
@@ -1083,7 +1096,6 @@ namespace WebApplications.Utilities.Database
             string infoMessagePrefix = $"{ID:B} @ {DateTime.UtcNow:O}:";
 
             DatabaseSchema schema = connection.CachedSchema;
-            // TODO Do we care enough? // ?? await connection.GetSchema(false, cancellationToken).ConfigureAwait(false);
 
             BatchProcessArgs args =
                 new BatchProcessArgs(
@@ -1102,34 +1114,61 @@ namespace WebApplications.Utilities.Database
             int actualIndex = 0;
             DbBatchDataReader commandReader = null;
 
+            // ReSharper disable AccessToModifiedClosure
             void MessageHandler(string message)
             {
+                Debug.Assert(message != null, "message != null");
+
                 if (!TryParseInfoMessage(message, ref state, ref index))
                     return;
 
                 if (commandReader != null && (index > actualIndex || state != Constants.ExecuteState.Start))
                     commandReader.State = BatchReaderState.Finished;
             }
+            // ReSharper restore AccessToModifiedClosure
 
             // Wait the semaphores and setup the connection, command and reader
             using (await AsyncSemaphore.WaitAllAsync(cancellationToken, semaphores).ConfigureAwait(false))
             using (DbConnection dbConnection = await CreateOpenConnectionAsync(connection, infoMessagePrefix, MessageHandler, cancellationToken)
-                    .ConfigureAwait(false))
+                .ConfigureAwait(false))
             using (DbCommand dbCommand = CreateCommand(args.SqlBuilder.ToString(), dbConnection, args.AllParameters.ToArray()))
+            using (cancellationToken.Register(dbCommand.Cancel))
             using (DbDataReader reader = await dbCommand.ExecuteReaderAsync(allBehavior, cancellationToken)
                 .ConfigureAwait(false))
             {
                 Debug.Assert(reader != null, "reader != null");
 
+                cancellationToken.ThrowIfCancellationRequested();
+
                 object[] values = null;
 
+                // Ensures the 'values' buffer is big enough
+                void EnsureValuesCapacity(int count)
+                {
+                    // Expand the values buffer if needed
+                    if (values == null)
+                        values = new object[count];
+                    else if (values.Length < count)
+                        Array.Resize(ref values, count);
+                }
+
                 SqlBatchCommand command = null;
-                SqlBatch batch = null;
+                SqlBatch batch = this;
 
-                Stack<List<IBatchItem>.Enumerator> enumeratorStack = new Stack<List<IBatchItem>.Enumerator>();
+                var enumeratorStack = new Stack<List<IBatchItem>.Enumerator, SqlBatch, List<Exception>>();
                 List<IBatchItem>.Enumerator currentEnumerator = _items.GetEnumerator();
+                List<Exception> exceptions = new List<Exception>();
 
-                // Enumerates the batches and commands within this batch
+                // The batch for the current root transaction
+                SqlBatch transactionBatch = _transaction != TransactionType.None ? this : null;
+                // The items within the current root tranasction that need to be completed
+                List<IBatchItem> transactionItems = transactionBatch == null ? null : new List<IBatchItem>();
+
+                ValueReference<bool> hasResultSet = new ValueReference<bool>(true);
+
+                bool resetConnection = false;
+
+                // Method for enumerates the batches and commands within this batch
                 bool NextCommand()
                 {
                     if (enumeratorStack == null)
@@ -1140,24 +1179,94 @@ namespace WebApplications.Utilities.Database
 
                     do
                     {
+                        // Attempt to get the next item from the enumerator, popping a new enumerator from the stack
+                        // if this one is empty
                         while (!currentEnumerator.MoveNext())
                         {
-                            // TODO Finished processing a batch, need to complete it if needed
+                            Debug.Assert(batch != null);
 
-                            if (!enumeratorStack.TryPop(out currentEnumerator))
+                            // No items in the enumerator means we have reached the end of a batch. 
+                            // We might need to set it to complete, depending on the transaction
+
+                            if (batch._suppressErrors)
+                                Debug.Assert(exceptions.Count < 1);
+
+                            if (exceptions.Count > 0)
                             {
-                                // TODO Finished processing the last command. Need to do anything?
+                                batch.SetException(connectionIndex, exceptions.ToArray());
+
+                                if (batch == transactionBatch)
+                                {
+                                    foreach (IBatchItem item in transactionItems)
+                                        item.SetException(connectionIndex, item.GetNotRunException());
+                                }
+                            }
+
+                            // Not inside a transaction, just complete it
+                            if (transactionBatch == null)
+                                batch._batchResult.SetCompleted(connectionIndex);
+
+                            // This is the batch that started the root transaction, so need to complete it and all child batches
+                            else if (batch == transactionBatch)
+                            {
+                                transactionBatch = null;
+                                Debug.Assert(transactionItems != null);
+
+                                batch._batchResult.SetCompleted(connectionIndex);
+                                foreach (IBatchItem item in transactionItems)
+                                    item.Result.SetCompleted(connectionIndex);
+
+                                transactionItems.Clear();
+                            }
+
+                            List<Exception> childEx = exceptions;
+
+                            // Attempt to pop the parent batches enumerator from the stack
+                            if (!enumeratorStack.TryPop(out currentEnumerator, out batch, out exceptions))
+                            {
+                                // Finished processing the last command.
+
+                                // If there are any errors, throw them
+                                if (!_suppressErrors && childEx.Count > 0)
+                                {
+                                    Debug.Assert(!_suppressErrors);
+                                    if (childEx.Count < 2) childEx[0].ReThrow();
+                                    else throw new AggregateException(
+                                        $"Multiple exceptions occurred for the program on connection #{connectionIndex}",
+                                        childEx);
+                                }
 
                                 enumeratorStack = null;
                                 return false;
                             }
+
+                            if (!batch._suppressErrors)
+                                exceptions.AddRange(childEx);
                         }
 
+                        // If transactionBatch is assigned, the item is within a transaction
+                        if (transactionBatch != null)
+                        {
+                            Debug.Assert(transactionItems != null);
+                            transactionItems.Add(currentEnumerator.Current);
+                        }
+
+                        // If the current item is a batch, need to push the parent batch to the stack
                         if (currentEnumerator.Current is SqlBatch currBatch)
                         {
-                            enumeratorStack.Push(currentEnumerator);
-                            enumeratorStack.Push(currentEnumerator = currBatch._items.GetEnumerator());
+                            enumeratorStack.Push(currentEnumerator, batch, exceptions);
+                            currentEnumerator = currBatch._items.GetEnumerator();
                             batch = currBatch;
+                            exceptions = new List<Exception>();
+
+                            // If we arent currently in a transaction, and the new batch has a transaction, set it as the 
+                            // transaction batch
+                            if (transactionBatch == null && currBatch._transaction != TransactionType.None)
+                            {
+                                transactionBatch = currBatch;
+                                if (transactionItems == null)
+                                    transactionItems = new List<IBatchItem>();
+                            }
                         }
                         else
                         {
@@ -1166,107 +1275,308 @@ namespace WebApplications.Utilities.Database
                         }
                     } while (true);
                 }
-                
-                while (NextCommand())
+
+                try
                 {
-                    Debug.Assert(command != null, "command != null");
-                    
+                    // Enumerate the commands in the batch
+                    while (NextCommand())
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            command.Result.SetCanceled(connectionIndex);
+
+                            // If we're inside a transaction, the connection should be reset to ensure it gets rolled back
+                            if (transactionBatch != null)
+                                resetConnection = true;
+
+                            cancellationToken.ThrowIfCancellationRequested();
+                        }
+
+                        Debug.Assert(command != null, "command != null");
+                        actualIndex = command.Index;
+
+                        if (index > actualIndex || !hasResultSet)
+                        {
+                            command.SetException(connectionIndex, new SqlProgramNotRunException(command.Program));
+                            continue;
+                        }
+                        Debug.Assert(index == actualIndex);
+
+                        bool gotOutput = false;
+
+                        // Enumerate the states returned from the database for this command
+                        bool cont = true;
+                        while (index == actualIndex && hasResultSet && cont)
+                        {
+                            if (cancellationToken.IsCancellationRequested)
+                            {
+                                command.Result.SetCanceled(connectionIndex);
+
+                                // If we're inside a transaction, the connection should be reset to ensure it gets rolled back
+                                if (transactionBatch != null)
+                                    resetConnection = true;
+
+                                cancellationToken.ThrowIfCancellationRequested();
+                            }
+
+                            try
+                            {
+                                string currState = state;
+                                // Null out the state, so if no more info messages set it we can detect it
+                                state = null;
+                                switch (currState)
+                                {
+                                    // If the state is null, then there were no more info messages to set it
+                                    case null:
+                                        cont = false;
+                                        break;
+
+                                    // Indicates the start of a command
+                                    case Constants.ExecuteState.Start:
+                                        // Handle the commands response from the database
+                                        using (commandReader = CreateReader(reader, command.CommandBehavior, hasResultSet))
+                                        {
+                                            await command.HandleCommandAsync(
+                                                    commandReader,
+                                                    dbCommand,
+                                                    connectionIndex,
+                                                    cancellationToken)
+                                                .ConfigureAwait(false);
+
+                                            if (commandReader.IsOpen)
+                                            {
+                                                // Read the rest of the result sets until an info message finishes the reader
+                                                await commandReader.ReadTillClosedAsync(cancellationToken)
+                                                    .ConfigureAwait(false);
+                                            }
+                                        }
+                                        commandReader = null;
+                                        break;
+
+                                    // Indicates the values of output parameters will be returned in the next record set
+                                    case Constants.ExecuteState.Output:
+                                        // Get the expected output parameters for the command
+                                        if (!args.CommandOutParams.TryGetValue(command, out var outs))
+                                        {
+                                            throw new SqlBatchExecutionException(
+                                                this,
+                                                LoggingLevel.Critical,
+                                                () => Resources.SqlBatch_ExecuteInternal_UnexpectedOutputParameters,
+                                                command.Program.Name);
+                                        }
+
+                                        gotOutput = true;
+
+                                        // No longer expect the output parameters
+                                        args.CommandOutParams.Remove(command);
+
+                                        // Make sure the output parameter values were actually returned
+                                        if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                        {
+                                            throw new SqlBatchExecutionException(
+                                                this,
+                                                LoggingLevel.Critical,
+                                                () => Resources.SqlBatch_ExecuteInternal_MissingOutputParameters,
+                                                command.Program.Name);
+                                        }
+
+                                        // Make sure the correct number of values were returned
+                                        if (outs.Count != reader.VisibleFieldCount)
+                                        {
+                                            throw new SqlBatchExecutionException(
+                                                this,
+                                                LoggingLevel.Critical,
+                                                () => Resources.SqlBatch_ExecuteInternal_WrongOutputParameters,
+                                                command.Program.Name);
+                                        }
+
+                                        // Expand the values buffer if needed
+                                        EnsureValuesCapacity(reader.VisibleFieldCount);
+
+                                        // Get the output values record
+                                        reader.GetValues(values);
+
+                                        // Set the output values
+                                        for (int i = 0; i < outs.Count; i++)
+                                        {
+                                            Debug.Assert(outs[i].output != null, "outs[i].output != null");
+                                            Debug.Assert(outs[i].param != null, "outs[i].param != null");
+
+                                            outs[i].output.SetOutputValue(values[i], outs[i].param.BaseParameter);
+                                        }
+
+                                        // Make sure theres only one record
+                                        if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                        {
+                                            throw new SqlBatchExecutionException(
+                                                this,
+                                                LoggingLevel.Critical,
+                                                () => Resources.SqlBatch_ExecuteInternal_WrongOutputParameters,
+                                                command.Program.Name);
+                                        }
+
+                                        hasResultSet.Value =
+                                            await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+                                        break;
+
+                                    // Indicates error information will be returned in the next record set
+                                    case Constants.ExecuteState.Error:
+                                        // Make sure error data was returned
+                                        if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                        {
+                                            throw new SqlBatchExecutionException(
+                                                this,
+                                                LoggingLevel.Critical,
+                                                () => Resources.SqlBatch_ExecuteInternal_MissingErrorData,
+                                                command.Program.Name);
+                                        }
+
+                                        // Expand the values buffer if needed
+                                        EnsureValuesCapacity(reader.VisibleFieldCount);
+
+                                        // Get the error data record
+                                        reader.GetValues(values);
+
+                                        // Create a DbException from the error data
+                                        DbException dbException = GetDbException(values, dbConnection);
+                                        SqlProgramExecutionException progExecException =
+                                            new SqlProgramExecutionException(command.Program, dbException);
+
+                                        command.SetException(connectionIndex, progExecException);
+
+                                        // TODO Not currently needed, but could support multiple rows of error data
+
+                                        hasResultSet.Value =
+                                            await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+
+                                        // Add it to the current exception collection if not suppressed
+                                        if (!batch._suppressErrors && !command.SuppressErrors)
+                                            exceptions.Add(progExecException);
+                                        break;
+
+                                    // Indicates the end of a command
+                                    case Constants.ExecuteState.End:
+                                        // If no output parameters were returned, but the command has output parameters, something has gone wrong
+                                        if (!gotOutput && args.CommandOutParams.ContainsKey(command))
+                                        {
+                                            throw new SqlBatchExecutionException(
+                                                this,
+                                                LoggingLevel.Critical,
+                                                () => Resources.SqlBatch_ExecuteInternal_MissingOutputParameters,
+                                                command.Program.Name);
+                                        }
+
+                                        // Make sure the end record set has data
+                                        if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                        {
+                                            throw new SqlBatchExecutionException(
+                                                this,
+                                                LoggingLevel.Critical,
+                                                () => Resources.SqlBatch_ExecuteInternal_MissingEnd,
+                                                command.Program.Name);
+                                        }
+
+                                        // Expects a single row and column with the string "End"
+                                        if (reader.FieldCount != 1
+                                            || await reader.IsDBNullAsync(0, cancellationToken).ConfigureAwait(false)
+                                            || !"End".Equals(reader.GetValue(0))
+                                            || await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+                                        {
+                                            throw new SqlBatchExecutionException(
+                                                this,
+                                                LoggingLevel.Critical,
+                                                () => Resources.SqlBatch_ExecuteInternal_EndWrongFormat,
+                                                command.Program.Name);
+                                        }
+
+                                        // Move on to the next record set, if any
+                                        hasResultSet.Value =
+                                            await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+                                        break;
+
+                                    default:
+                                        throw new SqlBatchExecutionException(
+                                            this,
+                                            LoggingLevel.Critical,
+                                            () => Resources.SqlBatch_ExecuteInternal_UnexpectedState,
+                                            state,
+                                            command.Program.Name);
+                                }
+                            }
+
+                            catch (OperationCanceledException)
+                            {
+                                Debug.Assert(cancellationToken.IsCancellationRequested);
+                                command.Result.SetCanceled(connectionIndex);
+
+                                // If we're inside a transaction, the connection should be reset to ensure it gets rolled back
+                                if (transactionBatch != null)
+                                    resetConnection = true;
+
+                                throw;
+                            }
+                            catch (Exception e)
+                            {
+                                // If the exception is at least Critical and it was thrown by this batch or command,
+                                // rethrow it right away
+                                bool rethrow = false;
+                                if (e is SqlBatchExecutionException bee)
+                                    rethrow = bee.Level >= LoggingLevel.Critical && (bee.BatchId == ID || bee.BatchId == batch.ID);
+                                else if (e is SqlProgramExecutionException pee)
+                                    rethrow = pee.Level >= LoggingLevel.Critical && pee.ProgramName == command.Program.Name;
+                                else
+                                    e = new SqlProgramExecutionException(command.Program, e);
+                                
+                                command.SetException(connectionIndex, e);
+
+                                // If the token has cancellation requested, this might be a cancelled/timeout exception
+                                if (cancellationToken.IsCancellationRequested)
+                                {
+                                    // If we're inside a transaction, the connection should be reset to ensure it gets rolled back
+                                    if (transactionBatch != null)
+                                        resetConnection = true;
+                                }
+                                
+                                // Rethrow if needed
+                                if (rethrow)
+                                    throw;
+
+                                // Add it to the current exception collection if not suppressed
+                                if (!batch._suppressErrors && !command.SuppressErrors)
+                                    exceptions.Add(e);
+                            }
+                        }
+                        if (transactionBatch == null)
+                            command.Result.SetCompleted(connectionIndex);
+                    }
+                }
+                finally
+                {
                     try
                     {
-                        // Handle the commands response from the database
-                        using (commandReader = CreateReader(reader, command.CommandBehavior))
+                        // If the batch was cancelled while inside a transaction, we need to explicitly reset the connection
+                        // to ensure the transaction gets rolled back. Just closing the connection doesn't always do this due to pooling.
+                        if (resetConnection && dbConnection.State == ConnectionState.Open)
                         {
-                            if (index > actualIndex || index == actualIndex && state != Constants.ExecuteState.Start)
-                                commandReader.State = BatchReaderState.Finished;
+                            reader.Close();
 
-                            await command.HandleCommandAsync(
-                                    commandReader,
-                                    dbCommand,
-                                    connectionIndex,
-                                    cancellationToken)
-                                .ConfigureAwait(false);
-
-                            if (commandReader.IsOpen)
+                            Debug.WriteLine("Resetting connection");
+                            using (DbCommand cmd = CreateCommand(
+                                "sp_reset_connection",
+                                dbConnection,
+                                Array<DbParameter>.Empty,
+                                CommandType.StoredProcedure))
                             {
-                                // Read the rest of the result sets until an info message finishes the reader
-                                await commandReader.ReadTillClosedAsync(cancellationToken).ConfigureAwait(false);
+
+                                // ReSharper disable once MethodSupportsCancellation
+                                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                             }
                         }
-                        commandReader = null;
-
-                        // Check the end states
-                        while (state != Constants.ExecuteState.End && index == actualIndex)
-                        {
-                            switch (state)
-                            {
-                                case Constants.ExecuteState.Output:
-                                {
-                                    // Get the expected output parameters for the command
-                                    if (!args.CommandOutParams.TryGetValue(command, out var outs))
-                                        throw new NotImplementedException(
-                                            "Proper exception, unexpected output parameters");
-
-                                    // No longer expect the output parameters
-                                    args.CommandOutParams.Remove(command);
-
-                                    if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                                        throw new NotImplementedException("Proper exception, missing data");
-
-                                    if (outs.Count != reader.VisibleFieldCount)
-                                        throw new NotImplementedException("Proper exception, field count mismatch");
-
-                                    // Expand the values buffer if needed
-                                    if (values == null)
-                                        values = new object[reader.VisibleFieldCount];
-                                    else if (values.Length < reader.VisibleFieldCount)
-                                        Array.Resize(ref values, reader.VisibleFieldCount);
-
-                                    // Get the output values record
-                                    reader.GetValues(values);
-
-                                    // Set the output values
-                                    for (int i = 0; i < outs.Count; i++)
-                                    {
-                                        Debug.Assert(outs[i].output != null, "outs[i].output != null");
-                                        Debug.Assert(outs[i].param != null, "outs[i].param != null");
-
-                                        outs[i].output.SetOutputValue(values[i], outs[i].param.BaseParameter);
-                                    }
-
-                                    if (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                                        throw new NotImplementedException("Proper exception, unexpected data");
-
-                                    await reader.NextResultAsync(cancellationToken).ConfigureAwait(false);
-                                    break;
-                                }
-                                case Constants.ExecuteState.Error:
-                                    throw new NotImplementedException();
-                                case Constants.ExecuteState.ReThrow:
-                                    throw new NotImplementedException();
-                                default:
-                                    throw new NotImplementedException("Proper exception, unexpected state");
-                            }
-                        }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        Debug.Assert(cancellationToken.IsCancellationRequested);
-                        command.Result.SetCanceled(connectionIndex);
-
-                        throw;
                     }
                     catch (Exception e)
                     {
-                        command.Result.SetException(connectionIndex, e);
-                        
-                        throw;
+                        Log.Add(e, LoggingLevel.Error, () => "An error occurred while resetting the connection.");
                     }
-                    finally
-                    {
-                        command.Result.SetCompleted(connectionIndex);
-                    }
-
-                    actualIndex++;
                 }
             }
         }
@@ -1313,32 +1623,6 @@ namespace WebApplications.Utilities.Database
                 .AppendLine(ID.ToString("D"))
                 .AppendLine(" */")
                 .AppendLine();
-        }
-
-        /// <summary>
-        /// Gets the isolation level string.
-        /// </summary>
-        /// <param name="isoLevel">The isolation level.</param>
-        /// <returns></returns>
-        private static string GetIsolationLevelStr(IsolationLevel isoLevel)
-        {
-            switch (isoLevel)
-            {
-                case IsolationLevel.ReadUncommitted:
-                    return "READ UNCOMMITTED";
-                case IsolationLevel.ReadCommitted:
-                case IsolationLevel.Unspecified:
-                    return "READ COMMITTED";
-                case IsolationLevel.RepeatableRead:
-                    return "REPEATABLE READ";
-                case IsolationLevel.Serializable:
-                    return "SERIALIZABLE";
-                case IsolationLevel.Snapshot:
-                    return "SNAPSHOT";
-                case IsolationLevel.Chaos:
-                default:
-                    return null;
-            }
         }
 
         /// <summary>
@@ -1442,9 +1726,9 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         [ItemNotNull]
         private async Task<DbConnection> CreateOpenConnectionAsync(
-            string connectionString,
-            string uid,
-            Action<string> messageHandler,
+            [NotNull] string connectionString,
+            [NotNull] string uid,
+            [NotNull] Action<string> messageHandler,
             CancellationToken cancellationToken)
         {
             DbConnection dbConnection = null;
@@ -1460,7 +1744,7 @@ namespace WebApplications.Utilities.Database
             }
             catch
             {
-                dbConnection.Dispose();
+                dbConnection?.Dispose();
                 throw;
             }
         }
@@ -1476,7 +1760,8 @@ namespace WebApplications.Utilities.Database
         private DbCommand CreateCommand(
             [NotNull] string text,
             [NotNull] DbConnection connection,
-            [NotNull] DbParameter[] parameters)
+            [NotNull] DbParameter[] parameters,
+            CommandType commandType = CommandType.Text)
         {
             DbCommand command = connection.CreateCommand();
             try
@@ -1488,7 +1773,7 @@ namespace WebApplications.Utilities.Database
 #endif
 
                 command.CommandText = text;
-                command.CommandType = CommandType.Text;
+                command.CommandType = commandType;
                 command.CommandTimeout = (int)BatchTimeout.TotalSeconds();
                 command.Parameters.AddRange(parameters);
 
@@ -1502,22 +1787,74 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// Gets a "not run" exception for this item.
+        /// </summary>
+        /// <param name="innerException">The inner exception.</param>
+        /// <returns>The exception.</returns>
+        Exception IBatchItem.GetNotRunException(Exception innerException) 
+            => new SqlBatchNotRunException(this, innerException);
+
+        /// <summary>
+        /// Gets an execution exception for this item.
+        /// </summary>
+        /// <param name="innerException">The inner exception.</param>
+        /// <param name="resource">The resource.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>The exception.</returns>
+        Exception IBatchItem.GetExecutionException(
+            Exception innerException,
+            Expression<Func<string>> resource,
+            params object[] parameters)
+            => new SqlBatchExecutionException(this, innerException, resource, parameters);
+
+        /// <summary>
         /// Creates the <see cref="DbBatchDataReader" /> for the underlying reader given.
         /// </summary>
         /// <param name="reader">The base reader.</param>
         /// <param name="commandBehavior">The program behavior.</param>
+        /// <param name="hasResultSet">The reference to the flag indicating if there are any more result sets.</param>
         /// <returns></returns>
+        /// <exception cref="System.NotSupportedException"></exception>
         [NotNull]
-        private DbBatchDataReader CreateReader([NotNull] DbDataReader reader, CommandBehavior commandBehavior)
+        private DbBatchDataReader CreateReader(
+            [NotNull] DbDataReader reader,
+            CommandBehavior commandBehavior,
+            [NotNull] ValueReference<bool> hasResultSet)
         {
             switch (reader)
             {
                 case SqlDataReader sqlReader:
-                    return new SqlBatchDataReader(sqlReader, commandBehavior);
+                    return new SqlBatchDataReader(this, sqlReader, commandBehavior, hasResultSet);
                 default:
                     // Eventually will support multiple db providers
                     throw new NotSupportedException();
             }
+        }
+
+        /// <summary>
+        /// Gets an exception from error data.
+        /// </summary>
+        /// <param name="errorData">The error data.</param>
+        /// <param name="dbConnection">The database connection.</param>
+        /// <returns></returns>
+        private static DbException GetDbException([NotNull] object[] errorData, [NotNull] DbConnection dbConnection)
+        {
+            Debug.Assert(dbConnection is SqlConnection);
+            SqlConnection sqlConnection = (SqlConnection)dbConnection;
+            return new SqlExceptionPrototype(
+                new SqlErrorCollectionPrototype
+                {
+                    new SqlErrorPrototype(
+                        (int)errorData[0],
+                        (byte)errorData[1],
+                        (byte)errorData[2],
+                        errorData[3] as string,
+                        errorData[4] as string,
+                        errorData[5] as string,
+                        (int)errorData[6])
+                },
+                sqlConnection.ServerVersion,
+                sqlConnection.ClientConnectionId);
         }
 
         /// <summary>

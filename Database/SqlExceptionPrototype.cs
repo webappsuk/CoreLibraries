@@ -1,0 +1,270 @@
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+// Copyright (c) 2015, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Linq.Expressions;
+using System.Reflection;
+using WebApplications.Utilities.Annotations;
+
+namespace WebApplications.Utilities.Database
+{
+    /// <summary>
+    /// The exception that is thrown when SQL Server returns a warning or error.
+    /// </summary>
+    /// <filterpriority>1</filterpriority>
+    [Serializable]
+    [PublicAPI]
+    public class SqlExceptionPrototype
+    {
+        /// <summary>
+        /// Function to creates a <see cref="SqlError"/>.
+        /// </summary>
+        /// <remarks>
+        /// This calls the
+        /// internal static SqlException CreateException(SqlErrorCollection errorCollection, string serverVersion, Guid conId)
+        /// constructor.</remarks>
+        [NotNull]
+        private static readonly Func<SqlErrorCollection, string, Guid, Exception, SqlException> _constructor;
+
+        /// <summary>
+        /// The equivalent <see cref="SqlException"/>.
+        /// </summary>
+        [NotNull]
+        public readonly SqlException SqlException;
+
+        /// <summary>
+        /// Creates the <see cref="_constructor"/> lambda.
+        /// </summary>
+        /// <remarks></remarks>
+        static SqlExceptionPrototype()
+        {
+            // Find SqlError constructor (note we don't get about the overload that accepts uint win32ErrorCode
+            MethodInfo methodInfo =
+                typeof(SqlException).GetMethod(
+                    "CreateException",
+                    BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod,
+                    null,
+                    new[]
+                    {
+                        typeof(SqlErrorCollection),
+                        typeof(string),
+                        typeof(Guid),
+                        typeof(Exception)
+                    },
+                    null);
+            Debug.Assert(methodInfo != null);
+
+            // Create parameters
+            List<ParameterExpression> parameters = new List<ParameterExpression>(4)
+            {
+                Expression.Parameter(
+                    typeof(SqlErrorCollection),
+                    "errorCollection"),
+                Expression.Parameter(typeof(string), "serverVersion"),
+                Expression.Parameter(typeof(Guid), "conId"),
+                Expression.Parameter(typeof(Exception), "innerException")
+            };
+
+            // Create lambda expression.
+            _constructor = Expression.Lambda<Func<SqlErrorCollection, string, Guid, Exception, SqlException>>(
+                Expression.Call(methodInfo, parameters),
+                parameters).Compile();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlExceptionPrototype" /> class.
+        /// </summary>
+        /// <param name="errorCollection">The error collection.</param>
+        /// <param name="serverVersion">The server version.</param>
+        /// <param name="conId">The connection id.</param>
+        /// <param name="innerException">The inner exception.</param>
+        public SqlExceptionPrototype(
+            SqlErrorCollection errorCollection,
+            string serverVersion = null,
+            Guid conId = default(Guid),
+            Exception innerException = null)
+            : this(
+                // ReSharper disable once AssignNullToNotNullAttribute
+                _constructor(
+                    errorCollection,
+                    serverVersion,
+                    conId == default(Guid) ? Guid.NewGuid() : conId,
+                    innerException))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlExceptionPrototype" /> class.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <remarks></remarks>
+        public SqlExceptionPrototype([NotNull] SqlException exception)
+        {
+            SqlException = exception ?? throw new ArgumentNullException(nameof(exception));
+        }
+
+        /// <summary>
+        /// Gets a collection of one or more <see cref="T:System.Data.SqlClient.SqlError"/> objects that give detailed information about exceptions generated by the .NET Framework Data Provider for SQL Server.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// The collected instances of the <see cref="T:System.Data.SqlClient.SqlError"/> class.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public SqlErrorCollection Errors => SqlException.Errors;
+
+        /// <summary>
+        /// Gets the severity level of the error returned from the .NET Framework Data Provider for SQL Server.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// A value from 1 to 25 that indicates the severity level of the error.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public byte Class => SqlException.Class;
+
+        /// <summary>
+        /// Gets the line number within the Transact-SQL command batch or stored procedure that generated the error.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// The line number within the Transact-SQL command batch or stored procedure that generated the error.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public int LineNumber => SqlException.LineNumber;
+
+        /// <summary>
+        /// Gets a number that identifies the type of error.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// The number that identifies the type of error.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public int Number => SqlException.Number;
+
+        /// <summary>
+        /// Gets the name of the stored procedure or remote procedure call (RPC) that generated the error.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// The name of the stored procedure or RPC.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public string Procedure => SqlException.Procedure;
+
+        /// <summary>
+        /// Gets the name of the computer that is running an instance of SQL Server that generated the error.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// The name of the computer running an instance of SQL Server.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public string Server => SqlException.Server;
+
+        /// <summary>
+        /// Gets a message that describes the current exception.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// The message describing the current exception.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public string Message => SqlException.Message;
+
+        /// <summary>
+        /// Gets a numeric error code from SQL Server that represents an error, warning or "no data found" message. For more information about how to decode these values, see SQL Server Books Online.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// The number representing the error code.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public byte State => SqlException.State;
+
+        /// <summary>
+        /// Gets the name of the provider that generated the error.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// The name of the provider that generated the error.
+        /// </returns>
+        /// <filterpriority>2</filterpriority>
+        public string Source => SqlException.Source;
+
+        /// <summary>
+        /// Returns a string that represents the current <see cref="T:System.Data.SqlClient.SqlException"/> object, and includes the client connection ID (for more information, see <see cref="P:System.Data.SqlClient.SqlException.ClientConnectionId"/>).
+        /// </summary>
+        /// 
+        /// <returns>
+        /// A string that represents the current <see cref="T:System.Data.SqlClient.SqlException"/> object.<see cref="T:System.String"/>.
+        /// </returns>
+        public override string ToString() => SqlException.ToString();
+
+        /// <summary>
+        /// Implicit conversion from <see cref="SqlExceptionPrototype" /> to <see cref="SqlException" />.
+        /// </summary>
+        /// <param name="prototype">The prototype.</param>
+        /// <returns>The result of the operator.</returns>
+        /// <remarks></remarks>
+        public static implicit operator SqlException(SqlExceptionPrototype prototype) => prototype?.SqlException;
+
+        /// <summary>
+        /// Implicit conversion from <see cref="SqlException" /> to <see cref="SqlExceptionPrototype" />.
+        /// </summary>
+        /// <param name="exception">The SQL exception.</param>
+        /// <returns>The result of the operator.</returns>
+        /// <remarks></remarks>
+        public static implicit operator SqlExceptionPrototype(SqlException exception)
+        {
+            return exception != null
+                ? new SqlExceptionPrototype(exception)
+                : null;
+        }
+
+        /// <summary>
+        /// Generates the collection.
+        /// </summary>
+        /// <returns></returns>
+        protected static SqlErrorCollection GenerateCollection(
+            int infoNumber,
+            byte errorState,
+            byte errorClass,
+            string errorMessage)
+        {
+            return new
+                SqlErrorCollectionPrototype
+            {
+                new SqlErrorPrototype(infoNumber, errorState, errorClass, errorMessage: errorMessage)
+            };
+        }
+    }
+}

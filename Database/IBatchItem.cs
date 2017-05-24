@@ -25,7 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+using System;
 using System.Data;
+using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Database
@@ -70,9 +72,38 @@ namespace WebApplications.Utilities.Database
         bool SuppressErrors { get; }
 
         /// <summary>
+        /// Gets the exception handler for this item.
+        /// </summary>
+        /// <value>
+        /// The exception handler.
+        /// </value>
+        ExceptionHandler ExceptionHandler { get; }
+
+        /// <summary>
         /// Processes the item to be executed.
         /// </summary>
         /// <param name="args">The arguments.</param>
         void Process([NotNull] BatchProcessArgs args);
+
+        /// <summary>
+        /// Gets a "not run" exception for this item.
+        /// </summary>
+        /// <param name="innerException">The inner exception.</param>
+        /// <returns>The exception.</returns>
+        [NotNull]
+        Exception GetNotRunException([CanBeNull] Exception innerException = null);
+
+        /// <summary>
+        /// Gets an execution exception for this item.
+        /// </summary>
+        /// <param name="innerException">The inner exception.</param>
+        /// <param name="resource">The resource.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>The exception.</returns>
+        [NotNull]
+        Exception GetExecutionException(
+            [CanBeNull] Exception innerException,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters);
     }
 }

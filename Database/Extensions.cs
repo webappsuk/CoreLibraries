@@ -35,6 +35,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Logging;
 using WebApplications.Utilities.Serialization;
 
 namespace WebApplications.Utilities.Database
@@ -249,8 +250,8 @@ namespace WebApplications.Utilities.Database
 
                 // Output an Error info message then select the error information
                 SqlBatch.AppendInfo(args, Constants.ExecuteState.Error, "%d", "@CmdIndex")
-                    .AppendLine(
-                        "SELECT\tERROR_NUMBER(),\r\n\tERROR_SEVERITY(),\r\n\tERROR_STATE(),\r\n\tERROR_LINE(),\r\n\tISNULL(QUOTENAME(ERROR_PROCEDURE()),'NULL'),\r\n\tERROR_MESSAGE();");
+                    .AppendLine("SELECT\tERROR_NUMBER(),\r\n\tCAST(ERROR_STATE() AS tinyint),\r\n\tCAST(ERROR_SEVERITY() AS tinyint)," +
+                                "\r\n\t@@SERVERNAME,\r\n\tERROR_MESSAGE(),\r\n\tERROR_PROCEDURE(),\r\n\tERROR_LINE();");
 
                 // If the error isnt being suppressed, rethrow it for any outer catches to handle it
                 if (!item.SuppressErrors)
@@ -313,6 +314,47 @@ namespace WebApplications.Utilities.Database
                 default:
                     return null;
             }
+        }
+
+        /// <summary>
+        /// Sets the exceptions that occurred for the item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="connectionIndex">Index of the connection.</param>
+        /// <param name="exceptions">The exceptions.</param>
+        internal static void SetException([NotNull] this IBatchItem item, int connectionIndex, [NotNull] params Exception[] exceptions)
+        {
+            item.Result.SetException(connectionIndex, exceptions);
+            foreach (Exception exception in exceptions)
+                HandleException(exception, item);
+        }
+
+        /// <summary>
+        /// Handles an exception.
+        /// </summary>
+        /// <param name="exception">The exception.</param>
+        /// <param name="item">The item whose handler should be used first.</param>
+        private static void HandleException(Exception exception, [NotNull] IBatchItem item)
+        {
+            do
+            {
+                try
+                {
+                    // If the item has a handler and it handles the exception, just return
+                    if (item.ExceptionHandler != null && item.ExceptionHandler(exception))
+                        return;
+                }
+                catch (Exception e)
+                {
+                    Log.Add(
+                        e,
+                        LoggingLevel.Error,
+                        () => Resources.SqlBatch_HandleException_Error);
+                }
+
+                // Move on to the parent item
+                item = item.Owner;
+            } while (item != null);
         }
 
     }

@@ -126,11 +126,19 @@ namespace WebApplications.Utilities.Database
         internal abstract void SetCompleted(int index);
 
         /// <summary>
-        /// Sets the exception that occurred.
+        /// Sets the exception(s) that occurred.
         /// </summary>
         /// <param name="index">The index.</param>
-        /// <param name="exception">The exception.</param>
-        internal abstract void SetException(int index, Exception exception);
+        /// <param name="exceptions">The exceptions.</param>
+        internal abstract void SetException(int index, [NotNull] IEnumerable<Exception> exceptions);
+
+        /// <summary>
+        /// Sets the exception(s) that occurred.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="exceptions">The exceptions.</param>
+        internal void SetException(int index, [NotNull] params Exception[] exceptions)
+            => SetException(index, (IEnumerable<Exception>)exceptions);
 
         /// <summary>
         /// Sets the result to canceled.
@@ -141,7 +149,14 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Sets the result to canceled if it is not yet completed.
         /// </summary>
-        internal abstract void CancelIfNotComplete();
+        /// <param name="cancellationToken">The cancellation token that caused the cancellation.</param>
+        internal abstract void SetCanceledIfNotComplete(CancellationToken cancellationToken = default(CancellationToken));
+
+        /// <summary>
+        /// Sets the result to faulted if it is not yet completed.
+        /// </summary>
+        /// <param name="exceptionFactory">A function which returns the exception for this result.</param>
+        internal abstract void SetExceptionIfNotComplete([NotNull] Func<Exception> exceptionFactory);
 
         /// <summary>
         /// Gets the result asynchronously.
@@ -180,7 +195,7 @@ namespace WebApplications.Utilities.Database
     /// <typeparam name="T">The type of the value returned by the program.</typeparam>
     public sealed class SqlBatchResult<T> : SqlBatchResult
     {
-        private (T result, bool completed, Exception exception)[] _results;
+        private (T result, bool completed, Exception[] exceptions)[] _results;
         private bool _cancelled;
 
         [NotNull]
@@ -217,7 +232,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="count">The count.</param>
         internal override void SetResultCount(int count)
         {
-            _results = new(T, bool, Exception)[count];
+            _results = new(T, bool, Exception[])[count];
         }
 
         /// <summary>
@@ -251,9 +266,18 @@ namespace WebApplications.Utilities.Database
                     return;
 
             // If there are any exceptions, set the result to faulted
-            if (_results.Any(r => r.exception != null))
+            if (_results.Any(r => r.exceptions != null && r.exceptions.Length > 0))
             {
-                _completionSource.TrySetException(_results.Select(t => t.exception).Where(e => e != null));
+                Exception GetException((T, bool, Exception[] exceptions) result, int ind)
+                {
+                    if (result.exceptions == null || result.exceptions.Length < 1) return null;
+                    if (result.exceptions.Length < 2) return result.exceptions[0];
+                    return new AggregateException(
+                        $"Multiple exceptions occurred for the program on connection #{ind}",
+                        result.exceptions);
+                }
+
+                _completionSource.TrySetException(_results.Select(GetException).Where(e => e != null));
                 return;
             }
 
@@ -272,33 +296,18 @@ namespace WebApplications.Utilities.Database
         /// Sets the exception that occurred.
         /// </summary>
         /// <param name="index">The index.</param>
-        /// <param name="exception">The exception.</param>
-        internal override void SetException(int index, Exception exception)
+        /// <param name="exceptions"></param>
+        internal override void SetException(int index, IEnumerable<Exception> exceptions)
         {
             Debug.Assert(_results != null, "_results != null");
+            Debug.Assert(exceptions != null);
 
             // Combine the exceptions for the index
-            AddException(ref _results[index].exception, exception, index);
+            AddExceptions(ref _results[index].exceptions, exceptions);
 
-            SetCompleted(index);
-
-            void AddException(ref Exception origEx, Exception newEx, int i)
+            void AddExceptions(ref Exception[] origEx, IEnumerable<Exception> newEx)
             {
-                switch (origEx)
-                {
-                    case null:
-                        origEx = newEx;
-                        break;
-                    case AggregateException aggEx:
-                        origEx = new AggregateException(aggEx.Message, aggEx.InnerExceptions.Append(newEx));
-                        break;
-                    default:
-                        origEx = new AggregateException(
-                            $"Multiple exceptions occurred for the command on connection #{i}",
-                            origEx,
-                            newEx);
-                        break;
-                }
+                origEx = origEx?.Union(newEx).ToArray() ?? newEx as Exception[] ?? newEx.ToArray();
             }
         }
 
@@ -306,16 +315,28 @@ namespace WebApplications.Utilities.Database
         /// Sets the result to canceled.
         /// </summary>
         /// <param name="index">The index.</param>
-        internal override void SetCanceled(int index)
-        {
-            _cancelled = true;
-            SetCompleted(index);
-        }
+        internal override void SetCanceled(int index) => _cancelled = true;
 
         /// <summary>
         /// Sets the result to canceled if it is not yet completed.
         /// </summary>
-        internal override void CancelIfNotComplete() => _completionSource.TrySetCanceled();
+        /// <param name="cancellationToken">The cancellation token that caused the cancellation.</param>
+        internal override void SetCanceledIfNotComplete(CancellationToken cancellationToken = default(CancellationToken))
+#if NET452
+            => _completionSource.TrySetCanceled();
+#else
+            => _completionSource.TrySetCanceled(cancellationToken);
+#endif
+
+        /// <summary>
+        /// Sets the result to faulted if it is not yet completed.
+        /// </summary>
+        /// <param name="exceptionFactory">A function which returns the exception for this result.</param>
+        internal override void SetExceptionIfNotComplete(Func<Exception> exceptionFactory)
+        {
+            if (!_completionSource.Task.IsCompleted)
+                _completionSource.TrySetException(exceptionFactory());
+        }
 
         /// <summary>
         /// Gets the result asynchronously.
@@ -332,6 +353,7 @@ namespace WebApplications.Utilities.Database
         /// <remarks>If the batch was executed against all connections, this will return the result of a single connection.</remarks>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
         /// <returns>An awaitable task which returns the result.</returns>
+        [NotNull]
         public new Task<T> GetResultAsync(CancellationToken cancellationToken = default(CancellationToken)) 
             => GetResultAsync(false, cancellationToken);
 
@@ -342,6 +364,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="startExecuting">If set to <see langword="true" /> the batch will start executing if it hasn't already.</param>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
         /// <returns>An awaitable task which returns the result.</returns>
+        [NotNull]
         public new async Task<T> GetResultAsync(bool startExecuting, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Execute the command if its not already running, if requested
@@ -365,6 +388,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
         /// <returns>An awaitable task which returns the results for all connections.</returns>
+        [NotNull]
         public Task<IEnumerable<T>> GetResultsAsync(CancellationToken cancellationToken = default(CancellationToken))
             => GetResultsAsync(false, cancellationToken);
 
@@ -374,6 +398,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="startExecuting">If set to <see langword="true" /> the batch will start executing if it hasn't already.</param>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
         /// <returns>An awaitable task which returns the results for all connections.</returns>
+        [NotNull]
         public async Task<IEnumerable<T>> GetResultsAsync(bool startExecuting, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Execute the command for all connections if its not already running

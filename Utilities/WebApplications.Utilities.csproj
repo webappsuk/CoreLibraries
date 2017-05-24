@@ -180,6 +180,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Threading\TaskCompletionSource.cs" />
+    <Compile Include="ValueReference.cs" />
     <Compile Include="VariableLengthEncoding.cs" />
     <Compile Include="ModuleInitializer.cs" />
     <Compile Include="ParameterUsageVisitor.cs" />

@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
 #endregion
 
 using System;
+using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Logging;
 
@@ -38,26 +39,16 @@ namespace WebApplications.Utilities.Database.Exceptions
     public class SqlProgramExecutionException : LoggingException
     {
         /// <summary>
-        /// The prefix reservation.
-        /// </summary>
-        private static readonly Guid _prefixReservation = System.Guid.NewGuid();
-
-        /// <summary>
         /// The program name context key
         /// </summary>
         [NotNull]
-        public static readonly string ProgramNameContextKey = LogContext.ReserveKey(
-            "SqlProgram Name",
-            _prefixReservation);
+        public static readonly string ProgramNameContextKey = ContextReservations.ProgramNameContextKey;
 
         /// <summary>
-        /// The gateway name of the module.
+        /// The name of the program in which the error occurred.
         /// </summary>
         [CanBeNull]
-        public string ProgramName
-        {
-            get { return this[ProgramNameContextKey]; }
-        }
+        public string ProgramName => this[ProgramNameContextKey];
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="SqlProgramExecutionException"/> class.
@@ -67,11 +58,32 @@ namespace WebApplications.Utilities.Database.Exceptions
         internal SqlProgramExecutionException([NotNull] SqlProgram sqlProgram, [NotNull] Exception innerException)
             : base(
                 new LogContext()
-                    .Set(_prefixReservation, ProgramNameContextKey, sqlProgram.Name),
+                    .Set(ContextReservations.PrefixReservation, ProgramNameContextKey, sqlProgram.Name),
                 innerException,
                 () => Resources.SqlProgramExecutionException_ErrorOccurredDuringExecution,
                 sqlProgram.Name,
                 innerException.Message)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlProgramExecutionException"/> class.
+        /// </summary>
+        /// <param name="sqlProgram">The executing SQL program.</param>
+        /// <param name="innerException">The inner exception.</param>
+        /// <param name="resource">The resource.</param>
+        /// <param name="parameters">The parameters.</param>
+        internal SqlProgramExecutionException(
+            [NotNull] SqlProgram sqlProgram,
+            [CanBeNull] Exception innerException,
+            [CanBeNull] Expression<Func<string>> resource,
+            [CanBeNull] params object[] parameters)
+            : base(
+                new LogContext()
+                    .Set(ContextReservations.PrefixReservation, ProgramNameContextKey, sqlProgram.Name),
+                innerException,
+                resource,
+                parameters)
         {
         }
     }

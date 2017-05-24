@@ -31,14 +31,15 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Database.Schema;
+using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Database
 {
@@ -71,7 +72,6 @@ namespace WebApplications.Utilities.Database
         /// Gets the result object.
         /// </summary>
         /// <value>The result.</value>
-        [NotNull]
         public SqlBatchResult Result { get; }
 
         /// <summary>
@@ -87,12 +87,12 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// The exception handler.
         /// </summary>
-        private readonly ExceptionHandler<DbException> _exceptionHandler;
+        private readonly ExceptionHandler _exceptionHandler;
 
         /// <summary>
         /// The index of the command in the root batch.
         /// </summary>
-        private ushort _index;
+        internal ushort Index { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlBatchCommand" /> class.
@@ -110,7 +110,7 @@ namespace WebApplications.Utilities.Database
             [CanBeNull] SetBatchParametersDelegate setParameters,
             CommandBehavior commandBehavior,
             bool suppressErrors,
-            [CanBeNull] ExceptionHandler<DbException> exceptionHandler,
+            [CanBeNull] ExceptionHandler exceptionHandler,
             [NotNull] SqlBatchResult result)
         {
             Owner = owner;
@@ -141,12 +141,41 @@ namespace WebApplications.Utilities.Database
         string IBatchItem.TransactionName => null;
 
         /// <summary>
-        /// Gets a value indicating whether errors are suppressed in the batch for this item.
+        /// Gets a value indicating whether errors are suppressed in the batch for this command.
         /// </summary>
         /// <value>
         ///   <see langword="true" /> if errors should be suppressed; otherwise, <see langword="false" />.
         /// </value>
-        bool IBatchItem.SuppressErrors => _suppressErrors;
+        public bool SuppressErrors => _suppressErrors;
+
+        /// <summary>
+        /// Gets the exception handler.
+        /// </summary>
+        /// <value>
+        /// The exception handler.
+        /// </value>
+        ExceptionHandler IBatchItem.ExceptionHandler => _exceptionHandler;
+
+        /// <summary>
+        /// Gets a "not run" exception for this item.
+        /// </summary>
+        /// <param name="innerException">The inner exception.</param>
+        /// <returns>The exception.</returns>
+        Exception IBatchItem.GetNotRunException(Exception innerException)
+            => new SqlProgramNotRunException(Program, innerException);
+
+        /// <summary>
+        /// Gets an execution exception for this item.
+        /// </summary>
+        /// <param name="innerException">The inner exception.</param>
+        /// <param name="resource">The resource.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>The exception.</returns>
+        Exception IBatchItem.GetExecutionException(
+            Exception innerException,
+            Expression<Func<string>> resource,
+            params object[] parameters)
+            => new SqlProgramExecutionException(Program, innerException, resource, parameters);
 
         /// <summary>
         /// Processes the command to be executed.
@@ -154,7 +183,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="args">The arguments.</param>
         void IBatchItem.Process(BatchProcessArgs args)
         {
-            _index = args.CommandIndex;
+            Index = args.CommandIndex;
 
             // Get the parameters for the command
             SqlBatchParametersCollection parameters = GetParametersForConnection(args.ConnectionString, args.CommandIndex);
@@ -167,7 +196,13 @@ namespace WebApplications.Utilities.Database
                 if (batchParameter.OutputValue != null)
                 {
                     if (!args.OutParameters.TryGetValue(batchParameter.OutputValue, out DbParameter dbParameter))
-                        throw new NotImplementedException("proper error");
+                        throw new SqlBatchExecutionException(
+                            Owner,
+                            LoggingLevel.Error,
+                            () => Resources.SqlBatchCommand_Process_DependsOnMissingOutput,
+                            Program.Name,
+                            batchParameter.ParameterName);
+
                     batchParameter.BaseParameter = dbParameter;
 
                     if (dependentParams == null) dependentParams = new List<DbBatchParameter>();
@@ -185,7 +220,12 @@ namespace WebApplications.Utilities.Database
                 foreach ((DbBatchParameter batchParameter, IOut outValue) in parameters.OutputParameters)
                 {
                     if (args.OutParameters.ContainsKey(outValue))
-                        throw new NotImplementedException("proper error");
+                        throw new SqlBatchExecutionException(
+                            Owner,
+                            LoggingLevel.Error,
+                            () => Resources.SqlBatchCommand_Process_OutAlreadyInUse,
+                            Program.Name,
+                            batchParameter.ParameterName);
 
                     args.OutParameters.Add(outValue, batchParameter.BaseParameter);
                     args.OutParameterCommands.Add(outValue, this);
@@ -217,15 +257,24 @@ namespace WebApplications.Utilities.Database
                 foreach (IGrouping<SqlBatchCommand, DbBatchParameter> cmd in dependentParams.GroupBy(
                     p => args.OutParameterCommands[p.OutputValue]))
                 {
+                    Debug.Assert(cmd != null, "cmd != null");
+                    Debug.Assert(cmd.Key != null, "cmd.Key != null");
+
                     string[] paramNames = cmd.Select(p => p.ParameterName).ToArray();
-                    // TODO get messages from Resources?
+
                     string message = paramNames.Length == 1
-                        ? $"The value of the {paramNames[0]} parameter depends on the output of a previous command which has not been executed successfully."
-                        : $"The value of the parameters {string.Join(",", paramNames)} depend on the output of a previous command which has not been executed successfully.";
+                        ? string.Format(
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            Resources.SqlBatchCommand_Process_SQL_SingleParameterDependsOnFailedProgram,
+                            paramNames[0])
+                        : string.Format(
+                            // ReSharper disable once AssignNullToNotNullAttribute
+                            Resources.SqlBatchCommand_Process_SQL_MultipleParametersDependOnFailedProgram,
+                            string.Join(",", paramNames));
 
                     args.SqlBuilder
                         .Append("IF (ISNULL(@Cmd")
-                        .Append(cmd.Key._index)
+                        .Append(cmd.Key.Index)
                         .AppendLine("Success,0) <> 1)")
                         .Append("\tRAISERROR(")
                         .AppendNVarChar(message)
@@ -237,7 +286,7 @@ namespace WebApplications.Utilities.Database
             // Indicate the start of the command. The select is used to wait for the 
             // command to be ready before actually executing the programs SQL.
             SqlBatch.AppendInfo(args, Constants.ExecuteState.Start)
-                .AppendLine("SELECT NULL;");
+                .AppendLine("SELECT 'Start';");
 
             // Output the sql for actually executing the commands program
             AppendExecuteSql(args.SqlBuilder, parameters);
@@ -249,15 +298,20 @@ namespace WebApplications.Utilities.Database
                 args.SqlBuilder
                     .Append("DECLARE @Cmd")
                     .Append(args.CommandIndex)
-                    .Append("Success bit")
-                    .AppendLine(
-                        args.ServerVersion.Major > 9
-                            ? " = 1;"
-                            : $"; SET @Cmd{args.CommandIndex}Success = 1;");
+                    .Append("Success bit");
+                if (args.ServerVersion.Major > 9)
+                    args.SqlBuilder.AppendLine(" = 1;");
+                else
+                {
+                    args.SqlBuilder
+                        .Append("; SET @Cmd")
+                        .Append(args.CommandIndex)
+                        .AppendLine("Success = 1;");
+                }
 
                 // If this command is inside a transaction, this flag needs to be set to 0 if the transaction is rolled back
-                if (args.InTransaction)
-                    args.TransactionStack.Peek().Item3.Add(args.CommandIndex);
+                if (args.TransactionStack.TryPeek(out _, out _, out List<ushort> successFlagList))
+                    successFlagList.Add(args.CommandIndex);
 
                 // Raise an info message indicating output parameters are being returned, and select the parameters out
                 SqlBatch
@@ -277,7 +331,9 @@ namespace WebApplications.Utilities.Database
 
             this.EndTry(args, startIndex);
 
-            SqlBatch.AppendInfo(args, Constants.ExecuteState.End).AppendLine();
+            SqlBatch.AppendInfo(args, Constants.ExecuteState.End)
+                .AppendLine("SELECT 'End';")
+                .AppendLine();
 
             SqlProgramMapping mapping = parameters.Mapping;
             SqlProgram program = Program;
@@ -376,10 +432,10 @@ namespace WebApplications.Utilities.Database
         /// <param name="reader">The reader.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns></returns>
-        protected Task StartReaderAsync(DbBatchDataReader reader, CancellationToken cancellationToken)
-        {
-            return reader.StartAsync(cancellationToken);
-        }
+        [NotNull]
+        protected Task StartReaderAsync(
+            [NotNull] DbBatchDataReader reader,
+            CancellationToken cancellationToken) => reader.StartAsync(cancellationToken);
 
         /// <summary>
         /// Handles the command asynchronously.
@@ -424,7 +480,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 SetBatchParametersDelegate setParameters,
-                ExceptionHandler<DbException> exceptionHandler,
+                ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
                     owner,
@@ -511,7 +567,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 SetBatchParametersDelegate setParameters,
-                ExceptionHandler<DbException> exceptionHandler,
+                ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
                     owner,
@@ -547,7 +603,7 @@ namespace WebApplications.Utilities.Database
                 int initialCount = 0;
 
                 // If this isn't the first command
-                if (_index > 0)
+                if (Index > 0)
                 {
                     // If we can set the records affected field, reset it to -1
                     if (_setRecordsAffected != null)
@@ -571,7 +627,7 @@ namespace WebApplications.Utilities.Database
 
                 // If this is the first command, or we have a _setRecordsAffected method, we can just return the property directly
                 // Otherwise we need to subtract the initial count from the current count
-                int count = _index == 0 || _setRecordsAffected != null
+                int count = Index == 0 || _setRecordsAffected != null
                     ? reader.RecordsAffected
                     : reader.RecordsAffected - initialCount;
 
@@ -600,7 +656,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlProgram program,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
                 CommandBehavior commandBehavior,
-                ExceptionHandler<DbException> exceptionHandler,
+                ExceptionHandler exceptionHandler,
                 bool suppressErrors,
                 [NotNull] SqlBatchResult result)
                 : base(owner, program, setParameters, commandBehavior, suppressErrors, exceptionHandler, result)
@@ -695,7 +751,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] ResultDelegateAsync resultAction,
                 CommandBehavior commandBehavior,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
-                ExceptionHandler<DbException> exceptionHandler,
+                ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
                     owner,
@@ -764,7 +820,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] ResultDelegateAsync<TResult> resultFunc,
                 CommandBehavior commandBehavior,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
-                ExceptionHandler<DbException> exceptionHandler,
+                ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
                     owner,
@@ -821,7 +877,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
-                ExceptionHandler<DbException> exceptionHandler,
+                ExceptionHandler exceptionHandler,
                 bool suppressErrors,
                 [NotNull] SqlBatchResult result)
                 : base(
@@ -899,7 +955,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlProgram program,
                 [NotNull] XmlResultDelegateAsync resultAction,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
-                ExceptionHandler<DbException> exceptionHandler,
+                ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(owner, program, setParameters, exceptionHandler, suppressErrors, new SqlBatchResult<bool>())
             {
@@ -961,7 +1017,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlProgram program,
                 [NotNull] XmlResultDelegateAsync<TResult> resultFunc,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
-                ExceptionHandler<DbException> exceptionHandler,
+                ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(owner, program, setParameters, exceptionHandler, suppressErrors, new SqlBatchResult<TResult>())
             {

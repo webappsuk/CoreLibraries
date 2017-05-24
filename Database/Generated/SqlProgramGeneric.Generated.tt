@@ -1139,7 +1139,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] out SqlBatchResult<TOut> result,
             <#= Strings.InputParametersTypedDefault #>,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null,
+            ExceptionHandler exceptionHandler = null,
             TypeConstraintMode? constraintMode = null)
         {
             return this.AddExecuteScalar<TOut>(program, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
@@ -1164,7 +1164,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] out SqlBatchResult<int> result,
             <#= Strings.InputParametersTypedDefault #>,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null,
+            ExceptionHandler exceptionHandler = null,
             TypeConstraintMode? constraintMode = null)
         {
             return this.AddExecuteNonQuery(program, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
@@ -1193,7 +1193,7 @@ namespace WebApplications.Utilities.Database
             <#= Strings.InputParametersTypedDefault #>,
             CommandBehavior behavior = CommandBehavior.Default,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null,
+            ExceptionHandler exceptionHandler = null,
             TypeConstraintMode? constraintMode = null)
         {
             return this.AddExecuteReader(program, resultAction, out result, behavior, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
@@ -1224,7 +1224,7 @@ namespace WebApplications.Utilities.Database
             <#= Strings.InputParametersTypedDefault #>,
             CommandBehavior behavior = CommandBehavior.Default,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null,
+            ExceptionHandler exceptionHandler = null,
             TypeConstraintMode? constraintMode = null)
         {
             return this.AddExecuteReader<TOut>(program, resultFunc, out result, behavior, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
@@ -1251,7 +1251,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] out SqlBatchResult result,
             <#= Strings.InputParametersTypedDefault #>,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null,
+            ExceptionHandler exceptionHandler = null,
             TypeConstraintMode? constraintMode = null)
         {
             return this.AddExecuteXmlReader(program, resultAction, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
@@ -1280,7 +1280,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] out SqlBatchResult<TOut> result,
             <#= Strings.InputParametersTypedDefault #>,
             bool suppressErrors = false,
-            ExceptionHandler<DbException> exceptionHandler = null,
+            ExceptionHandler exceptionHandler = null,
             TypeConstraintMode? constraintMode = null)
         {
             return this.AddExecuteXmlReader<TOut>(program, resultFunc, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);

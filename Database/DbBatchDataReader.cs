@@ -37,6 +37,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Exceptions;
+using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Database
 {
@@ -47,6 +49,9 @@ namespace WebApplications.Utilities.Database
     [PublicAPI]
     public abstract class DbBatchDataReader : DbDataReader
     {
+        [NotNull]
+        private readonly SqlBatch _batch;
+
         [NotNull]
         private readonly DbDataReader _baseReader;
 
@@ -71,6 +76,7 @@ namespace WebApplications.Utilities.Database
         {
             if (IsOpen) return _baseReader;
             if (IsFinished) throw FinishedError();
+            // ReSharper disable once ExplicitCallerInfoArgument
             throw ClosedError(name);
         }
 
@@ -139,6 +145,12 @@ namespace WebApplications.Utilities.Database
         protected readonly CommandBehavior CommandBehavior;
 
         /// <summary>
+        /// The reference to the flag indicating if there are any more result sets.
+        /// </summary>
+        [NotNull]
+        private readonly ValueReference<bool> _hasResultSet;
+
+        /// <summary>
         /// Whether to skip the remaining rows
         /// </summary>
         private bool _skipRows;
@@ -156,13 +168,21 @@ namespace WebApplications.Utilities.Database
         /// <summary>
         /// Initializes a new instance of the <see cref="DbBatchDataReader" /> class.
         /// </summary>
+        /// <param name="batch">The batch being read.</param>
         /// <param name="baseReader">The base reader.</param>
         /// <param name="commandBehavior">The command behavior.</param>
+        /// <param name="hasResultSet">The reference to the flag indicating if there are any more result sets.</param>
         /// <exception cref="System.ArgumentNullException">baseReader</exception>
-        protected internal DbBatchDataReader([NotNull] DbDataReader baseReader, CommandBehavior commandBehavior)
+        protected internal DbBatchDataReader(
+            [NotNull]SqlBatch batch,
+            [NotNull] DbDataReader baseReader,
+            CommandBehavior commandBehavior,
+            [NotNull] ValueReference<bool> hasResultSet)
         {
+            _batch = batch ?? throw new ArgumentNullException(nameof(batch));
             _baseReader = baseReader ?? throw new ArgumentNullException(nameof(baseReader));
             CommandBehavior = commandBehavior;
+            _hasResultSet = hasResultSet ?? throw new ArgumentNullException(nameof(hasResultSet));
         }
 
         /// <summary>Gets the number of columns in the current row.</summary>
@@ -264,9 +284,12 @@ namespace WebApplications.Utilities.Database
                 }
 
                 // Read the rest of the record set
-                while (BaseReader.Read()) { }
+                while (BaseReader.Read())
+                {
+                }
 
                 bool result = BaseReader.NextResult();
+                _hasResultSet.Value = result;
                 if (!result)
                     return false;
                 if (IsOpen) return true;
@@ -298,9 +321,13 @@ namespace WebApplications.Utilities.Database
             async Task<bool> Next()
             {
                 // Read the rest of the record set
-                while (await BaseReader.ReadAsync().ConfigureAwait(false)) { }
+                while (await BaseReader.ReadAsync().ConfigureAwait(false))
+                {
+                }
 
+                // ReSharper disable once PossibleNullReferenceException
                 bool result = await BaseReader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+                _hasResultSet.Value = result;
                 if (!result)
                     return false;
 
@@ -317,17 +344,30 @@ namespace WebApplications.Utilities.Database
         /// <returns></returns>
         internal async Task StartAsync(CancellationToken cancellationToken)
         {
-            if (!await BaseReader.ReadAsync(cancellationToken).ConfigureAwait(false))
-                throw new InvalidDataException("Missing start record set.");
+            // Expecting a single row with a single column with the string "Start"
 
-            if (BaseReader.FieldCount != 1
-                || !await BaseReader.IsDBNullAsync(0, cancellationToken).ConfigureAwait(false)
-                || await BaseReader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            if (!await BaseReader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
-                throw new InvalidDataException("Start record set in the wrong format.");
+                throw new SqlBatchExecutionException(
+                    _batch,
+                    LoggingLevel.Critical,
+                    () => Resources.DbBatchDataReader_StartAsync_MissingStart);
             }
 
-            await BaseReader.NextResultAsync(cancellationToken).ConfigureAwait(false);
+            if (BaseReader.FieldCount != 1
+                // ReSharper disable once PossibleNullReferenceException
+                || await BaseReader.IsDBNullAsync(0, cancellationToken).ConfigureAwait(false)
+                || !"Start".Equals(BaseReader.GetValue(0))
+                || await BaseReader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                throw new SqlBatchExecutionException(
+                    _batch,
+                    LoggingLevel.Critical,
+                    () => Resources.DbBatchDataReader_StartAsync_WrongFormat);
+            }
+
+            // ReSharper disable once PossibleNullReferenceException
+            _hasResultSet.Value = await BaseReader.NextResultAsync(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -343,8 +383,9 @@ namespace WebApplications.Utilities.Database
             async Task DoAsync()
             {
                 // ReSharper disable once PossibleNullReferenceException
-                while (IsOpen && await BaseReader.NextResultAsync(cancellationToken).ConfigureAwait(false))
+                while (IsOpen && _hasResultSet)
                 {
+                    _hasResultSet.Value = await BaseReader.NextResultAsync(cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -525,7 +566,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="T:System.InvalidOperationException">The connection drops or is closed during the data retrieval.The <see cref="T:System.Data.SqlClient.SqlDataReader" /> is closed during the data retrieval.There is no data ready to be read (for example, the first <see cref="M:System.Data.SqlClient.SqlDataReader.Read" /> hasn't been called, or returned false).Tried to read a previously-read column in sequential mode.There was an asynchronous operation in progress. This applies to all Get* methods when running in sequential mode, as they could be called while reading a stream.</exception>
         /// <exception cref="T:System.IndexOutOfRangeException">Trying to read a column that does not exist.</exception>
         /// <exception cref="T:System.InvalidCastException">
-        /// <paramref name="T" /> doesn’t match the type returned by SQL Server or cannot be cast.</exception>
+        /// <typeparamref name="T" /> doesn’t match the type returned by SQL Server or cannot be cast.</exception>
         public override T GetFieldValue<T>(int ordinal) => BaseReaderOpen().GetFieldValue<T>(ordinal);
 
         /// <summary>Asynchronously gets the value of the specified column as a type.</summary>
@@ -536,7 +577,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="T:System.InvalidOperationException">The connection drops or is closed during the data retrieval.The <see cref="T:System.Data.Common.DbDataReader" /> is closed during the data retrieval.There is no data ready to be read (for example, the first <see cref="M:System.Data.Common.DbDataReader.Read" /> hasn't been called, or returned false).Tried to read a previously-read column in sequential mode.There was an asynchronous operation in progress. This applies to all Get* methods when running in sequential mode, as they could be called while reading a stream.</exception>
         /// <exception cref="T:System.IndexOutOfRangeException">Trying to read a column that does not exist.</exception>
         /// <exception cref="T:System.InvalidCastException">
-        /// <paramref name="T" /> doesn’t match the type returned by the data source or cannot be cast.</exception>
+        /// <typeparamref name="T" /> doesn’t match the type returned by the data source or cannot be cast.</exception>
         public override Task<T> GetFieldValueAsync<T>(int ordinal, CancellationToken cancellationToken)
             => BaseReaderOpen().GetFieldValueAsync<T>(ordinal, cancellationToken);
 
@@ -632,15 +673,22 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private new SqlDataReader BaseReaderOpen([CallerMemberName] string name = null)
+            // ReSharper disable once ExplicitCallerInfoArgument
             => (SqlDataReader)base.BaseReaderOpen(name);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DbBatchDataReader" /> class.
         /// </summary>
+        /// <param name="batch">The batch being read.</param>
         /// <param name="baseReader">The base reader.</param>
         /// <param name="commandBehavior">The command behavior.</param>
-        internal SqlBatchDataReader([NotNull] SqlDataReader baseReader, CommandBehavior commandBehavior)
-            : base(baseReader, commandBehavior)
+        /// <param name="hasResultSet">The reference to the flag indicating if there are any more result sets.</param>
+        internal SqlBatchDataReader(
+            [NotNull] SqlBatch batch,
+            [NotNull] SqlDataReader baseReader,
+            CommandBehavior commandBehavior,
+            [NotNull] ValueReference<bool> hasResultSet)
+            : base(batch, baseReader, commandBehavior, hasResultSet)
         {
         }
 
@@ -648,7 +696,7 @@ namespace WebApplications.Utilities.Database
         /// <returns>An integer indicating the number of columns copied.</returns>
         /// <param name="values">An array of <see cref="T:System.Object" /> into which to copy the values. The column values are expressed as SQL Server types.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="values" /> is null. </exception>
-        public int GetSqlValues(Object[] values) => BaseReaderOpen().GetSqlValues(values);
+        public int GetSqlValues([NotNull] Object[] values) => BaseReaderOpen().GetSqlValues(values);
 
         /// <summary>Gets the value of the specified column as <see cref="T:System.Data.SqlTypes.SqlBytes" />.</summary>
         /// <returns>The value of the specified column.</returns>
@@ -734,6 +782,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="T:System.InvalidOperationException">An attempt was made to read or access columns in a closed <see cref="T:System.Data.SqlClient.SqlDataReader" />.</exception>
         /// <exception cref="T:System.InvalidCastException">The retrieved data is not compatible with the <see cref="T:System.Data.SqlTypes.SqlXml" /> type.</exception>
         [NotNull]
+        // ReSharper disable once AssignNullToNotNullAttribute
         public SqlXml GetSqlXml(int i) => BaseReaderOpen().GetSqlXml(i);
 
         /// <summary>Retrieves data of type XML as an <see cref="T:System.Xml.XmlReader" />.</summary>
@@ -743,6 +792,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="T:System.InvalidOperationException">An attempt was made to read or access columns in a closed <see cref="T:System.Data.SqlClient.SqlDataReader" />.</exception>
         /// <exception cref="T:System.InvalidCastException">The retrieved data is not compatible with the <see cref="T:System.Data.SqlTypes.SqlXml" /> type.</exception>
         [NotNull]
+        // ReSharper disable once AssignNullToNotNullAttribute
         public XmlReader GetXmlReader(int i) => BaseReaderOpen().GetXmlReader(i);
 
         /// <summary>Retrieves the value of the specified column as a <see cref="T:System.DateTimeOffset" /> object.</summary>

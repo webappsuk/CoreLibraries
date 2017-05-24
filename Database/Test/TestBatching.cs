@@ -29,6 +29,7 @@
 
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
@@ -38,6 +39,7 @@ using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 using WebApplications.Utilities.Database.Configuration;
+using WebApplications.Utilities.Database.Exceptions;
 
 namespace WebApplications.Utilities.Database.Test
 {
@@ -65,6 +67,7 @@ namespace WebApplications.Utilities.Database.Test
         private static SqlProgram<string, int, decimal, bool> _returnsTableProg;
         private static SqlProgram _returnsXmlProg;
         private static SqlProgram<string, int, int> _raiserrorProg;
+        private static SqlProgram<int> _delayProg;
 
         private static void AddTime(Stopwatch sw, ref double counter)
         {
@@ -81,6 +84,7 @@ namespace WebApplications.Utilities.Database.Test
             out SqlProgram<string, int, decimal, bool> returnsTableProg,
             out SqlProgram returnsXmlProg,
             out SqlProgram<string, int, int> raiserrorProg,
+            out SqlProgram<int> delayProg,
             out string randomString,
             out int randomInt,
             out decimal randomDecimal,
@@ -136,6 +140,8 @@ namespace WebApplications.Utilities.Database.Test
 
             returnsXmlProg = _returnsXmlProg ?? (_returnsXmlProg = database.GetSqlProgram("spReturnsXml").Result);
 
+            delayProg = _delayProg ?? (_delayProg = database.GetSqlProgram<int>("spDelay", "@DelayMS").Result);
+
             randomString = Random.RandomString(Encoding.ASCII, maxLength: 20);
             randomInt = Random.RandomInt32();
             randomDecimal = Math.Round(Random.RandomDecimal() % 1_000_000_000m, 2);
@@ -144,7 +150,7 @@ namespace WebApplications.Utilities.Database.Test
             output = new Out<int>();
             inputOutput = new Out<int>(Random.RandomInt32() / 2);
         }
-
+        
         [TestMethod]
         public async Task TestBatchEverything()
         {
@@ -155,6 +161,7 @@ namespace WebApplications.Utilities.Database.Test
                 out SqlProgram<string, int, decimal, bool> returnsTableProg,
                 out SqlProgram returnsXmlProg,
                 out SqlProgram<string, int, int> raiserrorProg,
+                out _,
                 out string randomString,
                 out int randomInt,
                 out decimal randomDecimal,
@@ -166,8 +173,16 @@ namespace WebApplications.Utilities.Database.Test
 
             SqlBatchResult<string> outputResult = null;
             SqlBatchResult tableResult = null;
+            SqlBatchResult<int> errorResult = null;
 
-            SqlBatch batch = SqlBatch.CreateTransaction(IsolationLevel.ReadUncommitted)
+            int handledExceptionsCount = 0;
+
+            SqlBatch batch = SqlBatch.CreateTransaction(IsolationLevel.ReadUncommitted, exceptionHandler: e =>
+                {
+                    Trace.WriteLine($"Root handler: {e.Message}");
+                    handledExceptionsCount++;
+                    return true;
+                })
                 .AddExecuteNonQuery(
                     nonQueryProg,
                     out SqlBatchResult<int> nonQueryResult,
@@ -184,7 +199,7 @@ namespace WebApplications.Utilities.Database.Test
                     b => b
                         .AddExecuteNonQuery(
                             raiserrorProg,
-                            out _,
+                            out errorResult,
                             "Error!",
                             16,
                             0)
@@ -226,33 +241,79 @@ namespace WebApplications.Utilities.Database.Test
                     },
                     out SqlBatchResult xmlResult);
 
+            Stopwatch sw = new Stopwatch();
+
 #pragma warning disable 4014
             Task<int> task1 = nonQueryResult.GetResultAsync();
             Task<string> task2 = scalarResult.GetResultAsync();
             Task<string> task3 = outputResult.GetResultAsync();
             Task task4 = tableResult.GetResultAsync();
             Task task5 = xmlResult.GetResultAsync();
+
+            task1.ContinueWith(_ => Trace.WriteLine($"Task1 done at {sw.Elapsed.TotalMilliseconds:N2}ms"), TaskContinuationOptions.ExecuteSynchronously);
+            task2.ContinueWith(_ => Trace.WriteLine($"Task2 done at {sw.Elapsed.TotalMilliseconds:N2}ms"), TaskContinuationOptions.ExecuteSynchronously);
+            task3.ContinueWith(_ => Trace.WriteLine($"Task3 done at {sw.Elapsed.TotalMilliseconds:N2}ms"), TaskContinuationOptions.ExecuteSynchronously);
+            task4.ContinueWith(_ => Trace.WriteLine($"Task4 done at {sw.Elapsed.TotalMilliseconds:N2}ms"), TaskContinuationOptions.ExecuteSynchronously);
+            task5.ContinueWith(_ => Trace.WriteLine($"Task5 done at {sw.Elapsed.TotalMilliseconds:N2}ms"), TaskContinuationOptions.ExecuteSynchronously);
 #pragma warning restore 4014
 
-            try
-            {
-                await batch.ExecuteAsync();
-
-                using (CancellationTokenSource cts = new CancellationTokenSource(5000))
+            using (CancellationTokenSource cts = new CancellationTokenSource(Debugger.IsAttached ? -1 : 5000))
+                try
                 {
+                    sw.Start();
+
+                    await batch.ExecuteAsync(cts.Token);
+                    Trace.WriteLine($"All done at   {sw.Elapsed.TotalMilliseconds:N2}ms");
                     CancellationToken token = cts.Token;
+                    bool thrown;
+
                     await task1.WithCancellation(token);
                     await task2.WithCancellation(token);
-                    await task3.WithCancellation(token);
-                    await task4.WithCancellation(token);
+                    try
+                    {
+                        thrown = false;
+                        await errorResult.GetResultAsync();
+                    }
+                    catch (SqlProgramExecutionException exception)
+                    {
+                        thrown = true;
+                        Trace.WriteLine($"{exception.GetType().Name}: {exception.Message}");
+                    }
+                    Assert.IsTrue(thrown, "Exception not thrown");
+
+                    try
+                    {
+                        thrown = false;
+                        await task3.WithCancellation(token);
+                    }
+                    catch (SqlProgramNotRunException exception)
+                    {
+                        thrown = true;
+                        Trace.WriteLine($"{exception.GetType().Name}: {exception.Message}");
+                    }
+                    Assert.IsTrue(thrown, "Exception not thrown");
+
+                    try
+                    {
+                        thrown = false;
+                        await task4.WithCancellation(token);
+                    }
+                    catch (SqlProgramExecutionException exception)
+                    {
+                        thrown = true;
+                        Trace.WriteLine($"{exception.GetType().Name}: {exception.Message}");
+                    }
+                    Assert.IsTrue(thrown, "Exception not thrown");
+
                     await task5.WithCancellation(token);
                 }
-            }
-            finally
-            {
-                Trace.WriteLine("SQL:");
-                Trace.WriteLine(GetSql(batch) ?? "<not available>");
-            }
+                finally
+                {
+                    Trace.WriteLine("SQL:");
+                    Trace.WriteLine(GetSql(batch) ?? "<not available>");
+                }
+
+            Assert.AreEqual(3, handledExceptionsCount);
 
             Assert.AreEqual(-1, task1.Result);
 
@@ -260,13 +321,101 @@ namespace WebApplications.Utilities.Database.Test
                 $"{randomString.Substring(0, randomString.Length)} - {randomInt} - {randomDecimal:F2} - {(randomBool ? "1" : "0")}",
                 task2.Result);
             
-            Assert.AreEqual("<foo>bar</foo>", task3.Result);
+            //Assert.AreEqual("<foo>bar</foo>", task3.Result);
 
-            Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
-            Assert.IsNull(output.OutputError, output.OutputError?.Message);
+            //Assert.IsNull(inputOutput.OutputError, inputOutput.OutputError?.Message);
+            //Assert.IsNull(output.OutputError, output.OutputError?.Message);
+            //
+            //Assert.AreEqual(inputOutputVal * 2, inputOutput.OutputValue.Value);
+            //Assert.AreEqual(randomInt, output.OutputValue.Value);
+        }
 
-            Assert.AreEqual(inputOutputVal * 2, inputOutput.OutputValue.Value);
-            Assert.AreEqual(randomInt, output.OutputValue.Value);
+        [TestMethod]
+        public async Task TestBatchCancellation()
+        {
+            Setup(
+                out SqlProgram<string, int> nonQueryProg,
+                out _,
+                out _,
+                out _,
+                out _,
+                out _,
+                out SqlProgram<int> delayProg,
+                out string randomString,
+                out int randomInt,
+                out decimal randomDecimal,
+                out bool randomBool,
+                out Out<int> output,
+                out Out<int> inputOutput);
+
+            const int delay = 4000;
+
+            SqlBatch batch = SqlBatch.CreateTransaction(IsolationLevel.ReadCommitted)
+                .AddExecuteNonQuery(
+                    nonQueryProg,
+                    out SqlBatchResult<int> res1,
+                    randomString,
+                    randomInt)
+                .AddExecuteNonQuery(
+                    delayProg,
+                    out SqlBatchResult<int> res2,
+                    delay)
+                .AddExecuteNonQuery(
+                    nonQueryProg,
+                    out SqlBatchResult<int> res3,
+                    randomString,
+                    randomInt);
+
+            using (var cts = new CancellationTokenSource(delay / 2))
+            {
+                bool thrown;
+                try
+                {
+                    thrown = false;
+                    await batch.ExecuteAsync(cts.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    thrown = true;
+                }
+                Assert.IsTrue(thrown);
+
+                try
+                {
+                    thrown = false;
+                    await res1.GetResultAsync();
+                }
+                catch (OperationCanceledException e)
+                {
+                    Trace.WriteLine(e.Message);
+                    thrown = true;
+                }
+                Assert.IsTrue(thrown);
+
+                try
+                {
+                    thrown = false;
+                    await res2.GetResultAsync();
+                }
+                catch (OperationCanceledException e)
+                {
+                    Trace.WriteLine(e.Message);
+                    thrown = true;
+                }
+                Assert.IsTrue(thrown);
+
+                try
+                {
+                    thrown = false;
+                    await res3.GetResultAsync();
+                }
+                catch (OperationCanceledException e)
+                {
+                    Trace.WriteLine(e.Message);
+                    thrown = true;
+                }
+                Assert.IsTrue(thrown);
+            }
         }
 
         [TestMethod]
@@ -276,7 +425,7 @@ namespace WebApplications.Utilities.Database.Test
             async Task JIT()
             {
                 _count = -1;
-                await RunBatched();
+                await RunBatched(true);
                 await RunNotBatched();
                 await RunBatched();
                 await RunNotBatched();
@@ -315,7 +464,7 @@ namespace WebApplications.Utilities.Database.Test
         }
 
         [TestMethod]
-        private async Task RunBatched()
+        private async Task RunBatched(bool traceSql = false)
         {
             Setup(
                 out SqlProgram<string, int> nonQueryProg,
@@ -323,6 +472,7 @@ namespace WebApplications.Utilities.Database.Test
                 out SqlProgram<int, Out<int>, Out<int>> outputParametersProg,
                 out SqlProgram<string, int, decimal, bool> returnsTableProg,
                 out SqlProgram returnsXmlProg,
+                out _,
                 out _,
                 out string randomString,
                 out int randomInt,
@@ -385,7 +535,7 @@ namespace WebApplications.Utilities.Database.Test
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            using (CancellationTokenSource cts = new CancellationTokenSource(Debugger.IsAttached ? -1 :  5000))
+            using (CancellationTokenSource cts = new CancellationTokenSource(Debugger.IsAttached ? -1 : 5000))
             try
             {
                 CancellationToken token = cts.Token;
@@ -410,7 +560,7 @@ namespace WebApplications.Utilities.Database.Test
             }
             finally
             {
-                if (_count == 0)
+                if (traceSql)
                 {
                     Trace.WriteLine("SQL:");
                     Trace.WriteLine(GetSql(batch) ?? "<not available>");
@@ -427,6 +577,7 @@ namespace WebApplications.Utilities.Database.Test
                 out SqlProgram<int, Out<int>, Out<int>> outputParametersProg,
                 out SqlProgram<string, int, decimal, bool> returnsTableProg,
                 out SqlProgram returnsXmlProg,
+                out _,
                 out _,
                 out string randomString,
                 out int randomInt,

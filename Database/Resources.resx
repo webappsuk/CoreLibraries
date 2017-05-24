@@ -405,4 +405,55 @@
   <data name="IsolationLevelNotSupported" xml:space="preserve">
     <value>The IsolationLevel enumeration value, {0}, is not supported.</value>
   </data>
+  <data name="SqlBatch_HandleException_Error" xml:space="preserve">
+    <value>An error occurred while executing an event handler.</value>
+  </data>
+  <data name="SqlBatchExecutionException_ErrorOccurredDuringExecution" xml:space="preserve">
+    <value>An error occurred whilst executing the SqlBatch with the ID '{0}'.  {1}</value>
+  </data>
+  <data name="SqlProgramNotRunException_ProgramNotRun" xml:space="preserve">
+    <value>The SqlProgram '{0}' was not run due to an unhandled exception elsewhere in the batch that is executing the program.</value>
+  </data>
+  <data name="SqlBatchNotRunException_BatchNotRun" xml:space="preserve">
+    <value>The SqlBatch with the ID '{0}' was not run to completion due to an unhandled exception.</value>
+  </data>
+  <data name="DbBatchDataReader_StartAsync_MissingStart" xml:space="preserve">
+    <value>Invalid batch format. Missing start record set.</value>
+  </data>
+  <data name="DbBatchDataReader_StartAsync_WrongFormat" xml:space="preserve">
+    <value>Invalid batch format. Start record set in the wrong format.</value>
+  </data>
+  <data name="SqlBatchCommand_Process_DependsOnMissingOutput" xml:space="preserve">
+    <value>The '{1}' parameter of the program '{0}' depends on an output parameters of another program which does not appear before this program in the batch.</value>
+  </data>
+  <data name="SqlBatchCommand_Process_OutAlreadyInUse" xml:space="preserve">
+    <value>The Out value specified for the '{1}' parameter of the '{0}' program is already in use by another program in the batch.</value>
+  </data>
+  <data name="SqlBatchCommand_Process_SQL_SingleParameterDependsOnFailedProgram" xml:space="preserve">
+    <value>The value of the {0} parameter depends on the output of a previous program which has not been executed successfully.</value>
+  </data>
+  <data name="SqlBatchCommand_Process_SQL_MultipleParametersDependOnFailedProgram" xml:space="preserve">
+    <value>The value of the parameters {0} depend on the output of a previous program which has not been executed successfully.</value>
+  </data>
+  <data name="SqlBatch_ExecuteInternal_UnexpectedOutputParameters" xml:space="preserve">
+    <value>Invalid batch format. Unexpected output parameters returned for the '{0}' program.</value>
+  </data>
+  <data name="SqlBatch_ExecuteInternal_MissingOutputParameters" xml:space="preserve">
+    <value>Invalid batch format. Missing output parameter data for the '{0}' program.</value>
+  </data>
+  <data name="SqlBatch_ExecuteInternal_WrongOutputParameters" xml:space="preserve">
+    <value>Invalid batch format. Incorrect number of output parameters returned for the '{0}' program.</value>
+  </data>
+  <data name="SqlBatch_ExecuteInternal_MissingErrorData" xml:space="preserve">
+    <value>Invalid batch format. Missing error data record set.</value>
+  </data>
+  <data name="SqlBatch_ExecuteInternal_MissingEnd" xml:space="preserve">
+    <value>Invalid batch format. Missing end record set.</value>
+  </data>
+  <data name="SqlBatch_ExecuteInternal_EndWrongFormat" xml:space="preserve">
+    <value>Invalid batch format. End record set in the wrong format.</value>
+  </data>
+  <data name="SqlBatch_ExecuteInternal_UnexpectedState" xml:space="preserve">
+    <value>Invalid batch format. Unexpected state '{0}' returned.</value>
+  </data>
 </root>
