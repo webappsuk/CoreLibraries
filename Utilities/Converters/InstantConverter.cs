@@ -41,19 +41,6 @@ namespace WebApplications.Utilities.Converters
     /// </summary>
     public class InstantConverter : TypeConverter
     {
-        [NotNull]
-        [ItemNotNull]
-        private static readonly InstantPattern[] _patterns =
-        {
-            InstantPattern.ExtendedIsoPattern,
-            InstantPattern.GeneralPattern,
-        };
-
-        [NotNull]
-        [ItemNotNull]
-        private static IEnumerable<InstantPattern> Patterns
-            => _patterns.Concat(_patterns.Select(p => p.WithCulture(CultureInfo.CurrentCulture)));
-
         /// <summary>
         /// Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.
         /// </summary>
@@ -90,7 +77,7 @@ namespace WebApplications.Utilities.Converters
             if (@string != null)
             {
                 Instant instant;
-                if (Patterns.TryParseAny(@string.Trim(), out instant))
+                if (TimeHelpers.GetInstantPatterns(culture).TryParseAny(@string.Trim(), out instant))
                     return instant;
 
                 DateTimeOffset dateTimeOffset;

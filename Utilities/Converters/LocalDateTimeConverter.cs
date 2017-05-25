@@ -41,21 +41,6 @@ namespace WebApplications.Utilities.Converters
     /// </summary>
     public class LocalDateTimeConverter : TypeConverter
     {
-        [NotNull]
-        [ItemNotNull]
-        private static readonly LocalDateTimePattern[] _patterns =
-        {
-            LocalDateTimePattern.FullRoundtripPattern,
-            LocalDateTimePattern.BclRoundtripPattern,
-            LocalDateTimePattern.ExtendedIsoPattern,
-            LocalDateTimePattern.GeneralIsoPattern,
-        };
-
-        [NotNull]
-        [ItemNotNull]
-        private static IEnumerable<LocalDateTimePattern> Patterns
-            => _patterns.Concat(_patterns.Select(p => p.WithCulture(CultureInfo.CurrentCulture)));
-
         /// <summary>
         /// Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.
         /// </summary>
@@ -93,7 +78,7 @@ namespace WebApplications.Utilities.Converters
             if (@string != null)
             {
                 LocalDateTime localDateTime;
-                if (Patterns.TryParseAny(@string.Trim(), out localDateTime))
+                if (TimeHelpers.GetLocalDateTimePatterns(culture).TryParseAny(@string.Trim(), out localDateTime))
                     return localDateTime;
 
                 DateTime dateTime;
