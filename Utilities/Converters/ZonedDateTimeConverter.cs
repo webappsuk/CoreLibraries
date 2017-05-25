@@ -41,32 +41,6 @@ namespace WebApplications.Utilities.Converters
     /// </summary>
     public class ZonedDateTimeConverter : TypeConverter
     {
-        [NotNull]
-        [ItemNotNull]
-        private static readonly ZonedDateTimePattern[] _patterns =
-        {
-            ZonedDateTimePattern.ExtendedFormatOnlyIsoPattern,
-            ZonedDateTimePattern.GeneralFormatOnlyIsoPattern
-        };
-
-        [NotNull]
-        [ItemNotNull]
-        private static IEnumerable<ZonedDateTimePattern> Patterns
-        {
-            get
-            {
-                // ReSharper disable PossibleNullReferenceException
-                return _patterns
-                    .Select(p => p.WithZoneProvider(TimeHelpers.DateTimeZoneProvider))
-                    .Concat(
-                        _patterns.Select(
-                            p => p
-                                .WithZoneProvider(TimeHelpers.DateTimeZoneProvider)
-                                .WithCulture(CultureInfo.CurrentCulture)));
-                // ReSharper restore PossibleNullReferenceException
-            }
-        }
-
         /// <summary>
         /// Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.
         /// </summary>
@@ -103,7 +77,7 @@ namespace WebApplications.Utilities.Converters
             if (@string != null)
             {
                 ZonedDateTime zonedDateTime;
-                if (Patterns.TryParseAny(@string.Trim(), out zonedDateTime))
+                if (TimeHelpers.GetZonedDateTimePatterns(culture).TryParseAny(@string.Trim(), out zonedDateTime))
                     return zonedDateTime;
 
                 DateTimeOffset dateTimeOffset;

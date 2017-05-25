@@ -40,18 +40,6 @@ namespace WebApplications.Utilities.Converters
     /// </summary>
     public class PeriodConverter : TypeConverter
     {
-        [NotNull]
-        [ItemNotNull]
-        private static readonly PeriodPattern[] _patterns =
-        {
-            PeriodPattern.RoundtripPattern,
-            PeriodPattern.NormalizingIsoPattern,
-        };
-
-        [NotNull]
-        [ItemNotNull]
-        private static IEnumerable<PeriodPattern> Patterns => _patterns;
-
         /// <summary>
         /// Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.
         /// </summary>
@@ -86,7 +74,7 @@ namespace WebApplications.Utilities.Converters
             if (@string != null)
             {
                 Period period;
-                if (Patterns.TryParseAny(@string.Trim(), out period))
+                if (TimeHelpers.GetPeriodPatterns(culture).TryParseAny(@string.Trim(), out period))
                     return period;
 
                 TimeSpan timeSpan;

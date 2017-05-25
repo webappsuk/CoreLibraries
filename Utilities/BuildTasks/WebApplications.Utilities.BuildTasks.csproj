@@ -14,6 +14,9 @@
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Tasks.v4.0" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <Reference Include="NodaTime, Version=1.3.0.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NodaTime.1.3.1\lib\net35-Client\NodaTime.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -27,11 +30,15 @@
       <Link>PeekableStream.cs</Link>
     </Compile>
     <Compile Include="DownloadCurrencies.cs" />
+    <Compile Include="..\TimeHelpers.cs" />
     <Compile Include="DownloadTZDB.cs" />
     <Compile Include="DownloadFile.cs" />
     <Compile Include="..\Globalization\*.cs" Exclude="..\Globalization\CultureHelper.cs" />
     <Compile Include="..\Annotations\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

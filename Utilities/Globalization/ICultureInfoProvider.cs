@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Globalization
@@ -41,7 +42,7 @@ namespace WebApplications.Utilities.Globalization
         /// <summary>
         /// The date this provider was published.
         /// </summary>
-        DateTime Published { get; }
+        Instant Published { get; }
 
         /// <summary>
         /// The cultures in the provider.

@@ -32,6 +32,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
+using NodaTime.Text;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Globalization
@@ -53,8 +54,8 @@ namespace WebApplications.Utilities.Globalization
             [NotNull] Stream stream,
             bool leaveOpen = false)
         {
-            if (currencyInfoProvider == null) throw new ArgumentNullException("currencyInfoProvider");
-            if (stream == null) throw new ArgumentNullException("stream");
+            if (currencyInfoProvider == null) throw new ArgumentNullException(nameof(currencyInfoProvider));
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
 
             using (BinaryWriter writer = new BinaryWriter(stream, Encoding.UTF8, leaveOpen))
             {
@@ -85,14 +86,14 @@ namespace WebApplications.Utilities.Globalization
         [NotNull]
         public static string ToXml([NotNull] this ICurrencyInfoProvider currencyInfoProvider)
         {
-            if (currencyInfoProvider == null) throw new ArgumentNullException("currencyInfoProvider");
+            if (currencyInfoProvider == null) throw new ArgumentNullException(nameof(currencyInfoProvider));
 
             XElement ccyTbl = new XElement("CcyTbl");
 
             XDocument doc = new XDocument(
                 new XElement(
                     "ISO_4217",
-                    new XAttribute("Pblshd", currencyInfoProvider.Published.ToString("yyyy-MM-dd")),
+                    new XAttribute("Pblshd", currencyInfoProvider.Published.ToString(InstantPattern.ExtendedIsoPattern.PatternText, null)),
                     ccyTbl));
 
             foreach (CurrencyInfo currency in currencyInfoProvider.All)
@@ -125,8 +126,8 @@ namespace WebApplications.Utilities.Globalization
             [NotNull] this ICurrencyInfoProvider first,
             [NotNull] ICurrencyInfoProvider second)
         {
-            if (first == null) throw new ArgumentNullException("first");
-            if (second == null) throw new ArgumentNullException("second");
+            if (first == null) throw new ArgumentNullException(nameof(first));
+            if (second == null) throw new ArgumentNullException(nameof(second));
 
             ICurrencyInfoProvider newest = first.Published > second.Published ? first : second;
             second = first.Published > second.Published ? second : first;

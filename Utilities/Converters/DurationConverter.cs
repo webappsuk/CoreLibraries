@@ -41,20 +41,6 @@ namespace WebApplications.Utilities.Converters
     /// </summary>
     public class DurationConverter : TypeConverter
     {
-        [NotNull]
-        [ItemNotNull]
-        private static readonly DurationPattern[] _patterns =
-        {
-            DurationPattern.RoundtripPattern,
-            DurationPattern.CreateWithInvariantCulture("-H:mm:ss.FFFFFFF"),
-            DurationPattern.CreateWithInvariantCulture("-D.hh:mm:ss.FFFFFFF"),
-        };
-
-        [NotNull]
-        [ItemNotNull]
-        private static IEnumerable<DurationPattern> Patterns
-            => _patterns.Concat(_patterns.Select(p => p.WithCulture(CultureInfo.CurrentCulture)));
-
         /// <summary>
         /// Returns whether this converter can convert an object of the given type to the type of this converter, using the specified context.
         /// </summary>
@@ -88,7 +74,7 @@ namespace WebApplications.Utilities.Converters
             if (@string != null)
             {
                 Duration duration;
-                if (Patterns.TryParseAny(@string.Trim(), out duration))
+                if (TimeHelpers.GetDurationPatterns(culture).TryParseAny(@string.Trim(), out duration))
                     return duration;
 
                 TimeSpan timeSpan;
