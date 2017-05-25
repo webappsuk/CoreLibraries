@@ -42,7 +42,7 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         internal BclCultureInfoProvider()
             : base(
-                Instant.FromDateTimeUtc(new DateTime(2014, 5, 5)),
+                Instant.FromDateTimeUtc(new DateTime(2014, 5, 5, 0, 0, 0, DateTimeKind.Utc)),
                 CultureInfo.GetCultures(CultureTypes.AllCultures)
                     .Where(c => !ReferenceEquals(c, null))
                     // ReSharper disable once AssignNullToNotNullAttribute
