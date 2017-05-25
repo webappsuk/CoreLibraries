@@ -2750,7 +2750,7 @@ namespace WebApplications.Utilities
         }
         #endregion
 
-        #region HasAtLeast/HasExact
+        #region HasAtLeast/HasExact/HasSingle
         /// <summary>
         /// Determines whether a sequence contains at least <paramref name="count" /> elements.
         /// </summary>
@@ -2879,6 +2879,72 @@ namespace WebApplications.Utilities
                         return false;
                 }
             return count == 0;
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains exactly one element, and returns the <paramref name="element"/> as an output parameter.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}" />.</param>
+        /// <param name="element">The single element.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the sequence has exactly one item, otherwise <see langword="false" />.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">source</exception>
+        [Pure]
+        public static bool HasSingle<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, out TSource element)
+        {
+            if (source == null) throw new ArgumentNullException("source");
+
+            if (source is TSource[] array)
+            {
+                if (array.Length == 1)
+                {
+                    element = array[0];
+                    return true;
+                }
+                element = default(TSource);
+                return false;
+            }
+
+            using (IEnumerator<TSource> enumerator = source.GetEnumerator())
+            {
+                if (enumerator.MoveNext())
+                {
+                    element = enumerator.Current;
+                    return !enumerator.MoveNext();
+                }
+                element = default(TSource);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains exactly one element that satisfies a condition, 
+        /// and returns the <paramref name="element"/> as an output parameter.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}" />.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <param name="element">The single element.</param>
+        /// <returns><see langword="true"/> if the sequence has exactly one item that match the <paramref name="predicate"/>, otherwise <see langword="false"/>.</returns>
+        public static bool HasSingle<TSource>(
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, bool> predicate,
+            out TSource element)
+        {
+            if (source == null) throw new ArgumentNullException("source");
+
+            using (IEnumerator<TSource> enumerator = source.Where(predicate).GetEnumerator())
+            {
+                if (enumerator.MoveNext())
+                {
+                    element = enumerator.Current;
+                    return !enumerator.MoveNext();
+                }
+                element = default(TSource);
+                return false;
+            }
         }
         #endregion
 

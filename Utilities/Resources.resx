@@ -556,4 +556,7 @@
   <data name="iso4217" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\iso4217.ccy;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="CultureHelper_GetFallBack_UnknownCulture" xml:space="preserve">
+    <value>The provider does not contain the culture '{0}'.</value>
+  </data>
 </root>

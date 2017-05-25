@@ -268,6 +268,15 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provider does not contain the culture &apos;{0}&apos;..
+        /// </summary>
+        internal static string CultureHelper_GetFallBack_UnknownCulture {
+            get {
+                return ResourceManager.GetString("CultureHelper_GetFallBack_UnknownCulture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parameter &apos;isoCode&apos; can not be null.
         /// </summary>
         internal static string CultureHelper_IsoCodeCannotBeNull {
