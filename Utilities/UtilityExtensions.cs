@@ -779,11 +779,11 @@ namespace WebApplications.Utilities
 
         [NotNull]
         [ItemNotNull]
-        private static readonly string[] _hexLower = Enumerable.Range(0, 255).Select(i => i.ToString("x2")).ToArray();
+        private static readonly string[] _hexLower = Enumerable.Range(0, 256).Select(i => i.ToString("x2")).ToArray();
 
         [NotNull]
         [ItemNotNull]
-        private static readonly string[] _hexUpper = Enumerable.Range(0, 255).Select(i => i.ToString("X2")).ToArray();
+        private static readonly string[] _hexUpper = Enumerable.Range(0, 256).Select(i => i.ToString("X2")).ToArray();
 
         /// <summary>
         /// Converts a byte to lower case hex.

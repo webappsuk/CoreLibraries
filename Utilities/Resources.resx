@@ -559,4 +559,13 @@
   <data name="CultureHelper_GetFallBack_UnknownCulture" xml:space="preserve">
     <value>The provider does not contain the culture '{0}'.</value>
   </data>
+  <data name="NeedNonNegNum" xml:space="preserve">
+    <value>Non-negative number required.</value>
+  </data>
+  <data name="EncodingHelper_Validate_UnknownCodePage" xml:space="preserve">
+    <value>Not a valid code page.</value>
+  </data>
+  <data name="EncodingHelper_Validate_IndexAndCountInvalid" xml:space="preserve">
+    <value>Index and count must refer to a location within the buffer.</value>
+  </data>
 </root>

@@ -81,6 +81,7 @@
     <Compile Include="Difference\StringChunk.cs" />
     <Compile Include="Difference\StringDifferences.cs" />
     <Compile Include="Difference\TextOptions.cs" />
+    <Compile Include="EncodingHelper.cs" />
     <Compile Include="Enumerator.cs" />
     <Compile Include="Formatting\Writeable.cs" />
     <Compile Include="Funcs.cs">

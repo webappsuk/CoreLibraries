@@ -376,6 +376,24 @@ namespace WebApplications.Utilities {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Index and count must refer to a location within the buffer..
+        /// </summary>
+        internal static string EncodingHelper_Validate_IndexAndCountInvalid {
+            get {
+                return ResourceManager.GetString("EncodingHelper_Validate_IndexAndCountInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid code page..
+        /// </summary>
+        internal static string EncodingHelper_Validate_UnknownCodePage {
+            get {
+                return ResourceManager.GetString("EncodingHelper_Validate_UnknownCodePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot safely flush the default enhanced memory cache..
         /// </summary>
         internal static string EnhancedMemoryCache_Clear_CannotSafelyFlush {
@@ -814,6 +832,15 @@ namespace WebApplications.Utilities {
         internal static string LocalTimeRange_StepCannotHaveDate {
             get {
                 return ResourceManager.GetString("LocalTimeRange_StepCannotHaveDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Non-negative number required..
+        /// </summary>
+        internal static string NeedNonNegNum {
+            get {
+                return ResourceManager.GetString("NeedNonNegNum", resourceCulture);
             }
         }
         

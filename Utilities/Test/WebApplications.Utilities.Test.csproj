@@ -95,6 +95,7 @@
     <Compile Include="TestConfiguration.cs" />
     <Compile Include="TestCulture.cs" />
     <Compile Include="TestDifference.cs" />
+    <Compile Include="TestEncodingHelper.cs" />
     <Compile Include="TestExtendedEnum.cs" />
     <Compile Include="TestHashCollection.cs" />
     <Compile Include="TestHashing.cs" />

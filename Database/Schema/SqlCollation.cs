@@ -181,23 +181,8 @@ namespace WebApplications.Utilities.Database.Schema
             LCID = lcid;
             Version = (SqlCollationVersion)version;
 
-            try
-            {
-                Encoding = Encoding.GetEncoding(CodePage);
-            }
-            catch
-            {
-                /* Ignore */
-            }
-
-            try
-            {
-                Culture = CultureInfo.GetCultureInfo(LCID);
-            }
-            catch
-            {
-                /* Ignore */
-            }
+            Encoding = EncodingHelper.GetEncoding(CodePage);
+            Culture = CultureHelper.GetCultureInfo(LCID);
 
             if (comparisonStyle == 0)
             {
