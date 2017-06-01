@@ -111,7 +111,7 @@
         <Value>$(ProjectDir)</Value>
       </T4ParameterValues>
     </ItemGroup>
-    <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" />
+    <!-- <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" /> -->
 
     <!-- NuGet package restore -->
     <Import Project="$(SlnDir).nuget\NuGet.targets" Condition="Exists('$(SlnDir)\.nuget\NuGet.targets')" />
