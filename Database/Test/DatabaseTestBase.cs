@@ -121,7 +121,7 @@ namespace WebApplications.Utilities.Database.Test
         {
             _testEndTicks = Stopwatch.GetTimestamp();
             Trace.WriteLine(
-                $"Ending test: {TestContext.TestName}, time taken {(_testEndTicks - _testStartTicks) / TimeSpan.TicksPerMillisecond}ms");
+                $"Ending test: {TestContext.TestName}, time taken {1000 * (_testEndTicks - _testStartTicks) / Stopwatch.Frequency:N3}ms");
             Log.Flush().Wait();
         }
     }

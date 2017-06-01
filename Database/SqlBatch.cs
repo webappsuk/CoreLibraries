@@ -682,6 +682,99 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <param name="program">The program to add to the batch.</param>
         /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteReader(
+            [NotNull] SqlProgram program,
+            [NotNull] ResultDisposableDelegateAsync resultAction,
+            [NotNull] out SqlBatchResult result,
+            CommandBehavior behavior = CommandBehavior.Default,
+            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            bool suppressErrors = false,
+            ExceptionHandler exceptionHandler = null)
+        {
+            if (program == null) throw new ArgumentNullException(nameof(program));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+            if ((behavior & CommandBehavior.CloseConnection) != 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(behavior),
+                    "CommandBehavior.CloseConnection is not supported");
+            CheckBuildingStateQuick();
+
+            SqlBatchCommand.ReaderDisposable command = new SqlBatchCommand.ReaderDisposable(
+                this,
+                program,
+                resultAction,
+                behavior,
+                setParameters,
+                exceptionHandler,
+                suppressErrors);
+            AddCommand(command);
+            result = command.Result;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch. 
+        /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
+        /// </summary>
+        /// <typeparam name="TOut">The type of the result.</typeparam>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+        /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
+        /// and get the value returned by <paramref name="resultFunc"/>.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteReader<TOut>(
+            [NotNull] SqlProgram program,
+            [NotNull] ResultDisposableDelegateAsync<TOut> resultFunc,
+            [NotNull] out SqlBatchResult<TOut> result,
+            CommandBehavior behavior = CommandBehavior.Default,
+            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            bool suppressErrors = false,
+            ExceptionHandler exceptionHandler = null)
+        {
+            if (program == null) throw new ArgumentNullException(nameof(program));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+            if ((behavior & CommandBehavior.CloseConnection) != 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(behavior),
+                    "CommandBehavior.CloseConnection is not supported");
+            CheckBuildingStateQuick();
+
+            SqlBatchCommand.ReaderDisposable<TOut> command = new SqlBatchCommand.ReaderDisposable<TOut>(
+                this,
+                program,
+                resultFunc,
+                behavior,
+                setParameters,
+                exceptionHandler,
+                suppressErrors);
+            AddCommand(command);
+            result = command.Result;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch.
+        /// </summary>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
         /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
         /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
@@ -746,6 +839,87 @@ namespace WebApplications.Utilities.Database
             CheckBuildingStateQuick();
 
             SqlBatchCommand.XmlReader<TOut> command = new SqlBatchCommand.XmlReader<TOut>(
+                this,
+                program,
+                resultFunc,
+                setParameters,
+                exceptionHandler,
+                suppressErrors);
+            AddCommand(command);
+            result = command.Result;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch.
+        /// </summary>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteXmlReader(
+            [NotNull] SqlProgram program,
+            [NotNull] XmlResultDisposableDelegateAsync resultAction,
+            [NotNull] out SqlBatchResult result,
+            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            bool suppressErrors = false,
+            ExceptionHandler exceptionHandler = null)
+        {
+            if (program == null) throw new ArgumentNullException(nameof(program));
+            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
+            CheckBuildingStateQuick();
+
+            SqlBatchCommand.XmlReaderDisposable command = new SqlBatchCommand.XmlReaderDisposable(
+                this,
+                program,
+                resultAction,
+                setParameters,
+                exceptionHandler,
+                suppressErrors);
+            AddCommand(command);
+            result = command.Result;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch.
+        /// The value returned by the <paramref name="resultFunc" /> will be returned by the <see cref="SqlBatchResult{T}" />.
+        /// </summary>
+        /// <typeparam name="TOut">The type of the result.</typeparam>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult{T}" /> which can be used to wait for the program to finish executing
+        /// and get the value returned by <paramref name="resultFunc" />.</param>
+        /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler" />
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <returns>
+        /// This <see cref="SqlBatch" /> instance.
+        /// </returns>
+        [NotNull]
+        public SqlBatch AddExecuteXmlReader<TOut>(
+            [NotNull] SqlProgram program,
+            [NotNull] XmlResultDisposableDelegateAsync<TOut> resultFunc,
+            [NotNull] out SqlBatchResult<TOut> result,
+            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            bool suppressErrors = false,
+            ExceptionHandler exceptionHandler = null)
+        {
+            if (program == null) throw new ArgumentNullException(nameof(program));
+            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
+            CheckBuildingStateQuick();
+
+            SqlBatchCommand.XmlReaderDisposable<TOut> command = new SqlBatchCommand.XmlReaderDisposable<TOut>(
                 this,
                 program,
                 resultFunc,
@@ -1123,7 +1297,7 @@ namespace WebApplications.Utilities.Database
                     return;
 
                 if (commandReader != null && (index > actualIndex || state != Constants.ExecuteState.Start))
-                    commandReader.State = BatchReaderState.Finished;
+                    commandReader.SetFinished();
             }
             // ReSharper restore AccessToModifiedClosure
 
@@ -1343,10 +1517,10 @@ namespace WebApplications.Utilities.Database
                                                     cancellationToken)
                                                 .ConfigureAwait(false);
 
-                                            if (commandReader.IsOpen)
+                                            if (!commandReader.IsFinishedReading)
                                             {
                                                 // Read the rest of the result sets until an info message finishes the reader
-                                                await commandReader.ReadTillClosedAsync(cancellationToken)
+                                                await commandReader.ReadTillFinishedAsync(cancellationToken)
                                                     .ConfigureAwait(false);
                                             }
                                         }

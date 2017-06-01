@@ -31,6 +31,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Data.SqlTypes;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -39,6 +40,7 @@ using System.Xml;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
 {
@@ -95,28 +97,52 @@ namespace WebApplications.Utilities.Database
         private static InvalidOperationException ClosedError([CallerMemberName] string name = null)
             => new InvalidOperationException($"Invalid attempt to call {name} when reader is closed.");
 
-        private int _state = (int)BatchReaderState.Open;
+        [Flags]
+        private enum BatchReaderState : byte
+        {
+            Open = 0,
+            Finished = 1,
+            Closed = 2
+        }
+
+        [NotNull]
+        private readonly object _stateLock = new object();
+        private BatchReaderState _state = BatchReaderState.Open;
 
         /// <summary>
-        /// Gets or sets the state of the reader.
+        /// Sets the state of the reader.
+        /// </summary>
+        /// <param name="state">The state.</param>
+        private void SetState(BatchReaderState state)
+        {
+            Debug.Assert(state != BatchReaderState.Open);
+
+            if ((state & _state) == state) return;
+
+            lock (_stateLock)
+            {
+                if ((state & _state) == state) return;
+                _state |= state;
+            }
+
+            Debug.Assert(_state != BatchReaderState.Open);
+
+            _finishedCompletionSource?.TrySetCompleted();
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the reader has finished reading data from the underlying reader.
         /// </summary>
         /// <value>
-        /// The state.
+        ///   <see langword="true" /> if this instance is finished reading from the underlying reader; otherwise, <see langword="false" />.
         /// </value>
-        internal BatchReaderState State
-        {
-            get => (BatchReaderState)_state;
-            set
-            {
-                int iv = (int)value;
-                int state;
-                do
-                {
-                    state = _state;
-                    if (iv <= state) return;
-                } while (Interlocked.CompareExchange(ref _state, iv, state) != state);
-            }
-        }
+        /// <exception cref="System.ArgumentOutOfRangeException">value</exception>
+        protected internal bool IsFinishedReading => (_state & BatchReaderState.Finished) == BatchReaderState.Finished;
+
+        /// <summary>
+        /// Indicates that this reader has finished reading from the underlying reader.
+        /// </summary>
+        internal void SetFinished() => SetState(BatchReaderState.Finished);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="DbBatchDataReader"/> is open.
@@ -124,20 +150,20 @@ namespace WebApplications.Utilities.Database
         /// <value>
         ///   <see langword="true" /> if open; otherwise, <see langword="false" />.
         /// </value>
-        public bool IsOpen => State == BatchReaderState.Open && !_skipRows;
+        public bool IsOpen => _state == BatchReaderState.Open && !_skipRows;
 
         /// <summary>
-        /// Gets a value indicating whether the reader has finished reading data.
+        /// Gets a value indicating whether the reader has finished reading data or the rest of the data should be skipped.
         /// </summary>
         /// <value>
         ///   <see langword="true" /> if this reader is finished; otherwise, <see langword="false" />.
         /// </value>
-        protected bool IsFinished => State == BatchReaderState.Finished || (!IsClosed && _skipRows);
+        protected bool IsFinished => IsFinishedReading || (_state == BatchReaderState.Open && _skipRows);
 
         /// <summary>Gets a value indicating whether the <see cref="T:System.Data.Common.DbDataReader" /> is closed.</summary>
         /// <returns>true if the <see cref="T:System.Data.Common.DbDataReader" /> is closed; otherwise false.</returns>
         /// <exception cref="T:System.InvalidOperationException">The <see cref="T:System.Data.SqlClient.SqlDataReader" /> is closed. </exception>
-        public override bool IsClosed => State == BatchReaderState.Closed;
+        public override bool IsClosed => (_state & BatchReaderState.Closed) == BatchReaderState.Closed;
 
         /// <summary>
         /// The command behavior.
@@ -371,22 +397,79 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        /// Reads the result sets while the reader <see cref="IsOpen"/>.
+        /// Reads the result sets while the reader is not <see cref="BatchReaderState.Finished"/>.
         /// </summary>
         /// <param name="cancellationToken">The cancellation instruction.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
         [NotNull]
-        internal Task ReadTillClosedAsync(CancellationToken cancellationToken)
+        internal Task ReadTillFinishedAsync(CancellationToken cancellationToken)
         {
-            return IsOpen ? DoAsync() : TaskResult.Completed;
+            return IsFinishedReading ? TaskResult.Completed : DoAsync();
 
             async Task DoAsync()
             {
                 // ReSharper disable once PossibleNullReferenceException
-                while (IsOpen && _hasResultSet)
+                while (!IsFinishedReading && _hasResultSet)
                 {
                     _hasResultSet.Value = await BaseReader.NextResultAsync(cancellationToken).ConfigureAwait(false);
                 }
+            }
+        }
+
+        private TaskCompletionSource _finishedCompletionSource;
+        internal TaskCompletionSource FinishedCompletionSource => _finishedCompletionSource;
+
+        /// <summary>
+        /// Gets an <see cref="IDisposable"/> which will close this reader and complete the <see cref="FinishedCompletionSource"/> when disposed.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        [NotNull]
+        internal IDisposable GetDisposer(CancellationToken cancellationToken)
+        {
+            // Create a new TCS if there isn't already one
+            if (_finishedCompletionSource == null)
+            {
+                TaskCompletionSource newSource = new TaskCompletionSource(SqlBatchResult.CompletionSourceOptions);
+                Interlocked.CompareExchange(ref _finishedCompletionSource, newSource, null);
+            }
+
+
+            TaskCompletionSource completionSource = _finishedCompletionSource;
+            CancellationTokenRegistration reg = default(CancellationTokenRegistration);
+
+            // If the reader is already over, we can just complete it
+            if (!IsOpen) completionSource.TrySetCompleted();
+
+            // If the token can be cancelled, then the source should be cancelled when the token is
+            else if (cancellationToken.CanBeCanceled)
+                reg = cancellationToken.Register(() => completionSource.TrySetCanceled());
+
+            return new Disposer(this, reg);
+        }
+
+        /// <summary>
+        /// Closes a reader on <see cref="Dispose"/>.
+        /// </summary>
+        private class Disposer : IDisposable
+        {
+            [NotNull]
+            private readonly DbBatchDataReader _reader;
+            private readonly CancellationTokenRegistration _cancellation;
+
+            public Disposer([NotNull] DbBatchDataReader reader, CancellationTokenRegistration cancellation)
+            {
+                _reader = reader;
+                _cancellation = cancellation;
+            }
+
+
+            /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+            public void Dispose()
+            {
+                // Closing the reader sets the State, which completes the TCS 
+                _reader.Close();
+                _cancellation.Dispose();
             }
         }
 
@@ -405,7 +488,7 @@ namespace WebApplications.Utilities.Database
             => BaseReaderOpen().IsDBNullAsync(ordinal, cancellationToken);
 
         /// <summary>Closes the <see cref="T:System.Data.Common.DbDataReader" /> object.</summary>
-        public override void Close() => State = BatchReaderState.Closed;
+        public override void Close() => SetState(BatchReaderState.Closed);
 
         /// <summary>Releases the managed resources used by the <see cref="T:System.Data.Common.DbDataReader" /> and optionally releases the unmanaged resources.</summary>
         /// <param name="disposing">true to release managed and unmanaged resources; false to release only unmanaged resources.</param>
@@ -636,13 +719,6 @@ namespace WebApplications.Utilities.Database
         /// <returns>An <see cref="XmlReader"/> for reading XML from the current record set.</returns>
         [NotNull]
         protected internal abstract XmlReader GetXmlReader();
-    }
-
-    internal enum BatchReaderState : byte
-    {
-        Open,
-        Finished,
-        Closed
     }
 
     /// <summary>

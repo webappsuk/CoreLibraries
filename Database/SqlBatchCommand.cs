@@ -25,6 +25,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
+// TODO Remove when migrated to .net standard project format
+#define NET452
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -319,12 +322,12 @@ namespace WebApplications.Utilities.Database
                     .Append("SELECT ");
 
                 bool firstParam = true;
-                foreach ((DbBatchParameter batchParameter, _) in parameters.OutputParameters)
+                foreach ((DbBatchParameter batchParameter, IOut) param in parameters.OutputParameters)
                 {
                     if (firstParam) firstParam = false;
                     else args.SqlBuilder.Append(", ");
 
-                    args.SqlBuilder.Append(batchParameter.BaseParameter.ParameterName);
+                    args.SqlBuilder.Append(param.batchParameter.BaseParameter.ParameterName);
                 }
                 args.SqlBuilder.AppendLine(";");
             }
@@ -459,7 +462,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
-        internal class Scalar<TResult> : SqlBatchCommand
+        internal sealed class Scalar<TResult> : SqlBatchCommand
         {
             /// <summary>
             /// Gets the result object.
@@ -522,7 +525,7 @@ namespace WebApplications.Utilities.Database
         /// Command for calling ExecuteNonQuery on a program in a batch.
         /// </summary>
         /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
-        internal class NonQuery : SqlBatchCommand
+        internal sealed class NonQuery : SqlBatchCommand
         {
             /// <summary>
             /// The SqlCommand._rowsAffected field setter.
@@ -636,13 +639,13 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        /// Base class for calling ExecuteReader on a program in a batch.
+        /// Base class for calling ExecuteReader and ExecuteXmlReader on a program in a batch.
         /// </summary>
         /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
         internal abstract class BaseReader : SqlBatchCommand
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="SqlBatchCommand.BaseReader" /> class.
+            /// Initializes a new instance of the <see cref="WebApplications.Utilities.Database.SqlBatchCommand.BaseReader" /> class.
             /// </summary>
             /// <param name="owner">The batch that owns this command.</param>
             /// <param name="program">The program to execute.</param>
@@ -705,6 +708,16 @@ namespace WebApplications.Utilities.Database
                 Task task = ExecuteResultDelegate(reader, cancellationToken);
                 await task.ConfigureAwait(false);
                 SetResult(task, connectionIndex);
+                if (reader.FinishedCompletionSource != null)
+                {
+                    Result.SetCompleted(connectionIndex);
+                    await reader.FinishedCompletionSource.Task.ConfigureAwait(false);
+#if NET452
+                    // If TCO.RunContinuationsAsynchronously isnt supported, need to yield after waiting for the task
+                    if (SqlBatchResult.CompletionSourceOptions == TaskCreationOptions.None)
+                        await Task.Yield();
+#endif
+                }
             }
 
             /// <summary>
@@ -715,7 +728,7 @@ namespace WebApplications.Utilities.Database
             /// <returns>An awaitable task.</returns>
             [NotNull]
             protected abstract Task ExecuteResultDelegate(
-                [NotNull] DbDataReader reader,
+                [NotNull] DbBatchDataReader reader,
                 CancellationToken cancellationToken);
 
             /// <summary>
@@ -726,11 +739,13 @@ namespace WebApplications.Utilities.Database
             protected abstract void SetResult([NotNull] Task task, int index);
         }
 
+        #region ExecuteReader comamnds
+
         /// <summary>
         /// Command for calling ExecuteReader on a program in a batch.
         /// </summary>
         /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
-        internal class Reader : BaseReader
+        internal sealed class Reader : BaseReader
         {
             [NotNull]
             private readonly ResultDelegateAsync _resultAction;
@@ -773,7 +788,7 @@ namespace WebApplications.Utilities.Database
             /// <returns>
             /// An awaitable task.
             /// </returns>
-            protected override Task ExecuteResultDelegate(DbDataReader reader, CancellationToken cancellationToken)
+            protected override Task ExecuteResultDelegate(DbBatchDataReader reader, CancellationToken cancellationToken)
             {
                 return _resultAction(reader, cancellationToken);
             }
@@ -792,7 +807,7 @@ namespace WebApplications.Utilities.Database
         /// Command for calling ExecuteReader on a program in a batch and returning a value.
         /// </summary>
         /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
-        internal class Reader<TResult> : BaseReader
+        internal sealed class Reader<TResult> : BaseReader
         {
             [NotNull]
             private readonly ResultDelegateAsync<TResult> _resultFunc;
@@ -842,7 +857,7 @@ namespace WebApplications.Utilities.Database
             /// <returns>
             /// An awaitable task.
             /// </returns>
-            protected override Task ExecuteResultDelegate(DbDataReader reader, CancellationToken cancellationToken)
+            protected override Task ExecuteResultDelegate(DbBatchDataReader reader, CancellationToken cancellationToken)
             {
                 return _resultFunc(reader, cancellationToken);
             }
@@ -859,58 +874,42 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
-        /// Base class for calling ExecuteXmlReader on a program in a batch.
+        /// Command for calling ExecuteReader on a program in a batch and exposing a disposer for cleaning up later.
         /// </summary>
         /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
-        internal abstract class BaseXmlReader : SqlBatchCommand
+        internal sealed class ReaderDisposable : BaseReader
         {
+            [NotNull]
+            private readonly ResultDisposableDelegateAsync _resultAction;
+
             /// <summary>
-            /// Initializes a new instance of the <see cref="SqlBatchCommand.BaseXmlReader" /> class.
+            /// Initializes a new instance of the <see cref="SqlBatchCommand.Reader" /> class.
             /// </summary>
             /// <param name="owner">The batch that owns this command.</param>
-            /// <param name="program">The program to execute.</param>
+            /// <param name="program">The program to execute scalar.</param>
+            /// <param name="resultAction">The result function.</param>
+            /// <param name="commandBehavior">The behavior.</param>
             /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
             /// <param name="exceptionHandler"></param>
             /// <param name="suppressErrors"></param>
-            /// <param name="result">The result.</param>
-            protected BaseXmlReader(
+            public ReaderDisposable(
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
+                [NotNull] ResultDisposableDelegateAsync resultAction,
+                CommandBehavior commandBehavior,
                 [CanBeNull] SetBatchParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
-                bool suppressErrors,
-                [NotNull] SqlBatchResult result)
+                bool suppressErrors)
                 : base(
                     owner,
                     program,
                     setParameters,
-                    CommandBehavior.SequentialAccess,
-                    suppressErrors,
+                    commandBehavior,
                     exceptionHandler,
-                    result)
+                    suppressErrors,
+                    new SqlBatchResult<bool>())
             {
-            }
-
-            /// <summary>
-            /// Handles the command asynchronously.
-            /// </summary>
-            /// <param name="reader">The reader.</param>
-            /// <param name="dbCommand"></param>
-            /// <param name="connectionIndex">Index of the connection this command is being run on.</param>
-            /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
-            /// <returns>
-            /// An awaitable task.
-            /// </returns>
-            internal override async Task HandleCommandAsync(
-                DbBatchDataReader reader,
-                DbCommand dbCommand,
-                int connectionIndex,
-                CancellationToken cancellationToken)
-            {
-                await StartReaderAsync(reader, cancellationToken).ConfigureAwait(false);
-                Task task = ExecuteResultDelegate(reader.GetXmlReader(), cancellationToken);
-                await task.ConfigureAwait(false);
-                SetResult(task, connectionIndex);
+                _resultAction = resultAction;
             }
 
             /// <summary>
@@ -918,25 +917,103 @@ namespace WebApplications.Utilities.Database
             /// </summary>
             /// <param name="reader">The reader.</param>
             /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
-            /// <returns>An awaitable task.</returns>
-            [NotNull]
-            protected abstract Task ExecuteResultDelegate(
-                [NotNull] System.Xml.XmlReader reader,
-                CancellationToken cancellationToken);
+            /// <returns>
+            /// An awaitable task.
+            /// </returns>
+            protected override Task ExecuteResultDelegate(DbBatchDataReader reader, CancellationToken cancellationToken)
+            {
+                return _resultAction(reader, reader.GetDisposer(cancellationToken), cancellationToken);
+            }
 
             /// <summary>
-            /// Sets the result of the command from the <see cref="Task"/> returned by <see cref="ExecuteResultDelegate"/>.
+            /// Sets the result of the command from the <see cref="Task" /> returned by <see cref="ExecuteResultDelegate" />.
             /// </summary>
-            /// <param name="task">The completed task returned by <see cref="ExecuteResultDelegate"/>.</param>
+            /// <param name="task">The completed task returned by <see cref="ExecuteResultDelegate" />.</param>
             /// <param name="index">The index.</param>
-            protected abstract void SetResult([NotNull] Task task, int index);
+            protected override void SetResult(Task task, int index)
+            {
+            }
         }
+
+        /// <summary>
+        /// Command for calling ExecuteReader on a program in a batch, exposing a disposer for cleaning up later and returning a value.
+        /// </summary>
+        /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
+        internal sealed class ReaderDisposable<TResult> : BaseReader
+        {
+            [NotNull]
+            private readonly ResultDisposableDelegateAsync<TResult> _resultFunc;
+
+            /// <summary>
+            /// Gets the result object.
+            /// </summary>
+            /// <value>The result.</value>
+            [NotNull]
+            public new SqlBatchResult<TResult> Result => (SqlBatchResult<TResult>)base.Result;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SqlBatchCommand.Reader{TResult}" /> class.
+            /// </summary>
+            /// <param name="owner">The batch that owns this command.</param>
+            /// <param name="program">The program to execute scalar.</param>
+            /// <param name="resultFunc">The result function.</param>
+            /// <param name="commandBehavior">The behavior.</param>
+            /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+            /// <param name="exceptionHandler"></param>
+            /// <param name="suppressErrors"></param>
+            public ReaderDisposable(
+                [NotNull] SqlBatch owner,
+                [NotNull] SqlProgram program,
+                [NotNull] ResultDisposableDelegateAsync<TResult> resultFunc,
+                CommandBehavior commandBehavior,
+                [CanBeNull] SetBatchParametersDelegate setParameters,
+                ExceptionHandler exceptionHandler,
+                bool suppressErrors)
+                : base(
+                    owner,
+                    program,
+                    setParameters,
+                    commandBehavior,
+                    exceptionHandler,
+                    suppressErrors,
+                    new SqlBatchResult<TResult>())
+            {
+                _resultFunc = resultFunc;
+            }
+
+            /// <summary>
+            /// Executes the result delegate.
+            /// </summary>
+            /// <param name="reader">The reader.</param>
+            /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
+            /// <returns>
+            /// An awaitable task.
+            /// </returns>
+            protected override Task ExecuteResultDelegate(DbBatchDataReader reader, CancellationToken cancellationToken)
+            {
+                return _resultFunc(reader, reader.GetDisposer(cancellationToken), cancellationToken);
+            }
+
+            /// <summary>
+            /// Sets the result of the command from the <see cref="Task" /> returned by <see cref="ExecuteResultDelegate" />.
+            /// </summary>
+            /// <param name="task">The completed task returned by <see cref="ExecuteResultDelegate" />.</param>
+            /// <param name="index">The index.</param>
+            protected override void SetResult(Task task, int index)
+            {
+                Result.SetResult(index, ((Task<TResult>)task).Result);
+            }
+        }
+
+        #endregion
+
+        #region ExecuteXmlReader commands
 
         /// <summary>
         /// Command for calling ExecuteXmlReader on a program in a batch.
         /// </summary>
         /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
-        internal class XmlReader : BaseXmlReader
+        internal sealed class XmlReader : BaseReader
         {
             [NotNull]
             private readonly XmlResultDelegateAsync _resultAction;
@@ -957,7 +1034,14 @@ namespace WebApplications.Utilities.Database
                 [CanBeNull] SetBatchParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
-                : base(owner, program, setParameters, exceptionHandler, suppressErrors, new SqlBatchResult<bool>())
+                : base(
+                    owner,
+                    program,
+                    setParameters,
+                    CommandBehavior.SequentialAccess,
+                    exceptionHandler,
+                    suppressErrors,
+                    new SqlBatchResult<bool>())
             {
                 _resultAction = resultAction;
             }
@@ -971,10 +1055,10 @@ namespace WebApplications.Utilities.Database
             /// An awaitable task.
             /// </returns>
             protected override Task ExecuteResultDelegate(
-                System.Xml.XmlReader reader,
+                DbBatchDataReader reader,
                 CancellationToken cancellationToken)
             {
-                return _resultAction(reader, cancellationToken);
+                return _resultAction(reader.GetXmlReader(), cancellationToken);
             }
 
             /// <summary>
@@ -991,7 +1075,7 @@ namespace WebApplications.Utilities.Database
         /// Command for calling ExecuteXmlReader on a program in a batch and returning a value.
         /// </summary>
         /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
-        internal class XmlReader<TResult> : BaseXmlReader
+        internal sealed class XmlReader<TResult> : BaseReader
         {
             [NotNull]
             private readonly XmlResultDelegateAsync<TResult> _resultFunc;
@@ -1019,7 +1103,14 @@ namespace WebApplications.Utilities.Database
                 [CanBeNull] SetBatchParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
-                : base(owner, program, setParameters, exceptionHandler, suppressErrors, new SqlBatchResult<TResult>())
+                : base(
+                    owner,
+                    program,
+                    setParameters,
+                    CommandBehavior.SequentialAccess,
+                    exceptionHandler,
+                    suppressErrors,
+                    new SqlBatchResult<TResult>())
             {
                 _resultFunc = resultFunc;
             }
@@ -1033,10 +1124,10 @@ namespace WebApplications.Utilities.Database
             /// An awaitable task.
             /// </returns>
             protected override Task ExecuteResultDelegate(
-                System.Xml.XmlReader reader,
+                DbBatchDataReader reader,
                 CancellationToken cancellationToken)
             {
-                return _resultFunc(reader, cancellationToken);
+                return _resultFunc(reader.GetXmlReader(), cancellationToken);
             }
 
             /// <summary>
@@ -1049,5 +1140,139 @@ namespace WebApplications.Utilities.Database
                 Result.SetResult(index, ((Task<TResult>)task).Result);
             }
         }
+
+        /// <summary>
+        /// Command for calling ExecuteXmlReader on a program in a batch and exposing a disposer for cleaning up later.
+        /// </summary>
+        /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
+        internal sealed class XmlReaderDisposable : BaseReader
+        {
+            [NotNull]
+            private readonly XmlResultDisposableDelegateAsync _resultAction;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SqlBatchCommand.XmlReader" /> class.
+            /// </summary>
+            /// <param name="owner">The batch that owns this command.</param>
+            /// <param name="program">The program to execute scalar.</param>
+            /// <param name="resultAction">The result function.</param>
+            /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+            /// <param name="exceptionHandler"></param>
+            /// <param name="suppressErrors"></param>
+            public XmlReaderDisposable(
+                [NotNull] SqlBatch owner,
+                [NotNull] SqlProgram program,
+                [NotNull] XmlResultDisposableDelegateAsync resultAction,
+                [CanBeNull] SetBatchParametersDelegate setParameters,
+                ExceptionHandler exceptionHandler,
+                bool suppressErrors)
+                : base(
+                    owner,
+                    program,
+                    setParameters,
+                    CommandBehavior.SequentialAccess,
+                    exceptionHandler,
+                    suppressErrors,
+                    new SqlBatchResult<bool>())
+            {
+                _resultAction = resultAction;
+            }
+
+            /// <summary>
+            /// Executes the result delegate.
+            /// </summary>
+            /// <param name="reader">The reader.</param>
+            /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
+            /// <returns>
+            /// An awaitable task.
+            /// </returns>
+            protected override Task ExecuteResultDelegate(
+                DbBatchDataReader reader,
+                CancellationToken cancellationToken)
+            {
+                return _resultAction(reader.GetXmlReader(), reader.GetDisposer(cancellationToken), cancellationToken);
+            }
+
+            /// <summary>
+            /// Sets the result of the command from the <see cref="Task" /> returned by <see cref="ExecuteResultDelegate" />.
+            /// </summary>
+            /// <param name="task">The completed task returned by <see cref="ExecuteResultDelegate" />.</param>
+            /// <param name="index">The index.</param>
+            protected override void SetResult(Task task, int index)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Command for calling ExecuteXmlReader on a program in a batch, exposing a disposer for cleaning up later and returning a value.
+        /// </summary>
+        /// <seealso cref="WebApplications.Utilities.Database.SqlBatchCommand" />
+        internal sealed class XmlReaderDisposable<TResult> : BaseReader
+        {
+            [NotNull]
+            private readonly XmlResultDisposableDelegateAsync<TResult> _resultFunc;
+
+            /// <summary>
+            /// Gets the result object.
+            /// </summary>
+            /// <value>The result.</value>
+            [NotNull]
+            public new SqlBatchResult<TResult> Result => (SqlBatchResult<TResult>)base.Result;
+
+            /// <summary>
+            /// Initializes a new instance of the <see cref="SqlBatchCommand.XmlReader{TResult}" /> class.
+            /// </summary>
+            /// <param name="owner">The batch that owns this command.</param>
+            /// <param name="program">The program to execute scalar.</param>
+            /// <param name="resultFunc">The result function.</param>
+            /// <param name="setParameters">An optional method for setting the parameters to pass to the program.</param>
+            /// <param name="exceptionHandler"></param>
+            /// <param name="suppressErrors"></param>
+            public XmlReaderDisposable(
+                [NotNull] SqlBatch owner,
+                [NotNull] SqlProgram program,
+                [NotNull] XmlResultDisposableDelegateAsync<TResult> resultFunc,
+                [CanBeNull] SetBatchParametersDelegate setParameters,
+                ExceptionHandler exceptionHandler,
+                bool suppressErrors)
+                : base(
+                    owner,
+                    program,
+                    setParameters,
+                    CommandBehavior.SequentialAccess,
+                    exceptionHandler,
+                    suppressErrors,
+                    new SqlBatchResult<TResult>())
+            {
+                _resultFunc = resultFunc;
+            }
+
+            /// <summary>
+            /// Executes the result delegate.
+            /// </summary>
+            /// <param name="reader">The reader.</param>
+            /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
+            /// <returns>
+            /// An awaitable task.
+            /// </returns>
+            protected override Task ExecuteResultDelegate(
+                DbBatchDataReader reader,
+                CancellationToken cancellationToken)
+            {
+                return _resultFunc(reader.GetXmlReader(), reader.GetDisposer(cancellationToken), cancellationToken);
+            }
+
+            /// <summary>
+            /// Sets the result of the command from the <see cref="Task" /> returned by <see cref="ExecuteResultDelegate" />.
+            /// </summary>
+            /// <param name="task">The completed task returned by <see cref="ExecuteResultDelegate" />.</param>
+            /// <param name="index">The index.</param>
+            protected override void SetResult(Task task, int index)
+            {
+                Result.SetResult(index, ((Task<TResult>)task).Result);
+            }
+        }
+
+        #endregion
     }
 }

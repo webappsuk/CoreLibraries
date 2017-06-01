@@ -366,7 +366,7 @@ namespace WebApplications.Utilities.Database.Test
                     randomString,
                     randomInt);
 
-            using (var cts = new CancellationTokenSource(delay / 2))
+            using (CancellationTokenSource cts = new CancellationTokenSource(delay / 2))
             {
                 bool thrown;
                 try
@@ -416,6 +416,85 @@ namespace WebApplications.Utilities.Database.Test
                 }
                 Assert.IsTrue(thrown);
             }
+        }
+
+        [TestMethod]
+        public async Task TestExecuteReaderDisposable()
+        {
+            Setup(
+                out SqlProgram<string, int> nonQueryProg,
+                out _,
+                out _,
+                out var returnsTableProg,
+                out _,
+                out _,
+                out _,
+                out string randomString,
+                out int randomInt,
+                out decimal randomDecimal,
+                out bool randomBool,
+                out Out<int> output,
+                out Out<int> inputOutput);
+
+            for (int i = 0; i < 2; i++)
+                using (CancellationTokenSource cts = new CancellationTokenSource(5000))
+                {
+                    bool shouldDispose = i == 0;
+                    Trace.WriteLine($"Running test with{(shouldDispose ? "" : "out")} disposing the disposer.");
+
+                    SqlBatch batch = SqlBatch.Create()
+                        .AddExecuteReader(
+                            returnsTableProg,
+                            (reader, disposable, token) => Task.FromResult((reader, disposable)),
+                            out SqlBatchResult<(DbDataReader, IDisposable)> res1,
+                            randomString,
+                            randomInt,
+                            randomDecimal,
+                            randomBool)
+                        .AddExecuteNonQuery(
+                            nonQueryProg,
+                            out SqlBatchResult<int> res2,
+                            randomString,
+                            randomInt);
+
+                    Stopwatch sw = Stopwatch.StartNew();
+
+                    Task execTask = batch.ExecuteAsync(cts.Token);
+
+                    Task<(DbDataReader, IDisposable)> task1 = res1.GetResultAsync(cts.Token);
+                    Task<int> task2 = res2.GetResultAsync(cts.Token);
+
+#pragma warning disable 4014
+                    execTask.ContinueWith(_ => Trace.WriteLine($"ExecuteAsync done at {sw.Elapsed.TotalMilliseconds:N2}ms"), TaskContinuationOptions.ExecuteSynchronously);
+                    task1.ContinueWith(_ => Trace.WriteLine($"res1.GetResultAsync done at {sw.Elapsed.TotalMilliseconds:N2}ms"), TaskContinuationOptions.ExecuteSynchronously);
+                    task2.ContinueWith(_ => Trace.WriteLine($"res2.GetResultAsync done at {sw.Elapsed.TotalMilliseconds:N2}ms"), TaskContinuationOptions.ExecuteSynchronously);
+#pragma warning restore 4014
+
+                    {
+                        (DbDataReader reader, IDisposable disposable) = await task1;
+
+                        Assert.IsTrue(await reader.ReadAsync(cts.Token));
+
+                        Assert.AreEqual(randomString, reader.GetValue(0));
+                        Assert.AreEqual(randomInt, reader.GetValue(1));
+                        Assert.AreEqual(randomDecimal, reader.GetValue(2));
+                        Assert.AreEqual(randomBool, reader.GetValue(3));
+
+                        await Task.Delay(1000);
+
+                        Assert.IsFalse(task2.IsCompleted, "Second task already completed.");
+
+                        // Both disposing and reading the end of the results should end the current reader and move on to the next
+                        if (shouldDispose)
+                            disposable.Dispose();
+                        else
+                            Assert.IsFalse(await reader.NextResultAsync(cts.Token));
+                    }
+
+                    await task2.WithCancellation(cts.Token);
+                    await execTask.WithCancellation(cts.Token);
+                    Trace.WriteLine("");
+                }
         }
 
         [TestMethod]

@@ -1238,6 +1238,66 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The action used to process the result.</param>
         /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
         <#= Strings.ParameterComments #>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteReader<<#= Strings.TypeParams#>>(
+            [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
+            [NotNull] ResultDisposableDelegateAsync resultAction,
+            [NotNull] out SqlBatchResult result,
+            <#= Strings.InputParametersTypedDefault #>,
+            CommandBehavior behavior = CommandBehavior.Default,
+            bool suppressErrors = false,
+            ExceptionHandler exceptionHandler = null,
+            TypeConstraintMode? constraintMode = null)
+        {
+            return this.AddExecuteReader(program, resultAction, out result, behavior, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch. 
+        /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <typeparam name="TOut">The type of the result.</typeparam>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="behavior">The query's effect on the database.</param>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteReader<<#= Strings.TypeParams#>, TOut>(
+            [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
+            [NotNull] ResultDisposableDelegateAsync<TOut> resultFunc,
+            [NotNull] out SqlBatchResult<TOut> result,
+            <#= Strings.InputParametersTypedDefault #>,
+            CommandBehavior behavior = CommandBehavior.Default,
+            bool suppressErrors = false,
+            ExceptionHandler exceptionHandler = null,
+            TypeConstraintMode? constraintMode = null)
+        {
+            return this.AddExecuteReader<TOut>(program, resultFunc, out result, behavior, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
+        <#= Strings.ParameterComments #>
         /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
         /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
         /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
@@ -1277,6 +1337,62 @@ namespace WebApplications.Utilities.Database
         public SqlBatch AddExecuteXmlReader<<#= Strings.TypeParams#>, TOut>(
             [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
             [NotNull] XmlResultDelegateAsync<TOut> resultFunc,
+            [NotNull] out SqlBatchResult<TOut> result,
+            <#= Strings.InputParametersTypedDefault #>,
+            bool suppressErrors = false,
+            ExceptionHandler exceptionHandler = null,
+            TypeConstraintMode? constraintMode = null)
+        {
+            return this.AddExecuteXmlReader<TOut>(program, resultFunc, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultAction">The action used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to wait for the program to finish executing.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteXmlReader<<#= Strings.TypeParams#>>(
+            [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
+            [NotNull] XmlResultDisposableDelegateAsync resultAction,
+            [NotNull] out SqlBatchResult result,
+            <#= Strings.InputParametersTypedDefault #>,
+            bool suppressErrors = false,
+            ExceptionHandler exceptionHandler = null,
+            TypeConstraintMode? constraintMode = null)
+        {
+            return this.AddExecuteXmlReader(program, resultAction, out result, c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? program.ConstraintMode), suppressErrors, exceptionHandler);
+        }
+
+        /// <summary>
+        /// Adds the specified program to the batch. 
+        /// The value returned by the <paramref name="resultFunc"/> will be returned by the <see cref="SqlBatchResult{T}"/>.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <typeparam name="TOut">The type of the result.</typeparam>
+        /// <param name="program">The program to add to the batch.</param>
+        /// <param name="resultFunc">The function used to process the result.</param>
+        /// <param name="result">A <see cref="SqlBatchResult" /> which can be used to get the value returned by the <paramref name="resultFunc"/>.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="suppressErrors">if set to <see langword="true" /> any errors that occur within this program
+        /// wont cause an exception to be thrown for the whole batch, unless an <paramref name="exceptionHandler"/> 
+        /// is specified and doesn't suppress the error. The program itself will still throw an exception.</param>
+        /// <param name="exceptionHandler">The optional exception handler.</param>
+        /// <param name="constraintMode">The constraint mode, if set will override the configured default for the program.</param>
+        /// <returns>This <see cref="SqlBatch"/> instance.</returns>
+        [NotNull]
+        public SqlBatch AddExecuteXmlReader<<#= Strings.TypeParams#>, TOut>(
+            [NotNull] SqlProgram<<#= Strings.TypeParams#>> program,
+            [NotNull] XmlResultDisposableDelegateAsync<TOut> resultFunc,
             [NotNull] out SqlBatchResult<TOut> result,
             <#= Strings.InputParametersTypedDefault #>,
             bool suppressErrors = false,

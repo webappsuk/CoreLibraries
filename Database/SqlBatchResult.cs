@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Database
         /// The <see cref="TaskCreationOptions"/> to use for the results <see cref="TaskCompletionSource" />
         /// </summary>
 #if NET452
-        protected static readonly TaskCreationOptions CompletionSourceOptions;
+        protected internal static readonly TaskCreationOptions CompletionSourceOptions;
         static SqlBatchResult()
         {
             FieldInfo field = typeof(TaskCreationOptions).GetField("RunContinuationsAsynchronously");
@@ -62,7 +62,7 @@ namespace WebApplications.Utilities.Database
             CompletionSourceOptions = (TaskCreationOptions)field.GetValue(null);
         }
 #else
-        protected const TaskCreationOptions CompletionSourceOptions = TaskCreationOptions.RunContinuationsAsynchronously;
+        protected internal const TaskCreationOptions CompletionSourceOptions = TaskCreationOptions.RunContinuationsAsynchronously;
 #endif
 
         /// <summary>
@@ -255,14 +255,15 @@ namespace WebApplications.Utilities.Database
         {
             Debug.Assert(_results != null, "_results != null");
 
+            // If we're already completed, return
+            if (_results[index].completed || _completionSource.Task.IsCompleted) return;
+
             // Set the result to completed
             _results[index].completed = true;
 
-            if (_completionSource.Task.IsCompleted) return;
-
             // If all the results are completed, we need to complete the task
-            foreach ((_, bool completed, _) in _results)
-                if (!completed)
+            foreach ((T, bool completed, Exception[]) res in _results)
+                if (!res.completed)
                     return;
 
             // If there are any exceptions, set the result to faulted
