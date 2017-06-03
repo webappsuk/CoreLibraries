@@ -62,6 +62,17 @@ namespace WebApplications.Utilities.Database
     public partial class SqlBatch : IEnumerable<SqlBatchCommand>, IBatchItem
     {
         /// <summary>
+        /// The additional time given to a command before a cancellation is triggered.
+        /// </summary>
+        /// <remarks>
+        /// <para>All batches will be cleaned up if the <see cref="BatchTimeout"/> is greater
+        /// than <see cref="Duration.Zero"/> and the <see cref="BatchTimeout"/> plus the
+        /// <see cref="AdditionalCancellationTime"/> has elapsed.</para>
+        /// <para>This ensures that resources don't leak over time, by badly written consumers.</para>
+        /// </remarks>
+        public static readonly Duration AdditionalCancellationTime = Duration.FromSeconds(1);
+
+        /// <summary>
         /// Holds the state of a batch
         /// </summary>
         /// <seealso cref="System.IDisposable" />
@@ -530,7 +541,7 @@ namespace WebApplications.Utilities.Database
         public SqlBatch AddExecuteScalar<TOut>(
             [NotNull] SqlProgram program,
             [NotNull] out SqlBatchResult<TOut> result,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            [CanBeNull] SetParametersDelegate setParameters = null,
             bool suppressErrors = false,
             ExceptionHandler exceptionHandler = null)
         {
@@ -565,7 +576,7 @@ namespace WebApplications.Utilities.Database
         public SqlBatch AddExecuteNonQuery(
             [NotNull] SqlProgram program,
             [NotNull] out SqlBatchResult<int> result,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            [CanBeNull] SetParametersDelegate setParameters = null,
             bool suppressErrors = false,
             ExceptionHandler exceptionHandler = null)
         {
@@ -603,7 +614,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegateAsync resultAction,
             [NotNull] out SqlBatchResult result,
             CommandBehavior behavior = CommandBehavior.Default,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            [CanBeNull] SetParametersDelegate setParameters = null,
             bool suppressErrors = false,
             ExceptionHandler exceptionHandler = null)
         {
@@ -651,7 +662,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDelegateAsync<TOut> resultFunc,
             [NotNull] out SqlBatchResult<TOut> result,
             CommandBehavior behavior = CommandBehavior.Default,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            [CanBeNull] SetParametersDelegate setParameters = null,
             bool suppressErrors = false,
             ExceptionHandler exceptionHandler = null)
         {
@@ -696,7 +707,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDisposableDelegateAsync resultAction,
             [NotNull] out SqlBatchResult result,
             CommandBehavior behavior = CommandBehavior.Default,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            [CanBeNull] SetParametersDelegate setParameters = null,
             bool suppressErrors = false,
             ExceptionHandler exceptionHandler = null)
         {
@@ -744,7 +755,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] ResultDisposableDelegateAsync<TOut> resultFunc,
             [NotNull] out SqlBatchResult<TOut> result,
             CommandBehavior behavior = CommandBehavior.Default,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            [CanBeNull] SetParametersDelegate setParameters = null,
             bool suppressErrors = false,
             ExceptionHandler exceptionHandler = null)
         {
@@ -787,7 +798,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgram program,
             [NotNull] XmlResultDelegateAsync resultAction,
             [NotNull] out SqlBatchResult result,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            [CanBeNull] SetParametersDelegate setParameters = null,
             bool suppressErrors = false,
             ExceptionHandler exceptionHandler = null)
         {
@@ -830,7 +841,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgram program,
             [NotNull] XmlResultDelegateAsync<TOut> resultFunc,
             [NotNull] out SqlBatchResult<TOut> result,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            [CanBeNull] SetParametersDelegate setParameters = null,
             bool suppressErrors = false,
             ExceptionHandler exceptionHandler = null)
         {
@@ -868,7 +879,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgram program,
             [NotNull] XmlResultDisposableDelegateAsync resultAction,
             [NotNull] out SqlBatchResult result,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            [CanBeNull] SetParametersDelegate setParameters = null,
             bool suppressErrors = false,
             ExceptionHandler exceptionHandler = null)
         {
@@ -911,7 +922,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgram program,
             [NotNull] XmlResultDisposableDelegateAsync<TOut> resultFunc,
             [NotNull] out SqlBatchResult<TOut> result,
-            [CanBeNull] SetBatchParametersDelegate setParameters = null,
+            [CanBeNull] SetParametersDelegate setParameters = null,
             bool suppressErrors = false,
             ExceptionHandler exceptionHandler = null)
         {
@@ -1086,6 +1097,11 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public async Task ExecuteAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (BatchTimeout > Duration.Zero)
+                cancellationToken = cancellationToken
+                    .WithTimeout(BatchTimeout.Plus(AdditionalCancellationTime))
+                    .Token;
+
             State state;
 
             // If this isnt the root batch, need to begin executing the root then wait for this batch to complete
@@ -1145,7 +1161,9 @@ namespace WebApplications.Utilities.Database
                     // Ensures all results get completed
                     foreach (IBatchItem item in EnumerateItems())
                         item.Result.SetExceptionIfNotComplete(() => item.GetNotRunException(e));
-                    throw;
+
+                    if (e is LoggingException) throw;
+                    throw new SqlBatchExecutionException(this, e);
                 }
                 finally
                 {
@@ -1162,6 +1180,11 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public async Task ExecuteAllAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (BatchTimeout > Duration.Zero)
+                cancellationToken = cancellationToken
+                    .WithTimeout(BatchTimeout.Plus(AdditionalCancellationTime))
+                    .Token;
+
             State state;
             if (!IsRoot)
             {
@@ -1226,7 +1249,9 @@ namespace WebApplications.Utilities.Database
                     // Ensures all results get completed
                     foreach (IBatchItem item in EnumerateItems())
                         item.Result.SetExceptionIfNotComplete(() => item.GetNotRunException(e));
-                    throw;
+
+                    if (e is LoggingException) throw;
+                    throw new SqlBatchExecutionException(this, e);
                 }
                 finally
                 {
@@ -1253,6 +1278,60 @@ namespace WebApplications.Utilities.Database
             else
                 ExecuteAsync();
 #pragma warning restore 4014
+        }
+
+        /// <summary>
+        /// Executes this batch for the result given asynchronously.
+        /// </summary>
+        /// <param name="result">The result to get.</param>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
+        /// <returns></returns>
+        [NotNull]
+        internal Task ExecuteAsync([NotNull] SqlBatchResult result, CancellationToken cancellationToken)
+        {
+            Task t = ExecuteAsync(cancellationToken);
+            return result.GetResultAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes this batch for the result given asynchronously.
+        /// </summary>
+        /// <typeparam name="T">The type of the result.</typeparam>
+        /// <param name="result">The result to get.</param>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
+        /// <returns></returns>
+        [NotNull]
+        internal Task<T> ExecuteAsync<T>([NotNull] SqlBatchResult<T> result, CancellationToken cancellationToken)
+        {
+            Task t = ExecuteAsync(cancellationToken);
+            return result.GetResultAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes this batch for the result given asynchronously.
+        /// </summary>
+        /// <param name="result">The result to get.</param>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
+        /// <returns></returns>
+        [NotNull]
+        internal Task ExecuteAllAsync([NotNull] SqlBatchResult result, CancellationToken cancellationToken)
+        {
+            Task t = ExecuteAllAsync(cancellationToken);
+            return result.GetResultAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Executes this batch for the result given asynchronously.
+        /// </summary>
+        /// <typeparam name="T">The type of the result.</typeparam>
+        /// <param name="result">The result to get.</param>
+        /// <param name="cancellationToken">A cancellation token which can be used to cancel the entire batch operation.</param>
+        /// <returns></returns>
+        [NotNull]
+        internal Task<IEnumerable<T>> ExecuteAllAsync<T>([NotNull] SqlBatchResult<T> result, CancellationToken cancellationToken)
+        {
+            Task t = ExecuteAllAsync(cancellationToken);
+            return result.GetResultsAsync(cancellationToken);
         }
 
         /// <summary>
@@ -1573,10 +1652,21 @@ namespace WebApplications.Utilities.Database
                                         // Set the output values
                                         for (int i = 0; i < outs.Count; i++)
                                         {
-                                            Debug.Assert(outs[i].output != null, "outs[i].output != null");
-                                            Debug.Assert(outs[i].param != null, "outs[i].param != null");
+                                            IOut output = outs[i].output;
+                                            DbBatchParameter param = outs[i].param;
 
-                                            outs[i].output.SetOutputValue(values[i], outs[i].param.BaseParameter);
+                                            Debug.Assert(output != null, "outs[i].output != null");
+                                            Debug.Assert(param != null, "outs[i].param != null");
+
+                                            try
+                                            {
+                                                object outValue = param.ProgramParameter.CastSQLValue(values[i], output.Type);
+                                                output.SetOutputValue(outValue, param.BaseParameter);
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                output.SetOutputError(e, param.BaseParameter);
+                                            }
                                         }
 
                                         // Make sure theres only one record
@@ -2126,7 +2216,10 @@ namespace WebApplications.Utilities.Database
                         }
 
                         if (!contains)
-                            throw new InvalidOperationException(Resources.SqlBatch_AddCommand_NoCommonConnections);
+                            throw new SqlBatchExecutionException(
+                                this,
+                                LoggingLevel.Error,
+                                () => Resources.SqlBatch_AddCommand_NoCommonConnections);
                         continue;
                     }
 
@@ -2137,7 +2230,10 @@ namespace WebApplications.Utilities.Database
                 }
 
                 if (commonConnections.Count < 1)
-                    throw new InvalidOperationException(Resources.SqlBatch_AddCommand_NoCommonConnections);
+                    throw new SqlBatchExecutionException(
+                        this,
+                        LoggingLevel.Error,
+                        () => Resources.SqlBatch_AddCommand_NoCommonConnections);
 
                 if (commonConnections.Count == 1)
                     commonConnection = commonConnections.Single();

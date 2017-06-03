@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.IO;
 
@@ -165,10 +166,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SqlProgramExecutionException))]
+        [ExpectedException(typeof(SqlProgramExecutionException), AllowDerivedTypes = true)]
         public async Task ExecuteReaderAsync_WithManualDisposal_Timeouts()
         {
-            TimeSpan commandTimeout = TimeSpan.FromSeconds(1);
+            Duration commandTimeout = Duration.FromSeconds(1);
             SqlProgram<int> timeoutTest =
                 await
                     SqlProgram<int>.Create(

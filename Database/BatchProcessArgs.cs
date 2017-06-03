@@ -38,6 +38,9 @@ namespace WebApplications.Utilities.Database
             new Dictionary<SqlBatchCommand, IReadOnlyList<(DbBatchParameter, IOut)>>();
 
         [NotNull]
+        public readonly HashSet<AsyncSemaphore> ProgramSemaphores = new HashSet<AsyncSemaphore>();
+
+        [NotNull]
         public readonly HashSet<AsyncSemaphore> ConnectionSemaphores = new HashSet<AsyncSemaphore>();
 
         [NotNull]
@@ -66,8 +69,10 @@ namespace WebApplications.Utilities.Database
         public AsyncSemaphore[] GetSemaphores()
         {
             AsyncSemaphore[] semaphores;
+
             // Concat the semaphores to a single array
             int semaphoreCount =
+                ProgramSemaphores.Count +
                 ConnectionSemaphores.Count +
                 LoadBalConnectionSemaphores.Count +
                 DatabaseSemaphores.Count;
@@ -79,14 +84,28 @@ namespace WebApplications.Utilities.Database
                 int i = 0;
 
                 // NOTE! Do NOT reorder these without also reordering the semaphores in SqlProgramCommand.WaitSemaphoresAsync
-                foreach (AsyncSemaphore semaphore in ConnectionSemaphores)
-                    semaphores[i++] = semaphore;
-                foreach (AsyncSemaphore semaphore in LoadBalConnectionSemaphores)
-                    semaphores[i++] = semaphore;
-                foreach (AsyncSemaphore semaphore in DatabaseSemaphores)
-                    semaphores[i++] = semaphore;
+                AddOrdered(semaphores, ProgramSemaphores, ref i);
+                AddOrdered(semaphores, ConnectionSemaphores, ref i);
+                AddOrdered(semaphores, LoadBalConnectionSemaphores, ref i);
+                AddOrdered(semaphores, DatabaseSemaphores, ref i);
             }
             return semaphores;
+        }
+
+        private static void AddOrdered(
+            [NotNull] AsyncSemaphore[] semaphores,
+            [NotNull] HashSet<AsyncSemaphore> set,
+            ref int index)
+        {
+            if (set.Count < 1) return;
+
+            int start = index;
+            index += set.Count;
+
+            set.CopyTo(semaphores, start);
+
+            // Need to sort the semaphores at each level to avoid possible deadlocks
+            Array.Sort(semaphores, start, set.Count);
         }
     }
 }

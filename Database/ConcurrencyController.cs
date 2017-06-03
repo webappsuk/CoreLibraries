@@ -153,10 +153,8 @@ namespace WebApplications.Utilities.Database
                 foreach (string id in _databaseSemaphores.Keys)
                 {
                     Debug.Assert(id != null);
-
-                    AsyncSemaphore semaphore;
-                    if (databases.Contains(id) ||
-                        !_databaseSemaphores.TryRemove(id, out semaphore))
+                    
+                    if (databases.Contains(id) || !_databaseSemaphores.TryRemove(id, out AsyncSemaphore semaphore))
                         continue;
 
                     Debug.Assert(semaphore != null);
@@ -164,9 +162,7 @@ namespace WebApplications.Utilities.Database
                 }
                 foreach (Id id in _loadBalancedConnectionSemaphores.Keys)
                 {
-                    AsyncSemaphore semaphore;
-                    if (loadBalancedConns.Contains(id) ||
-                        !_loadBalancedConnectionSemaphores.TryRemove(id, out semaphore))
+                    if (loadBalancedConns.Contains(id) || !_loadBalancedConnectionSemaphores.TryRemove(id, out AsyncSemaphore semaphore))
                         continue;
 
                     Debug.Assert(semaphore != null);
@@ -174,9 +170,7 @@ namespace WebApplications.Utilities.Database
                 }
                 foreach (ConnectionId id in _connectionSemaphores.Keys)
                 {
-                    AsyncSemaphore semaphore;
-                    if (connections.Contains(id) ||
-                        !_connectionSemaphores.TryRemove(id, out semaphore))
+                    if (connections.Contains(id) || !_connectionSemaphores.TryRemove(id, out AsyncSemaphore semaphore))
                         continue;
 
                     Debug.Assert(semaphore != null);
@@ -184,9 +178,7 @@ namespace WebApplications.Utilities.Database
                 }
                 foreach (Id id in _programSemaphores.Keys)
                 {
-                    AsyncSemaphore semaphore;
-                    if (programs.Contains(id) ||
-                        !_programSemaphores.TryRemove(id, out semaphore))
+                    if (programs.Contains(id) || !_programSemaphores.TryRemove(id, out AsyncSemaphore semaphore))
                         continue;
 
                     Debug.Assert(semaphore != null);
@@ -209,8 +201,7 @@ namespace WebApplications.Utilities.Database
         {
             if (maximumConcurrency < 1)
             {
-                AsyncSemaphore semaphore;
-                if (semaphores.TryRemove(id, out semaphore))
+                if (semaphores.TryRemove(id, out AsyncSemaphore semaphore))
                 {
                     Debug.Assert(semaphore != null);
                     semaphore.MaxCount = int.MaxValue;
@@ -234,12 +225,12 @@ namespace WebApplications.Utilities.Database
         /// <param name="databaseId">The database identifier.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"><paramref name="databaseId"/> was null.</exception>
+        [CanBeNull]
         public static AsyncSemaphore GetDatabaseSemaphore([NotNull] string databaseId)
         {
             if (databaseId == null) throw new ArgumentNullException(nameof(databaseId));
-
-            AsyncSemaphore semaphore;
-            _databaseSemaphores.TryGetValue(databaseId, out semaphore);
+            
+            _databaseSemaphores.TryGetValue(databaseId, out AsyncSemaphore semaphore);
             return semaphore;
         }
 
@@ -250,6 +241,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="connectionId">The connection identifier.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"><paramref name="databaseId"/> or <paramref name="connectionId"/> was null.</exception>
+        [CanBeNull]
         public static AsyncSemaphore GetLoadBalancedConnectionSemaphore(
             [NotNull] string databaseId,
             [NotNull] string connectionId)
@@ -257,8 +249,9 @@ namespace WebApplications.Utilities.Database
             if (databaseId == null) throw new ArgumentNullException(nameof(databaseId));
             if (connectionId == null) throw new ArgumentNullException(nameof(connectionId));
 
-            AsyncSemaphore semaphore;
-            _loadBalancedConnectionSemaphores.TryGetValue(new Id(databaseId, connectionId), out semaphore);
+            _loadBalancedConnectionSemaphores.TryGetValue(
+                new Id(databaseId, connectionId),
+                out AsyncSemaphore semaphore);
             return semaphore;
         }
 
@@ -270,6 +263,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="connection">The connection.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"><paramref name="databaseId"/> or <paramref name="connectionId"/> or <paramref name="connection"/> was null.</exception>
+        [CanBeNull]
         public static AsyncSemaphore GetConnectionSemaphore(
             [NotNull] string databaseId,
             [NotNull] string connectionId,
@@ -279,8 +273,9 @@ namespace WebApplications.Utilities.Database
             if (connectionId == null) throw new ArgumentNullException(nameof(connectionId));
             if (connection == null) throw new ArgumentNullException(nameof(connection));
 
-            AsyncSemaphore semaphore;
-            _connectionSemaphores.TryGetValue(new ConnectionId(databaseId, connectionId, connection), out semaphore);
+            _connectionSemaphores.TryGetValue(
+                new ConnectionId(databaseId, connectionId, connection),
+                out AsyncSemaphore semaphore);
             return semaphore;
         }
 
@@ -291,6 +286,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="programName">Name of the program.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException"><paramref name="databaseId"/> or <paramref name="programName"/> was null.</exception>
+        [CanBeNull]
         public static AsyncSemaphore GetProgramSemaphore(
             [NotNull] string databaseId,
             [NotNull] string programName)
@@ -298,8 +294,7 @@ namespace WebApplications.Utilities.Database
             if (databaseId == null) throw new ArgumentNullException(nameof(databaseId));
             if (programName == null) throw new ArgumentNullException(nameof(programName));
 
-            AsyncSemaphore semaphore;
-            _programSemaphores.TryGetValue(new Id(databaseId, programName), out semaphore);
+            _programSemaphores.TryGetValue(new Id(databaseId, programName), out AsyncSemaphore semaphore);
             return semaphore;
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NodaTime;
 using WebApplications.Testing;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.Logging;
@@ -109,12 +110,12 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        [ExpectedException(typeof(SqlProgramExecutionException))]
+        [ExpectedException(typeof(SqlProgramExecutionException), AllowDerivedTypes = true)]
         public async Task ExecuteNonQuery_WithTimeoutSet_ThrowsSqlProgramExecutionExceptionOnTimeout()
         {
             SqlProgram<int> timeoutTest =
                 await SqlProgram<int>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTimeoutTest",
-                                    defaultCommandTimeout: new TimeSpan(0, 0, 5));
+                                    defaultCommandTimeout: Duration.FromSeconds(5));
             DateTime timeStarted = DateTime.Now;
             timeoutTest.ExecuteNonQuery(10);
             DateTime timeEnded = DateTime.Now;

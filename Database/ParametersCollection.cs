@@ -41,12 +41,12 @@ namespace WebApplications.Utilities.Database
     /// <summary>
     /// A delegate for setting the parameters to pass to a batch for a single program.
     /// </summary>
-    public delegate void SetBatchParametersDelegate(SqlBatchParametersCollection parameters);
+    public delegate void SetParametersDelegate(ParametersCollection parameters);
 
     /// <summary>
     /// Holds the collection of parameters to a <see cref="SqlBatchCommand"/>.
     /// </summary>
-    public partial class SqlBatchParametersCollection
+    public partial class ParametersCollection
     {
         [NotNull]
         private readonly SqlBatchCommand _command;
@@ -98,12 +98,12 @@ namespace WebApplications.Utilities.Database
         internal SqlProgramMapping Mapping => _mapping;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlBatchParametersCollection" /> class.
+        /// Initializes a new instance of the <see cref="ParametersCollection" /> class.
         /// </summary>
         /// <param name="mapping">The mapping.</param>
         /// <param name="command">The command.</param>
         /// <param name="commandIndex">Index of the command.</param>
-        internal SqlBatchParametersCollection([NotNull] SqlProgramMapping mapping, [NotNull] SqlBatchCommand command, ushort commandIndex)
+        internal ParametersCollection([NotNull] SqlProgramMapping mapping, [NotNull] SqlBatchCommand command, ushort commandIndex)
         {
             _mapping = mapping;
             _command = command;
@@ -146,6 +146,60 @@ namespace WebApplications.Utilities.Database
             }
 
             return batchParameter;
+        }
+
+        /// <summary>
+        /// Sets the specified parameter with the value provided and returns it as an <see cref="SqlParameter" /> object.
+        /// </summary>
+        /// <typeparam name="T">The type of the value to set.</typeparam>
+        /// <param name="parameterName">The name of the parameter to set.</param>
+        /// <param name="value">The value to set the parameter to.</param>
+        /// <param name="mode"><para>The constraint mode.</para>
+        /// <para>By default this is set to give a warning if truncation/loss of precision occurs.</para></param>
+        /// <returns>The SqlParameter with the specified name.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="parameterName"/> is <see langword="null" />.</exception>
+        /// <exception cref="LoggingException">Could not find a match with the <paramref name="parameterName" /> specified.</exception>
+        /// <exception cref="DatabaseSchemaException"><para>The type <typeparamref name="T" /> is invalid for the <see cref="SqlProgramParameter.Direction" />.</para>
+        /// <para>-or-</para>
+        /// <para>The type <typeparamref name="T" /> was unsupported.</para>
+        /// <para>-or-</para>
+        /// <para>A fatal error occurred.</para>
+        /// <para>-or-</para>
+        /// <para>The object exceeded the SQL type's maximum <see cref="SqlTypeSize">size</see>.</para>
+        /// <para>-or-</para>
+        /// <para>The serialized object was truncated.</para>
+        /// <para>-or-</para>
+        /// <para>Unicode characters were found and only ASCII characters are supported in the SQL type.</para>
+        /// <para>-or-</para>
+        /// <para>The date was outside the range of accepted dates for the SQL type.</para></exception>
+        [NotNull]
+        public DbParameter SetParameter<T>(
+            [NotNull] string parameterName,
+            T value,
+            TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
+
+            // Find parameter definition
+            SqlProgramParameter parameterDefinition;
+            if (!_mapping.Definition.TryGetParameter(parameterName, out parameterDefinition))
+                throw new LoggingException(
+                    LoggingLevel.Critical,
+                    () => Resources.SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter,
+                    _command.Program.Name,
+                    parameterName);
+            Debug.Assert(parameterDefinition != null);
+
+            lock (_parameters)
+            {
+                // Find or create SQL Parameter.
+                DbBatchParameter parameter = GetOrAddParameter(parameterDefinition);
+
+                Debug.Assert(parameter != null);
+                parameter.SetParameterValue(parameterDefinition, value, mode);
+                AddOutParameter(parameter, value as IOut);
+                return parameter;
+            }
         }
 
         /// <summary>

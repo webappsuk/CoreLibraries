@@ -345,7 +345,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="startExecuting">If set to <see langword="true" /> the batch will start executing if it hasn't already.</param>
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
         /// <returns>An awaitable task.</returns>
-        protected override Task GetResultInternalAsync(bool startExecuting, CancellationToken cancellationToken) 
+        protected override Task GetResultInternalAsync(bool startExecuting, CancellationToken cancellationToken)
             => GetResultAsync(startExecuting, cancellationToken);
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="cancellationToken">A cancellation token which can be used to cancel the operation. The batch will continue running.</param>
         /// <returns>An awaitable task which returns the result.</returns>
         [NotNull]
-        public new Task<T> GetResultAsync(CancellationToken cancellationToken = default(CancellationToken)) 
+        public new Task<T> GetResultAsync(CancellationToken cancellationToken = default(CancellationToken))
             => GetResultAsync(false, cancellationToken);
 
         /// <summary>

@@ -40,11 +40,22 @@ namespace WebApplications.Utilities.Threading
     /// number can enter a critical region at the same time
     /// </summary>
     /// <remarks>
-    /// Originally based on http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266983.aspx
+    /// Originally based on http://blogs.msdn.com/b/pfxteam/archive/2012/02/12/10266983.aspx.
     /// </remarks>
     [PublicAPI]
-    public class AsyncSemaphore
+    public class AsyncSemaphore : IComparable<AsyncSemaphore>
     {
+        private static long _nextId;
+
+        /// <summary>
+        /// The ID of the semaphore.
+        /// </summary>
+        /// <remarks>
+        /// This is used for sorting semaphores before waiting on multiple, to ensure they 
+        /// are always awaited in the same order every time to avoid a possible deadlock.
+        /// </remarks>
+        private readonly ulong _id = (ulong)Interlocked.Increment(ref _nextId);
+
         [NotNull]
         private readonly Queue<TaskCompletionSource<IDisposable>> _waiters = new Queue<TaskCompletionSource<IDisposable>>();
 
@@ -235,6 +246,12 @@ namespace WebApplications.Utilities.Threading
 
             return releaser.IsDefault ? AllReleaser.Default : releaser;
         }
+
+        /// <summary>Compares the current object with another object of the same type.</summary>
+        /// <returns>A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />. </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public int CompareTo(AsyncSemaphore other)
+            => other == null ? 1 : _id.CompareTo(other._id);
 
         /// <summary>
         /// Used to release a single semaphore.

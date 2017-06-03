@@ -226,7 +226,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        [ExpectedException(typeof(DatabaseSchemaException))]
+        [ExpectedException(typeof(SqlProgramExecutionException), AllowDerivedTypes = true)]
         public async Task ExecuteReader_WithByteArrayParameterTooLong_ThrowsExceptionWhenTypeConstraintModeError()
         {
             // This Sql Program is configured in the app.config to use TypeConstraintMode Error, so will throw error

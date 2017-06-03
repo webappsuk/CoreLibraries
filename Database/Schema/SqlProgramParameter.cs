@@ -125,6 +125,8 @@ namespace WebApplications.Utilities.Database.Schema
                 parameter.Scale = Type.Size.Scale;
             if (Type.SqlDbType == SqlDbType.Udt)
                 parameter.UdtTypeName = Type.Name;
+            else if (Type.SqlDbType == SqlDbType.Structured)
+                parameter.TypeName = Type.Name;
             parameter.Direction = Direction;
             return parameter;
         }
@@ -264,7 +266,7 @@ namespace WebApplications.Utilities.Database.Schema
         }
 
         /// <summary>
-        ///   Casts the CLR value to the correct SQL type.
+        ///   Casts the SQL value to the correct CLR type.
         /// </summary>
         /// <param name="value">The CLR value to cast.</param>
         /// <param name="clrType">The CLR type of the value to cast.</param>
@@ -288,7 +290,7 @@ namespace WebApplications.Utilities.Database.Schema
         }
 
         /// <summary>
-        ///   Casts the CLR value to the correct SQL type.
+        ///   Casts the SQL value to the correct CLR type.
         /// </summary>
         /// <typeparam name="T">The CLR type of the value to cast.</typeparam>
         /// <param name="value">The CLR value to cast.</param>

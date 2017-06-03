@@ -148,7 +148,7 @@ namespace WebApplications.Utilities.Database.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(LoggingException))]
+        [ExpectedException(typeof(LoggingException), AllowDerivedTypes = true)]
         public async Task Test_DatabaseProgramCall_ParamOrderMatters_WrongOrderExecuted()
         {
             int rowCount = 0;

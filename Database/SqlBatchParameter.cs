@@ -71,7 +71,7 @@ namespace WebApplications.Utilities.Database
         /// <value>
         ///   <see langword="true" /> if the output value is used; otherwise, <see langword="false" />.
         /// </value>
-        public bool IsOutputUsed { get; private set; }
+        public bool IsOutputUsed { get; protected set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DbBatchParameter" /> class.
@@ -108,7 +108,7 @@ namespace WebApplications.Utilities.Database
                 SetParameterValue(parameter, value.Value, mode);
             IsOutputUsed = value.Value is IOut;
         }
-
+        
         /// <summary>
         /// Sets the value of the parameter.
         /// </summary>
@@ -116,7 +116,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameter">The parameter.</param>
         /// <param name="value">The value.</param>
         /// <param name="mode">The mode.</param>
-        protected abstract void SetParameterValue<T>(
+        protected internal abstract void SetParameterValue<T>(
             SqlProgramParameter parameter,
             T value,
             TypeConstraintMode mode);
@@ -278,12 +278,13 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameter">The parameter.</param>
         /// <param name="value">The value.</param>
         /// <param name="mode">The mode.</param>
-        protected override void SetParameterValue<T>(
+        protected internal override void SetParameterValue<T>(
             [NotNull] SqlProgramParameter parameter,
             T value,
             TypeConstraintMode mode)
         {
             parameter.SetSqlParameterValue(BaseParameter, value, mode);
+            IsOutputUsed = value is IOut;
         }
 
         /// <summary>Gets or sets the <see cref="T:System.Globalization.CompareInfo" /> object that defines how string comparisons should be performed for this parameter.</summary>

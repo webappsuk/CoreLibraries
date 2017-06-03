@@ -34,7 +34,6 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -47,19 +46,13 @@ using WebApplications.Utilities.Threading;
 
 namespace WebApplications.Utilities.Database
 {
-
     #region Delegates
-    /// <summary>
-    /// A delegate that accepts any method that takes a <see cref="SqlProgramCommand"/> and set's its parameters.
-    /// </summary>
-    /// <param name="command">The command.</param>
-    public delegate void SetParametersDelegate([NotNull] SqlProgramCommand command);
-
     /// <summary>
     /// A delegate that accepts any method that accepts a <see cref="DbDataReader"/>.
     /// </summary>
     /// <param name="reader">The reader.</param>
     /// <remarks>The <paramref name="reader"/> is disposed automatically after use, so should not be disposed by this method.</remarks>
+    [Obsolete("This delegate is obsolete. Consider using the asynchronous ResultDelegateAsync instead.")]
     public delegate void ResultDelegate([NotNull] DbDataReader reader);
 
     /// <summary>
@@ -72,6 +65,7 @@ namespace WebApplications.Utilities.Database
     /// <see cref="IDisposable.Dispose"/> method when ready.</para>
     /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
     /// with a <see cref="CloseableStream"/>.</para></remarks>
+    [Obsolete("This delegate is obsolete. Consider using the asynchronous ResultDisposableDelegateAsync instead.")]
     public delegate void ResultDisposableDelegate([NotNull] DbDataReader reader, [NotNull] IDisposable disposable);
 
     /// <summary>
@@ -106,6 +100,7 @@ namespace WebApplications.Utilities.Database
     /// <returns>The result.</returns>
     /// <remarks>The reader is disposed automatically after use, so should not be disposed by this method.</remarks>
     [CanBeNull]
+    [Obsolete("This delegate is obsolete. Consider using the asynchronous ResultDelegateAsync<T> instead.")]
     public delegate T ResultDelegate<out T>([NotNull] DbDataReader reader);
 
     /// <summary>
@@ -121,6 +116,7 @@ namespace WebApplications.Utilities.Database
     /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
     /// with a <see cref="CloseableStream"/>.</para></remarks>
     [CanBeNull]
+    [Obsolete("This delegate is obsolete. Consider using the asynchronous ResultDisposableDelegateAsync<T> instead.")]
     public delegate T ResultDisposableDelegate<out T>([NotNull] DbDataReader reader, [NotNull] IDisposable disposable);
 
     /// <summary>
@@ -153,6 +149,7 @@ namespace WebApplications.Utilities.Database
     /// </summary>
     /// <param name="reader">The reader.</param>
     /// <remarks>The reader is disposed automatically after use, so should not be disposed by this method.</remarks>
+    [Obsolete("This delegate is obsolete. Consider using the asynchronous XmlResultDelegateAsync instead.")]
     public delegate void XmlResultDelegate([NotNull] XmlReader reader);
 
     /// <summary>
@@ -165,6 +162,7 @@ namespace WebApplications.Utilities.Database
     /// <see cref="IDisposable.Dispose"/> method when ready.</para>
     /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
     /// with a <see cref="CloseableStream"/>.</para></remarks>
+    [Obsolete("This delegate is obsolete. Consider using the asynchronous XmlResultDisposableDelegateAsync instead.")]
     public delegate void XmlResultDisposableDelegate([NotNull] XmlReader reader, [NotNull] IDisposable disposable);
 
     /// <summary>
@@ -200,6 +198,7 @@ namespace WebApplications.Utilities.Database
     /// <returns>The result.</returns>
     /// <remarks>The reader is disposed automatically after use, so should not be disposed by this method.</remarks>
     [CanBeNull]
+    [Obsolete("This delegate is obsolete. Consider using the asynchronous XmlResultDelegateAsync<T> instead.")]
     public delegate T XmlResultDelegate<out T>([NotNull] XmlReader reader);
 
     /// <summary>
@@ -215,6 +214,7 @@ namespace WebApplications.Utilities.Database
     /// <para>This is most useful when retrieving a stream from the <paramref name="reader"/> and can be used
     /// with a <see cref="CloseableStream"/>.</para></remarks>
     [CanBeNull]
+    [Obsolete("This delegate is obsolete. Consider using the asynchronous XmlResultDisposableDelegateAsync<T> instead.")]
     public delegate T XmlResultDisposableDelegate<out T>([NotNull] XmlReader reader, [NotNull] IDisposable disposable);
 
     /// <summary>
@@ -315,7 +315,7 @@ namespace WebApplications.Utilities.Database
         ///   The default command timeout to use.
         ///   This is the time to wait for the program to execute before generating an error.
         /// </summary>
-        private TimeSpan _defaultCommandTimeout = TimeSpan.FromSeconds(30);
+        private Duration _defaultCommandTimeout = Duration.FromSeconds(30);
 
         /// <summary>
         ///   Gets or sets the default command timeout.
@@ -323,18 +323,18 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <value>
         ///   The default command timeout, this is initialized to be 30 seconds by default.
-        ///   When setting the default timeout if the value is less than <see cref="TimeSpan.Zero"/>
+        ///   When setting the default timeout if the value is less than <see cref="Duration.Zero"/>
         ///   then this will be set to the original interval of 30 seconds.
         /// </value>
-        public TimeSpan DefaultCommandTimeout
+        public Duration DefaultCommandTimeout
         {
-            get { return _defaultCommandTimeout; }
+            get => _defaultCommandTimeout;
             set
             {
                 if (_defaultCommandTimeout == value)
                     return;
-                _defaultCommandTimeout = value < TimeSpan.Zero
-                    ? TimeSpan.FromSeconds(30)
+                _defaultCommandTimeout = value < Duration.Zero
+                    ? Duration.FromSeconds(30)
                     : value;
             }
         }
@@ -367,20 +367,19 @@ namespace WebApplications.Utilities.Database
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
             [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
         {
-            if (connection == null) throw new ArgumentNullException(nameof(connection));
-            if (name == null) throw new ArgumentNullException(nameof(name));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Connection = connection ?? throw new ArgumentNullException(nameof(connection));
 
-            Name = name;
-            Connection = connection;
             if (connection.DatabaseId != null)
                 Semaphore = ConcurrencyController.GetProgramSemaphore(connection.DatabaseId, name);
 
-            DefaultCommandTimeout = (defaultCommandTimeout == null || defaultCommandTimeout < TimeSpan.Zero)
-                ? TimeSpan.FromSeconds(30)
-                : (TimeSpan)defaultCommandTimeout;
+            if (defaultCommandTimeout == null || defaultCommandTimeout < Duration.Zero)
+                DefaultCommandTimeout = Duration.FromSeconds(30);
+            else
+                DefaultCommandTimeout = (Duration)defaultCommandTimeout;
 
             ConstraintMode = constraintMode;
 
@@ -411,7 +410,7 @@ namespace WebApplications.Utilities.Database
         protected SqlProgram(
             [NotNull] SqlProgram program,
             [NotNull] IEnumerable<KeyValuePair<string, Type>> parameters,
-            TimeSpan? defaultCommandTimeout,
+            Duration? defaultCommandTimeout,
             TypeConstraintMode constraintMode)
         {
             if (program == null) throw new ArgumentNullException(nameof(program));
@@ -424,8 +423,10 @@ namespace WebApplications.Utilities.Database
             // If we have no specific default command timeout set it to the existing one for the program.
             if (defaultCommandTimeout == null)
                 DefaultCommandTimeout = program.DefaultCommandTimeout;
+            else if (defaultCommandTimeout < Duration.Zero)
+                DefaultCommandTimeout = Duration.FromSeconds(30);
             else
-                DefaultCommandTimeout = (TimeSpan)defaultCommandTimeout;
+                DefaultCommandTimeout = (Duration)defaultCommandTimeout;
             ConstraintMode = constraintMode;
 
             IReadOnlyCollection<KeyValuePair<string, Type>> p = parameters.Enumerate();
@@ -462,7 +463,7 @@ namespace WebApplications.Utilities.Database
             [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
-            [CanBeNull] TimeSpan? defaultCommandTimeout = null,
+            [CanBeNull] Duration? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -502,7 +503,7 @@ namespace WebApplications.Utilities.Database
             [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -545,7 +546,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
             bool ignoreValidationErrors,
-            [CanBeNull] TimeSpan? defaultCommandTimeout,
+            [CanBeNull] Duration? defaultCommandTimeout,
             TypeConstraintMode constraintMode,
             [NotNull] params Type[] parameterTypes)
         {
@@ -590,7 +591,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] string name,
             bool ignoreValidationErrors,
             bool checkOrder,
-            TimeSpan? defaultCommandTimeout,
+            Duration? defaultCommandTimeout,
             TypeConstraintMode constraintMode,
             [NotNull] IEnumerable<string> parameterNames,
             [NotNull] params Type[] parameterTypes)
@@ -627,7 +628,7 @@ namespace WebApplications.Utilities.Database
             CancellationToken cancellationToken,
             [NotNull] SqlProgram program,
             bool ignoreValidationErrors,
-            TimeSpan? defaultCommandTimeout,
+            Duration? defaultCommandTimeout,
             TypeConstraintMode constraintMode,
             [NotNull] params Type[] parameterTypes)
         {
@@ -667,7 +668,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] SqlProgram program,
             bool ignoreValidationErrors,
             bool checkOrder,
-            TimeSpan? defaultCommandTimeout,
+            Duration? defaultCommandTimeout,
             TypeConstraintMode constraintMode,
             [NotNull] IEnumerable<string> parameterNames,
             [NotNull] params Type[] parameterTypes)
@@ -827,53 +828,7 @@ namespace WebApplications.Utilities.Database
             Debug.Assert(mapping != null);
             return mapping;
         }
-
-        /// <summary>
-        ///   Creates a new command against a random connection.  This should always be used within a using statement.
-        /// </summary>
-        /// <param name="timeout">
-        ///   <para>The time to wait for an executing program before throwing an error.</para>
-        ///   <para>If <see langword="null"/> is specified then <see cref="DefaultCommandTimeout"/> is used.</para>
-        /// </param>
-        /// <returns>A <see cref="SqlProgramCommand"/>.</returns>
-        [NotNull]
-        public SqlProgramCommand CreateCommand(TimeSpan? timeout = null)
-        {
-            // Select a random valid mapping.
-            // ReSharper disable once PossibleNullReferenceException
-            SqlProgramMapping sqlProgramMapping = Mappings.Choose(mapping => mapping.Connection.Weight);
-            if (sqlProgramMapping == null)
-                throw new LoggingException(() => Resources.SqlProgram_CreateCommand_No_Mapping, Name);
-
-            return new SqlProgramCommand(
-                this,
-                sqlProgramMapping,
-                (timeout == null || timeout < TimeSpan.Zero)
-                    ? DefaultCommandTimeout
-                    : (TimeSpan)timeout);
-        }
-
-        /// <summary>
-        ///   Creates the commands for all connections in a load balanced connection.
-        /// </summary>
-        /// <param name="timeout">
-        ///   <para>The time to wait for an executing program before throwing an error.</para>
-        ///   <para>If <see langword="null"/> or less than <see cref="TimeSpan.Zero"/> then <see cref="DefaultCommandTimeout"/> is used.</para>
-        /// </param>
-        /// <returns>An enumeration of <see cref="SqlProgramCommand"/> (one for each connection).</returns>
-        [NotNull]
-        public IEnumerable<SqlProgramCommand> CreateCommandsForAllConnections(TimeSpan? timeout = null)
-        {
-            TimeSpan t = (timeout == null || timeout < TimeSpan.Zero)
-                ? DefaultCommandTimeout
-                : (TimeSpan)timeout;
-            // ReSharper disable once PossibleNullReferenceException
-            return Mappings
-                // ReSharper disable once AssignNullToNotNullAttribute
-                .Select(mapping => new SqlProgramCommand(this, mapping, t))
-                .ToArray();
-        }
-
+        
         /// <summary>
         ///   Returns a <see cref="string"/> that represents this instance.
         /// </summary>
@@ -904,11 +859,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteScalarAsync<T> instead.")]
         public T ExecuteScalar<T>()
-        {
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteScalar<T>();
-        }
+            => ExecuteScalarAsync<T>().GetAwaiter().GetResult();
 
         /// <summary>
         ///   Executes the query against each connection, and returns the first column of the first row in the result set returned by the query.
@@ -936,11 +889,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteScalarAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteScalarAll<T>()
-        {
-            // ReSharper disable once PossibleNullReferenceException
-            return CreateCommandsForAllConnections().Select(command => command.ExecuteScalar<T>()).ToArray();
-        }
+            => ExecuteScalarAllAsync<T>().GetAwaiter().GetResult();
 
         /// <summary>
         ///   Executes the query, and returns the first column of the first row in the result set returned by the query.
@@ -960,14 +911,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteScalarAsync<T> instead.")]
         public T ExecuteScalar<T>([NotNull] SetParametersDelegate setParameters)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteScalar<T>();
-        }
+            => ExecuteScalarAsync<T>(setParameters).GetAwaiter().GetResult();
 
         /// <summary>
         ///   Executes the query against each connection, and returns the first column of the first row in the result set returned by the query.
@@ -996,21 +942,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
         [NotNull]
-        public IEnumerable<T> ExecuteScalarAll<T>([NotNull] SetParametersDelegate setParameters)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-
-            // ReSharper disable PossibleNullReferenceException
-            return CreateCommandsForAllConnections().Select(
-                command =>
-                {
-                    Debug.Assert(command != null);
-                    setParameters(command);
-                    return command.ExecuteScalar<T>();
-                })
-                .ToArray();
-            // ReSharper restore PossibleNullReferenceException
-        }
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteScalarAllAsync<T> instead.")]
+        public IEnumerable<T> ExecuteScalarAll<T>([NotNull] SetParametersDelegate setParameters) 
+            => ExecuteScalarAllAsync<T>(setParameters).GetAwaiter().GetResult();
         #endregion
 
         #region ExecuteScalarAsync and ExecuteScalarAllAsync overloads
@@ -1039,8 +973,9 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<T> ExecuteScalarAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
         {
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteScalarAsync<T>(cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteScalar(this, out SqlBatchResult<T> result)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -1065,17 +1000,9 @@ namespace WebApplications.Utilities.Database
         public Task<IEnumerable<T>> ExecuteScalarAllAsync<T>(
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteScalarAsync<T>(cancellationToken)))
-                    .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteScalar(this, out SqlBatchResult<T> result)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -1106,9 +1033,9 @@ namespace WebApplications.Utilities.Database
         {
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteScalarAsync<T>(cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteScalar(this, out SqlBatchResult<T> result, setParameters)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -1138,21 +1065,9 @@ namespace WebApplications.Utilities.Database
         {
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return Task.WhenAll(
-                CreateCommandsForAllConnections()
-                    .Select(
-                        command =>
-                        {
-                            setParameters(command);
-                            return command.ExecuteScalarAsync<T>(cancellationToken);
-                        }))
-                .ContinueWith(
-                    t => (IEnumerable<T>)t.Result,
-                    cancellationToken,
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                    TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteScalar(this, out SqlBatchResult<T> result, setParameters)
+                .ExecuteAllAsync(result, cancellationToken);
         }
         #endregion
 
@@ -1171,11 +1086,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteNonQueryAsync instead.")]
         public int ExecuteNonQuery()
-        {
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteNonQuery();
-        }
+            => ExecuteNonQueryAsync().GetAwaiter().GetResult();
 
         /// <summary>
         ///   Executes a Transact-SQL statement against every connection and returns the number of rows affected for each connection.
@@ -1192,11 +1105,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteNonQueryAllAsync instead.")]
         public IEnumerable<int> ExecuteNonQueryAll()
-        {
-            // ReSharper disable once PossibleNullReferenceException
-            return CreateCommandsForAllConnections().Select(command => command.ExecuteNonQuery()).ToArray();
-        }
+            => ExecuteNonQueryAllAsync().GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes a Transact-SQL statement against the connection and returns the number of rows affected.
@@ -1213,14 +1124,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteNonQueryAsync instead.")]
         public int ExecuteNonQuery([NotNull] SetParametersDelegate setParameters)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteNonQuery();
-        }
+            => ExecuteNonQueryAsync(setParameters).GetAwaiter().GetResult();
 
         /// <summary>
         ///   Executes a Transact-SQL statement against every connection and returns the number of rows affected for each connection.
@@ -1238,21 +1144,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteNonQueryAllAsync instead.")]
         public IEnumerable<int> ExecuteNonQueryAll([NotNull] SetParametersDelegate setParameters)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-
-            // ReSharper disable PossibleNullReferenceException
-            return CreateCommandsForAllConnections().Select(
-                command =>
-                {
-                    Debug.Assert(command != null);
-                    setParameters(command);
-                    return command.ExecuteNonQuery();
-                })
-                .ToArray();
-            // ReSharper restore PossibleNullReferenceException
-        }
+            => ExecuteNonQueryAllAsync(setParameters).GetAwaiter().GetResult();
         #endregion
 
         #region ExecuteNonQueryAsync and ExecuteNonQueryAllAsync overloads
@@ -1274,8 +1168,9 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         public Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteNonQueryAsync(cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteNonQuery(this, out SqlBatchResult<int> result)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -1297,17 +1192,9 @@ namespace WebApplications.Utilities.Database
         public Task<IEnumerable<int>> ExecuteNonQueryAllAsync(
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteNonQueryAsync(cancellationToken)))
-                    .ContinueWith(
-                        t => (IEnumerable<int>)t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteNonQuery(this, out SqlBatchResult<int> result)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -1337,9 +1224,9 @@ namespace WebApplications.Utilities.Database
         {
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteNonQueryAsync(cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteNonQuery(this, out SqlBatchResult<int> result, setParameters)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -1365,21 +1252,9 @@ namespace WebApplications.Utilities.Database
         {
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return Task.WhenAll(
-                CreateCommandsForAllConnections()
-                    .Select(
-                        command =>
-                        {
-                            setParameters(command);
-                            return command.ExecuteNonQueryAsync(cancellationToken);
-                        }))
-                .ContinueWith(
-                    t => (IEnumerable<int>)t.Result,
-                    cancellationToken,
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                    TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteNonQuery(this, out SqlBatchResult<int> result, setParameters)
+                .ExecuteAllAsync(result, cancellationToken);
         }
         #endregion
 
@@ -1397,11 +1272,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync instead.")]
         public void ExecuteReader()
-        {
-            SqlProgramCommand command = CreateCommand();
-            command.ExecuteNonQuery();
-        }
+            => ExecuteReaderAsync().GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters against every connection.
@@ -1416,12 +1289,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync instead.")]
         public void ExecuteReaderAll()
-        {
-            // ReSharper disable once PossibleNullReferenceException, ReturnValueOfPureMethodIsNotUsed
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-                command.ExecuteNonQuery();
-        }
+            => ExecuteReaderAllAsync().GetAwaiter().GetResult();
 
         /// <summary>
         ///   Executes the program with the specified parameters.
@@ -1439,11 +1309,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync<T> instead.")]
         public T ExecuteReader<T>()
-        {
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteScalar<T>();
-        }
+            => ExecuteReaderAsync<T>().GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -1461,11 +1329,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteReaderAll<T>()
-        {
-            // ReSharper disable once PossibleNullReferenceException
-            return CreateCommandsForAllConnections().Select(command => command.ExecuteScalar<T>()).ToArray();
-        }
+            => ExecuteReaderAllAsync<T>().GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -1483,14 +1349,18 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync instead.")]
         public void ExecuteReader(
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-            SqlProgramCommand command = CreateCommand();
-            command.ExecuteReader(resultAction, behavior);
-        }
+            => ExecuteReaderAsync(
+                    (reader, _) =>
+                    {
+                        resultAction(reader);
+                        return TaskResult.Completed;
+                    },
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -1508,14 +1378,18 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync instead.")]
         public void ExecuteReader(
             [NotNull] ResultDisposableDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-            SqlProgramCommand command = CreateCommand();
-            command.ExecuteReader(resultAction, behavior);
-        }
+            => ExecuteReaderAsync(
+                    (reader, disp, _) =>
+                    {
+                        resultAction(reader, disp);
+                        return TaskResult.Completed;
+                    },
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -1532,15 +1406,18 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync instead.")]
         public void ExecuteReaderAll(
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-                // ReSharper disable once PossibleNullReferenceException
-                command.ExecuteReader(resultAction, behavior);
-        }
+            => ExecuteReaderAllAsync(
+                    (reader, _) =>
+                    {
+                        resultAction(reader);
+                        return TaskResult.Completed;
+                    },
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -1557,15 +1434,18 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync instead.")]
         public void ExecuteReaderAll(
             [NotNull] ResultDisposableDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-                // ReSharper disable once PossibleNullReferenceException
-                command.ExecuteReader(resultAction, behavior);
-        }
+            => ExecuteReaderAllAsync(
+                    (reader, disp, _) =>
+                    {
+                        resultAction(reader, disp);
+                        return TaskResult.Completed;
+                    },
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -1585,14 +1465,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync<T> instead.")]
         public T ExecuteReader<T>(
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteReader(resultFunc, behavior);
-        }
+            => ExecuteReaderAsync<T>(
+                    (reader, _) => Task.FromResult(resultFunc(reader)),
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -1612,14 +1492,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync<T> instead.")]
         public T ExecuteReader<T>(
             [NotNull] ResultDisposableDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteReader(resultFunc, behavior);
-        }
+            => ExecuteReaderAsync<T>(
+                    (reader, disp, _) => Task.FromResult(resultFunc(reader, disp)),
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -1642,17 +1522,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteReaderAll<T>(
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-            // ReSharper disable once PossibleNullReferenceException
-            return
-                CreateCommandsForAllConnections()
-                    .Select(command => command.ExecuteReader(resultFunc, behavior))
-                    .ToArray();
-        }
+            => ExecuteReaderAllAsync<T>(
+                    (reader, _) => Task.FromResult(resultFunc(reader)),
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -1675,17 +1552,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteReaderAll<T>(
             [NotNull] ResultDisposableDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-            // ReSharper disable once PossibleNullReferenceException
-            return
-                CreateCommandsForAllConnections()
-                    .Select(command => command.ExecuteReader(resultFunc, behavior))
-                    .ToArray();
-        }
+            => ExecuteReaderAllAsync<T>(
+                    (reader, disp, _) => Task.FromResult(resultFunc(reader, disp)),
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -1704,18 +1578,20 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync instead.")]
         public void ExecuteReader(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            command.ExecuteReader(resultAction, behavior);
-        }
+            => ExecuteReaderAsync(
+                    setParameters,
+                    (reader, _) =>
+                    {
+                        resultAction(reader);
+                        return TaskResult.Completed;
+                    },
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -1734,18 +1610,20 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync instead.")]
         public void ExecuteReader(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDisposableDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            command.ExecuteReader(resultAction, behavior);
-        }
+            => ExecuteReaderAsync(
+                    setParameters,
+                    (reader, disp, _) =>
+                    {
+                        resultAction(reader, disp);
+                        return TaskResult.Completed;
+                    },
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters against all connections.
@@ -1763,21 +1641,20 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync instead.")]
         public void ExecuteReaderAll(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-            {
-                Debug.Assert(command != null);
-                setParameters(command);
-                command.ExecuteReader(resultAction, behavior);
-            }
-        }
+            => ExecuteReaderAllAsync(
+                    setParameters,
+                    (reader, _) =>
+                    {
+                        resultAction(reader);
+                        return TaskResult.Completed;
+                    },
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters against all connections, requires manual disposal.
@@ -1795,21 +1672,20 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync instead.")]
         public void ExecuteReaderAll(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDisposableDelegate resultAction,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-            {
-                Debug.Assert(command != null);
-                setParameters(command);
-                command.ExecuteReader(resultAction, behavior);
-            }
-        }
+            => ExecuteReaderAllAsync(
+                    setParameters,
+                    (reader, disp, _) =>
+                    {
+                        resultAction(reader, disp);
+                        return TaskResult.Completed;
+                    },
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -1830,18 +1706,16 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync<T> instead.")]
         public T ExecuteReader<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteReader(resultFunc, behavior);
-        }
+            => ExecuteReaderAsync<T>(
+                    setParameters,
+                    (reader, _) => Task.FromResult(resultFunc(reader)),
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -1862,18 +1736,16 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync<T> instead.")]
         public T ExecuteReader<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDisposableDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteReader(resultFunc, behavior);
-        }
+            => ExecuteReaderAsync<T>(
+                    setParameters,
+                    (reader, disp, _) => Task.FromResult(resultFunc(reader, disp)),
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters against all connections.
@@ -1897,21 +1769,16 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteReaderAll<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-            {
-                Debug.Assert(command != null);
-                setParameters(command);
-                yield return command.ExecuteReader(resultFunc, behavior);
-            }
-        }
+            => ExecuteReaderAllAsync<T>(
+                    setParameters,
+                    (reader, _) => Task.FromResult(resultFunc(reader)),
+                    behavior)
+                .GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters against all connections, requires manual disposal.
@@ -1935,21 +1802,16 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteReaderAll<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] ResultDisposableDelegate<T> resultFunc,
             CommandBehavior behavior = CommandBehavior.Default)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-            {
-                Debug.Assert(command != null);
-                setParameters(command);
-                yield return command.ExecuteReader(resultFunc, behavior);
-            }
-        }
+            => ExecuteReaderAllAsync<T>(
+                    setParameters,
+                    (reader, disp, _) => Task.FromResult(resultFunc(reader, disp)),
+                    behavior)
+                .GetAwaiter().GetResult();
         #endregion
 
         #region ExecuteReaderAsync and ExecuteReaderAllAsync overloads
@@ -1973,11 +1835,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is equivalent to calling ExecuteNonQueryAsync.")]
         public Task ExecuteReaderAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteNonQueryAsync(cancellationToken);
-        }
+            => ExecuteNonQueryAsync(cancellationToken);
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -1995,20 +1855,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is equivalent to calling ExecuteNonQueryAllAsync.")]
         public Task ExecuteReaderAllAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteNonQueryAsync(cancellationToken)))
-                    .ContinueWith(
-                        t => (IEnumerable<int>)t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
-        }
+            => ExecuteNonQueryAllAsync(cancellationToken);
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -2027,11 +1876,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is equivalent to calling ExecuteScalarAsync<T>.")]
         public Task<T> ExecuteReaderAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteScalarAsync<T>(cancellationToken);
-        }
+            => ExecuteScalarAsync<T>(cancellationToken);
 
         /// <summary>
         /// Executes the program with the specified parameters against all connections.
@@ -2050,21 +1897,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is equivalent to calling ExecuteScalarAllAsync<T>.")]
         public Task<IEnumerable<T>> ExecuteReaderAllAsync<T>(
             CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteScalarAsync<T>(cancellationToken)))
-                    .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
-        }
+            => ExecuteScalarAllAsync<T>(cancellationToken);
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -2091,8 +1927,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultAction, out SqlBatchResult result, behavior)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2120,8 +1957,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultAction, out SqlBatchResult result, behavior)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2149,12 +1987,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteReaderAsync(resultAction, behavior, cancellationToken)));
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultAction, out SqlBatchResult result, behavior)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2182,12 +2017,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteReaderAsync(resultAction, behavior, cancellationToken)));
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultAction, out SqlBatchResult result, behavior)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2216,8 +2048,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultFunc, out SqlBatchResult<T> result, behavior)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2246,8 +2079,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultFunc, out SqlBatchResult<T> result, behavior)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2276,17 +2110,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken)))
-                    .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultFunc, out SqlBatchResult<T> result, behavior)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2315,17 +2141,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken)))
-                    .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultFunc, out SqlBatchResult<T> result, behavior)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2356,9 +2174,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultAction, out SqlBatchResult result, behavior, setParameters)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2389,9 +2207,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultAction, out SqlBatchResult result, behavior, setParameters)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2422,17 +2240,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(
-                            command =>
-                            {
-                                setParameters(command);
-                                return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
-                            }));
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultAction, out SqlBatchResult result, behavior, setParameters)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2463,17 +2273,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(
-                            command =>
-                            {
-                                setParameters(command);
-                                return command.ExecuteReaderAsync(resultAction, behavior, cancellationToken);
-                            }));
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultAction, out SqlBatchResult result, behavior, setParameters)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2505,9 +2307,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultFunc, out SqlBatchResult<T> result, behavior, setParameters)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2539,9 +2341,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultFunc, out SqlBatchResult<T> result, behavior, setParameters)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2573,21 +2375,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return Task.WhenAll(
-                CreateCommandsForAllConnections()
-                    .Select(
-                        command =>
-                        {
-                            setParameters(command);
-                            return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
-                        }))
-                .ContinueWith(
-                    t => (IEnumerable<T>)t.Result,
-                    cancellationToken,
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                    TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultFunc, out SqlBatchResult<T> result, behavior, setParameters)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -2619,21 +2409,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return Task.WhenAll(
-                CreateCommandsForAllConnections()
-                    .Select(
-                        command =>
-                        {
-                            setParameters(command);
-                            return command.ExecuteReaderAsync(resultFunc, behavior, cancellationToken);
-                        }))
-                .ContinueWith(
-                    t => (IEnumerable<T>)t.Result,
-                    cancellationToken,
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                    TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteReader(this, resultFunc, out SqlBatchResult<T> result, behavior, setParameters)
+                .ExecuteAllAsync(result, cancellationToken);
         }
         #endregion
 
@@ -2651,11 +2429,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync instead.")]
         public void ExecuteXmlReader()
-        {
-            SqlProgramCommand command = CreateCommand();
-            command.ExecuteNonQuery();
-        }
+            => ExecuteXmlReaderAsync().GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters against every connection.
@@ -2670,12 +2446,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync instead.")]
         public void ExecuteXmlReaderAll()
-        {
-            // ReSharper disable once PossibleNullReferenceException, ReturnValueOfPureMethodIsNotUsed
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-                command.ExecuteNonQuery();
-        }
+            => ExecuteXmlReaderAllAsync().GetAwaiter().GetResult();
 
         /// <summary>
         ///   Executes the program with the specified parameters.
@@ -2693,11 +2466,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/>
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync<T> instead.")]
         public T ExecuteXmlReader<T>()
-        {
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteScalar<T>();
-        }
+            => ExecuteXmlReaderAsync<T>().GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -2715,11 +2486,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteXmlReaderAll<T>()
-        {
-            // ReSharper disable once PossibleNullReferenceException
-            return CreateCommandsForAllConnections().Select(command => command.ExecuteScalar<T>()).ToArray();
-        }
+            => ExecuteXmlReaderAllAsync<T>().GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -2736,13 +2505,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync instead.")]
         public void ExecuteXmlReader([NotNull] XmlResultDelegate resultAction)
-        {
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            SqlProgramCommand command = CreateCommand();
-            command.ExecuteXmlReader(resultAction);
-        }
+            => ExecuteXmlReaderAsync(
+                (reader, _) =>
+                {
+                    resultAction(reader);
+                    return TaskResult.Completed;
+                }).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -2759,13 +2529,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync instead.")]
         public void ExecuteXmlReader([NotNull] XmlResultDisposableDelegate resultAction)
-        {
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            SqlProgramCommand command = CreateCommand();
-            command.ExecuteXmlReader(resultAction);
-        }
+            => ExecuteXmlReaderAsync(
+                (reader, disp, _) =>
+                {
+                    resultAction(reader, disp);
+                    return TaskResult.Completed;
+                }).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -2781,14 +2552,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync instead.")]
         public void ExecuteXmlReaderAll([NotNull] XmlResultDelegate resultAction)
-        {
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-                // ReSharper disable once PossibleNullReferenceException
-                command.ExecuteXmlReader(resultAction);
-        }
+            => ExecuteXmlReaderAllAsync(
+                (reader, _) =>
+                {
+                    resultAction(reader);
+                    return TaskResult.Completed;
+                }).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -2804,14 +2575,14 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync instead.")]
         public void ExecuteXmlReaderAll([NotNull] XmlResultDisposableDelegate resultAction)
-        {
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-                // ReSharper disable once PossibleNullReferenceException
-                command.ExecuteXmlReader(resultAction);
-        }
+            => ExecuteXmlReaderAllAsync(
+                (reader, disp, _) =>
+                {
+                    resultAction(reader, disp);
+                    return TaskResult.Completed;
+                }).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -2830,13 +2601,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync<T> instead.")]
         public T ExecuteXmlReader<T>([NotNull] XmlResultDelegate<T> resultFunc)
-        {
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteXmlReader(resultFunc);
-        }
+            => ExecuteXmlReaderAsync<T>(
+                (reader, _) => Task.FromResult(resultFunc(reader))).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -2855,13 +2623,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync<T> instead.")]
         public T ExecuteXmlReader<T>([NotNull] XmlResultDisposableDelegate<T> resultFunc)
-        {
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteXmlReader(resultFunc);
-        }
+            => ExecuteXmlReaderAsync<T>(
+                (reader, disp, _) => Task.FromResult(resultFunc(reader, disp))).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -2883,13 +2648,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteXmlReaderAll<T>([NotNull] XmlResultDelegate<T> resultFunc)
-        {
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            // ReSharper disable once PossibleNullReferenceException
-            return CreateCommandsForAllConnections().Select(command => command.ExecuteXmlReader(resultFunc)).ToArray();
-        }
+            => ExecuteXmlReaderAllAsync<T>(
+                (reader, _) => Task.FromResult(resultFunc(reader))).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -2911,13 +2673,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteXmlReaderAll<T>([NotNull] XmlResultDisposableDelegate<T> resultFunc)
-        {
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            // ReSharper disable once PossibleNullReferenceException
-            return CreateCommandsForAllConnections().Select(command => command.ExecuteXmlReader(resultFunc)).ToArray();
-        }
+            => ExecuteXmlReaderAllAsync<T>(
+                (reader, disp, _) => Task.FromResult(resultFunc(reader, disp))).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -2935,17 +2694,17 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync instead.")]
         public void ExecuteXmlReader(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate resultAction)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            command.ExecuteXmlReader(resultAction);
-        }
+            => ExecuteXmlReaderAsync(
+                setParameters,
+                (reader, _) =>
+                {
+                    resultAction(reader);
+                    return TaskResult.Completed;
+                }).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -2963,17 +2722,17 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync instead.")]
         public void ExecuteXmlReader(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDisposableDelegate resultAction)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            command.ExecuteXmlReader(resultAction);
-        }
+            => ExecuteXmlReaderAsync(
+                setParameters,
+                (reader, disp, _) =>
+                {
+                    resultAction(reader, disp);
+                    return TaskResult.Completed;
+                }).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters against all connections.
@@ -2990,20 +2749,17 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync instead.")]
         public void ExecuteXmlReaderAll(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate resultAction)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-            {
-                Debug.Assert(command != null);
-                setParameters(command);
-                command.ExecuteXmlReader(resultAction);
-            }
-        }
+            => ExecuteXmlReaderAllAsync(
+                setParameters,
+                (reader, _) =>
+                {
+                    resultAction(reader);
+                    return TaskResult.Completed;
+                }).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters against all connections, requires manual disposal.
@@ -3020,20 +2776,17 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync instead.")]
         public void ExecuteXmlReaderAll(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDisposableDelegate resultAction)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-            {
-                Debug.Assert(command != null);
-                setParameters(command);
-                command.ExecuteXmlReader(resultAction);
-            }
-        }
+            => ExecuteXmlReaderAllAsync(
+                setParameters,
+                (reader, disp, _) =>
+                {
+                    resultAction(reader, disp);
+                    return TaskResult.Completed;
+                }).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -3053,17 +2806,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync<T> instead.")]
         public T ExecuteXmlReader<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate<T> resultFunc)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteXmlReader(resultFunc);
-        }
+            => ExecuteXmlReaderAsync<T>(
+                setParameters,
+                (reader, _) => Task.FromResult(resultFunc(reader))).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters, requires manual disposal.
@@ -3083,17 +2832,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [CanBeNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync<T> instead.")]
         public T ExecuteXmlReader<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDisposableDelegate<T> resultFunc)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteXmlReader(resultFunc);
-        }
+            => ExecuteXmlReaderAsync<T>(
+                setParameters,
+                (reader, disp, _) => Task.FromResult(resultFunc(reader, disp))).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters against all connections.
@@ -3116,20 +2861,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteXmlReaderAll<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDelegate<T> resultFunc)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-            {
-                Debug.Assert(command != null);
-                setParameters(command);
-                yield return command.ExecuteXmlReader(resultFunc);
-            }
-        }
+            => ExecuteXmlReaderAllAsync<T>(
+                setParameters,
+                (reader, _) => Task.FromResult(resultFunc(reader))).GetAwaiter().GetResult();
 
         /// <summary>
         /// Executes the program with the specified parameters against all connections, requires manual disposal.
@@ -3152,20 +2890,13 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync<T> instead.")]
         public IEnumerable<T> ExecuteXmlReaderAll<T>(
             [NotNull] SetParametersDelegate setParameters,
             [NotNull] XmlResultDisposableDelegate<T> resultFunc)
-        {
-            if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
-            if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
-
-            foreach (SqlProgramCommand command in CreateCommandsForAllConnections())
-            {
-                Debug.Assert(command != null);
-                setParameters(command);
-                yield return command.ExecuteXmlReader(resultFunc);
-            }
-        }
+            => ExecuteXmlReaderAllAsync<T>(
+                setParameters,
+                (reader, disp, _) => Task.FromResult(resultFunc(reader, disp))).GetAwaiter().GetResult();
         #endregion
 
         #region ExecuteXmlReaderAsync and ExecuteXmlReaderAllAsync overloads
@@ -3189,11 +2920,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is equivalent to calling ExecuteNonQueryAsync.")]
         public Task ExecuteXmlReaderAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteNonQueryAsync(cancellationToken);
-        }
+            => ExecuteNonQueryAsync(cancellationToken);
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -3211,20 +2940,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is equivalent to calling ExecuteNonQueryAllAsync.")]
         public Task ExecuteXmlReaderAllAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteNonQueryAsync(cancellationToken)))
-                    .ContinueWith(
-                        t => (IEnumerable<int>)t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
-        }
+            => ExecuteNonQueryAllAsync(cancellationToken);
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -3243,11 +2961,9 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is equivalent to calling ExecuteScalarAsync<T>.")]
         public Task<T> ExecuteXmlReaderAsync<T>(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteScalarAsync<T>(cancellationToken);
-        }
+            => ExecuteScalarAsync<T>(cancellationToken);
 
         /// <summary>
         /// Executes the program with the specified parameters against all connections.
@@ -3266,21 +2982,10 @@ namespace WebApplications.Utilities.Database
         ///   <IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true" />
         /// </PermissionSet>
         [NotNull]
+        [Obsolete("This method is equivalent to calling ExecuteScalarAllAsync<T>.")]
         public Task<IEnumerable<T>> ExecuteXmlReaderAllAsync<T>(
             CancellationToken cancellationToken = default(CancellationToken))
-        {
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(command => command.ExecuteScalarAsync<T>(cancellationToken)))
-                    .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
-        }
+            => ExecuteScalarAllAsync<T>(cancellationToken);
 
         /// <summary>
         /// Executes the program with the specified parameters.
@@ -3304,9 +3009,10 @@ namespace WebApplications.Utilities.Database
             CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
+            
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultAction, out SqlBatchResult result)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3332,8 +3038,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultAction, out SqlBatchResult result)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3358,12 +3065,10 @@ namespace WebApplications.Utilities.Database
             CancellationToken cancellationToken = default(CancellationToken))
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
-
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return Task.WhenAll(
-                CreateCommandsForAllConnections()
-                    .Select(command => command.ExecuteXmlReaderAsync(resultAction, cancellationToken)));
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultAction, out SqlBatchResult result)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3389,11 +3094,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return Task.WhenAll(
-                CreateCommandsForAllConnections()
-                    .Select(command => command.ExecuteXmlReaderAsync(resultAction, cancellationToken)));
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultAction, out SqlBatchResult result)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3420,8 +3123,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultFunc, out SqlBatchResult<T> result)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3448,8 +3152,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            SqlProgramCommand command = CreateCommand();
-            return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultFunc, out SqlBatchResult<T> result)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3476,16 +3181,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return Task.WhenAll(
-                CreateCommandsForAllConnections()
-                    .Select(command => command.ExecuteXmlReaderAsync(resultFunc, cancellationToken)))
-                .ContinueWith(
-                    t => (IEnumerable<T>)t.Result,
-                    cancellationToken,
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                    TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultFunc, out SqlBatchResult<T> result)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3512,16 +3210,9 @@ namespace WebApplications.Utilities.Database
         {
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return Task.WhenAll(
-                CreateCommandsForAllConnections()
-                    .Select(command => command.ExecuteXmlReaderAsync(resultFunc, cancellationToken)))
-                .ContinueWith(
-                    t => (IEnumerable<T>)t.Result,
-                    cancellationToken,
-                    TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                    TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultFunc, out SqlBatchResult<T> result)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3550,9 +3241,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultAction, out SqlBatchResult result, setParameters)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3581,9 +3272,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultAction, out SqlBatchResult result, setParameters)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3612,16 +3303,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return Task.WhenAll(
-                CreateCommandsForAllConnections()
-                    .Select(
-                        command =>
-                        {
-                            setParameters(command);
-                            return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
-                        }));
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultAction, out SqlBatchResult result, setParameters)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3650,16 +3334,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultAction == null) throw new ArgumentNullException(nameof(resultAction));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return Task.WhenAll(
-                CreateCommandsForAllConnections()
-                    .Select(
-                        command =>
-                        {
-                            setParameters(command);
-                            return command.ExecuteXmlReaderAsync(resultAction, cancellationToken);
-                        }));
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultAction, out SqlBatchResult result, setParameters)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3689,9 +3366,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultFunc, out SqlBatchResult<T> result, setParameters)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3721,9 +3398,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            SqlProgramCommand command = CreateCommand();
-            setParameters(command);
-            return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultFunc, out SqlBatchResult<T> result, setParameters)
+                .ExecuteAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3753,22 +3430,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(
-                            command =>
-                            {
-                                setParameters(command);
-                                return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
-                            }))
-                    .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultFunc, out SqlBatchResult<T> result, setParameters)
+                .ExecuteAllAsync(result, cancellationToken);
         }
 
         /// <summary>
@@ -3798,22 +3462,9 @@ namespace WebApplications.Utilities.Database
             if (setParameters == null) throw new ArgumentNullException(nameof(setParameters));
             if (resultFunc == null) throw new ArgumentNullException(nameof(resultFunc));
 
-            // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            return
-                Task.WhenAll(
-                    CreateCommandsForAllConnections()
-                        .Select(
-                            command =>
-                            {
-                                setParameters(command);
-                                return command.ExecuteXmlReaderAsync(resultFunc, cancellationToken);
-                            }))
-                    .ContinueWith(
-                        t => (IEnumerable<T>)t.Result,
-                        cancellationToken,
-                        TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Current);
-            // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute
+            return SqlBatch.Create(batchTimeout: DefaultCommandTimeout)
+                .AddExecuteXmlReader(this, resultFunc, out SqlBatchResult<T> result, setParameters)
+                .ExecuteAllAsync(result, cancellationToken);
         }
         #endregion
     }

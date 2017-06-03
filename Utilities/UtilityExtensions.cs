@@ -3457,6 +3457,114 @@ namespace WebApplications.Utilities
         #endregion
 
         /// <summary>
+        /// Sorts the elements of a sequence in ascending order.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <param name="source">A sequence of values to order.</param>
+        /// <returns>
+        /// An <see cref="IOrderedEnumerable{TElement}" /> whose elements are sorted.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="source" /> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IOrderedEnumerable<T> OrderByElement<T>([NotNull] this IEnumerable<T> source)
+            => source.OrderBy(v => v);
+
+        /// <summary>
+        /// Sorts the elements of a sequence in ascending order using a specified comparer.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <param name="source">A sequence of values to order.</param>
+        /// <param name="comparer">An <see cref="IComparer{T}"/> to compare the elements.</param>
+        /// <returns>
+        /// An <see cref="IOrderedEnumerable{TElement}" /> whose elements are sorted.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="source" /> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IOrderedEnumerable<T> OrderByElement<T>([NotNull] this IEnumerable<T> source, IComparer<T> comparer)
+            => source.OrderBy(v => v, comparer);
+
+        /// <summary>
+        /// Sorts the elements of a sequence in descending order.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <param name="source">A sequence of values to order.</param>
+        /// <returns>
+        /// An <see cref="IOrderedEnumerable{TElement}" /> whose elements are sorted in descending order.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="source" /> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IOrderedEnumerable<T> OrderByElementDescending<T>([NotNull] this IEnumerable<T> source)
+            => source.OrderByDescending(v => v);
+
+        /// <summary>
+        /// Sorts the elements of a sequence in descending order using a specified comparer.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <param name="source">A sequence of values to order.</param>
+        /// <param name="comparer">An <see cref="IComparer{T}"/> to compare the elements.</param>
+        /// <returns>
+        /// An <see cref="IOrderedEnumerable{TElement}" /> whose elements are sorted in descending order.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="source" /> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IOrderedEnumerable<T> OrderByElementDescending<T>([NotNull] this IEnumerable<T> source, IComparer<T> comparer)
+            => source.OrderByDescending(v => v, comparer);
+
+        /// <summary>
+        /// Performs a subsequent ordering of the elements in a sequence in ascending order.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <param name="source">An <see cref="IOrderedEnumerable{TElement}" /> that contains elements to sort.</param>
+        /// <returns>
+        /// An <see cref="IOrderedEnumerable{TElement}" /> whose elements are sorted.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="source" /> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IOrderedEnumerable<T> ThenByElement<T>([NotNull] this IOrderedEnumerable<T> source)
+            => source.ThenBy(v => v);
+
+        /// <summary>
+        /// Performs a subsequent ordering of the elements in a sequence in ascending order using a specified comparer.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <param name="source">An <see cref="IOrderedEnumerable{TElement}" /> that contains elements to sort.</param>
+        /// <param name="comparer">An <see cref="IComparer{T}"/> to compare the elements.</param>
+        /// <returns>
+        /// An <see cref="IOrderedEnumerable{TElement}" /> whose elements are sorted.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="source" /> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IOrderedEnumerable<T> ThenByElement<T>([NotNull] this IOrderedEnumerable<T> source, IComparer<T> comparer)
+            => source.ThenBy(v => v, comparer);
+
+        /// <summary>
+        /// Performs a subsequent ordering of the elements in a sequence in descending order.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <param name="source">An <see cref="IOrderedEnumerable{TElement}" /> that contains elements to sort.</param>
+        /// <returns>
+        /// An <see cref="IOrderedEnumerable{TElement}" /> whose elements are sorted.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="source" /> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IOrderedEnumerable<T> ThenByElementDescending<T>([NotNull] this IOrderedEnumerable<T> source)
+            => source.ThenByDescending(v => v);
+
+        /// <summary>
+        /// Performs a subsequent ordering of the elements in a sequence in descending order using a specified comparer.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of <paramref name="source" />.</typeparam>
+        /// <param name="source">An <see cref="IOrderedEnumerable{TElement}" /> that contains elements to sort.</param>
+        /// <param name="comparer">An <see cref="IComparer{T}"/> to compare the elements.</param>
+        /// <returns>
+        /// An <see cref="IOrderedEnumerable{TElement}" /> whose elements are sorted.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="source" /> is <see langword="null" />.</exception>
+        [NotNull]
+        public static IOrderedEnumerable<T> ThenByElementDescending<T>([NotNull] this IOrderedEnumerable<T> source, IComparer<T> comparer)
+            => source.ThenByDescending(v => v, comparer);
+
+        /// <summary>
         /// Enumerates the given <see cref="IEnumerable{T}"/>. 
         /// If the enumerable implements <see cref="IReadOnlyCollection{T}"/> then it will just be returned; otherwise it will be enumerated.
         /// </summary>

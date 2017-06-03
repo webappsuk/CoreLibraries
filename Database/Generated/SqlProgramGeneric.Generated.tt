@@ -102,6 +102,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.SqlServer.Server;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Database.Exceptions;
@@ -110,107 +111,6 @@ using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Database
 {
-    #region Extensions to SqlProgramCommand
-    /// <summary>
-    /// A specialised command that allows finer grained control when using SqlPrograms.
-    /// </summary>
-    public partial class SqlProgramCommand
-    {
-        /// <summary>
-        /// Sets the parameters in ordinal order.
-        /// </summary>
-        <#= Strings.TypeComments #>
-        <#= Strings.ParameterComments #>
-        /// <param name="mode">The constraint mode.</param>
-        /// <returns>The parameters that were set</returns>
-        [NotNull]
-        public IEnumerable<SqlParameter> SetParameters<<#= Strings.TypeParams#>>(<#= Strings.ParametersTyped #>, TypeConstraintMode mode = TypeConstraintMode.Warn)
-        {
-            IReadOnlyList<SqlProgramParameter> parameters = _mapping.Parameters;<# /* TODO With ~20+ params, .ToArray becomes more efficient */ #>
-            if (parameters.Count < <#= Strings.GenericCount #>)
-                throw new LoggingException(
-                    LoggingLevel.Critical,
-                    () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
-                    _program.Name,
-                    parameters.Count,
-                    <#= Strings.GenericCount #>);
-
-            SqlParameter[] sqlParameters = new SqlParameter[<#= Strings.GenericCount #>];
-            SqlParameter parameter;
-            SqlProgramParameter programParameter;
-            int index;
-            lock (_parameters)
-            {
-<# for (int i = 0; i < Strings.GenericCount; i++) { #>
-                // Find or create SQL Parameter <#= i+1 #>.
-                programParameter = parameters[<#= i #>];
-                index = _parameters.IndexOf(programParameter.FullName, _mapping.Definition.ParameterNameComparer);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                programParameter.SetSqlParameterValue(parameter, p<#= i+1 #>Value, mode);
-                AddOutParameter(programParameter, parameter, p<#= i+1 #>Value as IOut);
-                sqlParameters[<#= i #>] = parameter;
-<# } #>
-            }
-
-            // Return parameters that were set
-            return sqlParameters;
-        }
-
-        /// <summary>
-        /// Sets the parameters by name.
-        /// </summary>
-        <#= Strings.TypeComments #>
-        /// <param name="names">The enumeration of parameters names.</param>
-        <#= Strings.ParameterComments #>
-        /// <param name="mode">The constraint mode.</param>
-        /// <returns>The parameters that were set</returns>
-        [NotNull]
-        public IEnumerable<SqlParameter> SetParameters<<#= Strings.TypeParams#>>(IEnumerable<string> names, <#= Strings.ParametersTyped #>, TypeConstraintMode mode = TypeConstraintMode.Warn)
-        {
-            string[] namesArr = names as string[] ?? names?.ToArray();
-
-            if ((namesArr == null) || (namesArr.Length != <#= Strings.GenericCount #>))
-                throw new LoggingException(
-                    LoggingLevel.Critical,
-                    () => Resources.SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters,
-                    _program.Name,
-                    <#= Strings.GenericCount #>,
-                    namesArr == null ? 0 : namesArr.Length);
-
-            SqlProgramParameter[] parameters = new SqlProgramParameter[<#= Strings.GenericCount #>];
-            for (int i = 0; i < <#= Strings.GenericCount #>; i++)
-            {
-                if (!_mapping.Definition.TryGetParameter(namesArr[i], out parameters[i]))
-                    throw new LoggingException(
-                        LoggingLevel.Critical,
-                        () => Resources.SqlProgramCommand_SetParameters_Unknown_Parameter,
-                        _program.Name,
-                        namesArr[i]);
-            }
-
-            SqlParameter[] sqlParameters = new SqlParameter[<#= Strings.GenericCount #>];
-            SqlParameter parameter;
-            SqlProgramParameter programParameter;
-            int index;
-            lock (_parameters)
-            {
-<# for (int i = 0; i < Strings.GenericCount; i++) { #>
-                // Find or create SQL Parameter <#= i+1 #>.
-                programParameter = parameters[<#= i #>];
-                index = _parameters.IndexOf(programParameter.FullName, _mapping.Definition.ParameterNameComparer);
-                parameter = index < 0 ? _parameters.Add(programParameter.CreateSqlParameter()) : _parameters[index];
-                programParameter.SetSqlParameterValue(parameter, p<#= i+1 #>Value, mode);
-                AddOutParameter(programParameter, parameter, p<#= i+1 #>Value as IOut);
-                sqlParameters[<#= i #>] = parameter;
-<# } #>
-            }
-
-            // Return parameters that were set
-            return sqlParameters;
-        }
-    }
-    #endregion
-
     #region SqlProgam<<#= Strings.TypeParams #>>
     /// <summary>
     ///   Used to create an object for easy calling of stored procedures or functions in a database.
@@ -233,7 +133,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
             [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn)
             : base(connection, name, parameters, defaultCommandTimeout, constraintMode)
         {
@@ -253,7 +153,7 @@ namespace WebApplications.Utilities.Database
         protected SqlProgram(
             [NotNull] SqlProgram program,
             [NotNull] IEnumerable<KeyValuePair<string, Type>> parameters,
-            TimeSpan? defaultCommandTimeout,
+            Duration? defaultCommandTimeout,
             TypeConstraintMode constraintMode)
             : base(program, parameters, defaultCommandTimeout, constraintMode)
         {
@@ -278,7 +178,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] LoadBalancedConnection connection,
             [NotNull] string name,
             bool ignoreValidationErrors = false,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -309,7 +209,7 @@ namespace WebApplications.Utilities.Database
         public static async Task<SqlProgram<<#= Strings.TypeParams #>>> Create(
             [NotNull] SqlProgram sqlProgram,
             bool ignoreValidationErrors = false,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -345,7 +245,7 @@ namespace WebApplications.Utilities.Database
             <#= Strings.ConstructorNames #>,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -381,7 +281,7 @@ namespace WebApplications.Utilities.Database
             <#= Strings.ConstructorNames #>,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode constraintMode = TypeConstraintMode.Warn,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -409,6 +309,7 @@ namespace WebApplications.Utilities.Database
         /// <returns>The scalar value.</returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteScalarAsync<TOut> instead.")]
         public TOut ExecuteScalar<TOut>(<#=Strings.ParametersTypedDefault#>, TypeConstraintMode? constraintMode = null)
         {
             return this.ExecuteScalar<TOut>(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode));
@@ -441,6 +342,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteScalarAllAsync<TOut> instead.")]
         public IEnumerable<TOut> ExecuteScalarAll<TOut>(<#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
@@ -473,6 +375,7 @@ namespace WebApplications.Utilities.Database
         /// <returns>Number of rows affected.</returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteNonQueryAsync instead.")]
         public int ExecuteNonQuery(<#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             return this.ExecuteNonQuery(c => c.SetParameters(<#= Strings.Parameters #>, constraintMode ?? ConstraintMode));
@@ -503,6 +406,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteNonQueryAllAsync instead.")]
         public IEnumerable<int> ExecuteNonQueryAll(<#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             ValidateExecuteAllOutParameters(<#= Strings.Parameters #>);
@@ -535,6 +439,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior">The behaviour.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync instead.")]
         public void ExecuteReader([NotNull] ResultDelegate resultAction, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
@@ -550,6 +455,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="behavior">The behaviour.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync instead.")]
         public void ExecuteReader([NotNull] ResultDisposableDelegate resultAction, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
@@ -600,6 +506,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync instead.")]
         public void ExecuteReaderAll([NotNull] ResultDelegate resultAction, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
@@ -617,6 +524,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync instead.")]
         public void ExecuteReaderAll([NotNull] ResultDisposableDelegate resultAction, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
@@ -673,6 +581,7 @@ namespace WebApplications.Utilities.Database
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync<TOut> instead.")]
         public TOut ExecuteReader<TOut>([NotNull] ResultDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
@@ -690,6 +599,7 @@ namespace WebApplications.Utilities.Database
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAsync<TOut> instead.")]
         public TOut ExecuteReader<TOut>([NotNull] ResultDisposableDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
@@ -747,6 +657,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync<TOut> instead.")]
         public IEnumerable<TOut> ExecuteReaderAll<TOut>([NotNull] ResultDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
@@ -767,6 +678,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteReaderAllAsync<TOut> instead.")]
         public IEnumerable<TOut> ExecuteReaderAll<TOut>([NotNull] ResultDisposableDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, CommandBehavior behavior = CommandBehavior.Default, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
@@ -824,6 +736,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The result function.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync instead.")]
         public void ExecuteXmlReader([NotNull] XmlResultDelegate resultAction, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
@@ -838,6 +751,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="resultAction">The result function.</param>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync instead.")]
         public void ExecuteXmlReader([NotNull] XmlResultDisposableDelegate resultAction, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
@@ -885,6 +799,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync instead.")]
         public void ExecuteXmlReaderAll([NotNull] XmlResultDelegate resultAction, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
@@ -901,6 +816,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync instead.")]
         public void ExecuteXmlReaderAll([NotNull] XmlResultDisposableDelegate resultAction, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultAction == null) throw new ArgumentNullException("resultAction");
@@ -954,6 +870,7 @@ namespace WebApplications.Utilities.Database
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync<TOut> instead.")]
         public TOut ExecuteXmlReader<TOut>([NotNull] XmlResultDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
@@ -970,6 +887,7 @@ namespace WebApplications.Utilities.Database
         /// <returns></returns>
         /// <exception cref="SqlProgramExecutionException">An error occurred executing the program.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAsync<TOut> instead.")]
         public TOut ExecuteXmlReader<TOut>([NotNull] XmlResultDisposableDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
@@ -1024,6 +942,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync<TOut> instead.")]
         public IEnumerable<TOut> ExecuteXmlReaderAll<TOut>([NotNull] XmlResultDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
@@ -1043,6 +962,7 @@ namespace WebApplications.Utilities.Database
         /// <exception cref="ArgumentException">Out&lt;T&gt; values are not allowed when executing against all connections. Use MultiOut&lt;T&gt; or omit the parameter instead.</exception>
         /// <PermissionSet><IPermission class="System.Security.Permissions.EnvironmentPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.ReflectionPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="MemberAccess"/><IPermission class="System.Security.Permissions.RegistryPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="UnmanagedCode, ControlEvidence, ControlPolicy, ControlAppDomain"/><IPermission class="System.Diagnostics.PerformanceCounterPermission, System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/><IPermission class="System.Data.SqlClient.SqlClientPermission, System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Unrestricted="true"/></PermissionSet>
         [NotNull]
+        [Obsolete("This method is obsolete. Consider using the asynchronous ExecuteXmlReaderAllAsync<TOut> instead.")]
         public IEnumerable<TOut> ExecuteXmlReaderAll<TOut>([NotNull] XmlResultDisposableDelegate<TOut> resultFunc, <#= Strings.ParametersTypedDefault #>, TypeConstraintMode? constraintMode = null)
         {
             if (resultFunc == null) throw new ArgumentNullException("resultFunc");
@@ -1404,8 +1324,8 @@ namespace WebApplications.Utilities.Database
     }
     #endregion
     
-    #region Extensions to SqlBatchParametersCollection
-    partial class SqlBatchParametersCollection
+    #region Extensions to ParametersCollection
+    partial class ParametersCollection
     {
         /// <summary>
         /// Sets the parameters in ordinal order.
@@ -1495,6 +1415,95 @@ namespace WebApplications.Utilities.Database
             // Return parameters that were set
             return batchParameters;
         }
+        
+        /// <summary>
+        /// Sets the parameters in ordinal order.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        <#= Strings.ParameterComments #>
+        /// <param name="mode">The constraint mode.</param>
+        /// <returns>The parameters that were set</returns>
+        [NotNull]
+        public IEnumerable<DbParameter> SetParameters<<#= Strings.TypeParams#>>(<#= Strings.ParametersTyped #>, TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            IReadOnlyList<SqlProgramParameter> parameters = _mapping.Parameters;
+            if (parameters.Count < <#= Strings.GenericCount #>)
+                throw new LoggingException(
+                    LoggingLevel.Critical,
+                    () => Resources.SqlProgramCommand_SetParameters_Too_Many_Parameters,
+                    _command.Program.Name,
+                    parameters.Count,
+                    <#= Strings.GenericCount #>);
+
+            DbParameter[] batchParameters = new DbParameter[<#= Strings.GenericCount #>];
+            DbBatchParameter parameter;
+            SqlProgramParameter programParameter;
+            lock (_parameters)
+            {
+<# for (int i = 0; i < Strings.GenericCount; i++) { #>
+                // Find or create SQL Parameter <#= i+1 #>.
+                programParameter = parameters[<#= i #>];
+                parameter = GetOrAddParameter(programParameter);
+                parameter.SetParameterValue(programParameter, p<#= i+1 #>Value, mode);
+                AddOutParameter(parameter, p<#= i+1 #>Value as IOut);
+                batchParameters[<#= i #>] = parameter;
+<# } #>
+            }
+
+            // Return parameters that were set
+            return batchParameters;
+        }
+
+        /// <summary>
+        /// Sets the parameters by name.
+        /// </summary>
+        <#= Strings.TypeComments #>
+        /// <param name="names">The enumeration of parameters names.</param>
+        <#= Strings.ParameterComments #>
+        /// <param name="mode">The constraint mode.</param>
+        /// <returns>The parameters that were set</returns>
+        [NotNull]
+        public IEnumerable<DbParameter> SetParameters<<#= Strings.TypeParams#>>(IEnumerable<string> names, <#= Strings.ParametersTyped #>, TypeConstraintMode mode = TypeConstraintMode.Warn)
+        {
+            string[] namesArr = names as string[] ?? names?.ToArray();
+
+            if ((namesArr == null) || (namesArr.Length != <#= Strings.GenericCount #>))
+                throw new LoggingException(
+                    LoggingLevel.Critical,
+                    () => Resources.SqlProgramCommand_SetParameters_Wrong_Number_Of_Parameters,
+                    _command.Program.Name,
+                    <#= Strings.GenericCount #>,
+                    namesArr == null ? 0 : namesArr.Length);
+
+            SqlProgramParameter[] parameters = new SqlProgramParameter[<#= Strings.GenericCount #>];
+            for (int i = 0; i < <#= Strings.GenericCount #>; i++)
+            {
+                if (!_mapping.Definition.TryGetParameter(namesArr[i], out parameters[i]))
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
+                        () => Resources.SqlProgramCommand_SetParameters_Unknown_Parameter,
+                        _command.Program.Name,
+                        namesArr[i]);
+            }
+
+            DbParameter[] batchParameters = new DbParameter[<#= Strings.GenericCount #>];
+            DbBatchParameter parameter;
+            SqlProgramParameter programParameter;
+            lock (_parameters)
+            {
+<# for (int i = 0; i < Strings.GenericCount; i++) { #>
+                // Find or create SQL Parameter <#= i+1 #>.
+                programParameter = parameters[<#= i #>];
+                parameter = GetOrAddParameter(programParameter);
+                parameter.SetParameterValue(programParameter, p<#= i+1 #>Value, mode);
+                AddOutParameter(parameter, p<#= i+1 #>Value as IOut);
+                batchParameters[<#= i #>] = parameter;
+<# } #>
+            }
+
+            // Return parameters that were set
+            return batchParameters;
+        }
     }
     #endregion
 }
@@ -1528,7 +1537,7 @@ namespace WebApplications.Utilities.Database.Configuration
             <#= Strings.ConstructorNames #>,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1558,7 +1567,7 @@ namespace WebApplications.Utilities.Database.Configuration
             <#= Strings.ConstructorNames #>,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1606,7 +1615,7 @@ namespace WebApplications.Utilities.Database.Configuration
             <#= Strings.ConstructorNames #>,
             bool? ignoreValidationErrors = null,
             bool? checkOrder = null,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {

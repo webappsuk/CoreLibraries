@@ -185,12 +185,11 @@
     <Compile Include="SqlBatchCommand.cs" />
     <Compile Include="SqlBatchDataTextReader.cs" />
     <Compile Include="SqlBatchParameter.cs" />
-    <Compile Include="SqlBatchParametersCollection.cs" />
+    <Compile Include="ParametersCollection.cs" />
     <Compile Include="SqlBatchResult.cs" />
     <Compile Include="SqlErrorCollectionPrototype.cs" />
     <Compile Include="SqlErrorPrototype.cs" />
     <Compile Include="SqlExceptionPrototype.cs" />
-    <Compile Include="SqlProgramCommand.cs" />
     <Compile Include="Generated\SqlProgramGeneric2.Generated.cs">
       <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>

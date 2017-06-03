@@ -69,7 +69,7 @@ namespace WebApplications.Utilities.Database
         /// The set parameters delegate.
         /// </summary>
         [CanBeNull]
-        private readonly SetBatchParametersDelegate _setParameters;
+        private readonly SetParametersDelegate _setParameters;
 
         /// <summary>
         /// Gets the result object.
@@ -110,7 +110,7 @@ namespace WebApplications.Utilities.Database
         internal SqlBatchCommand(
             [NotNull] SqlBatch owner,
             [NotNull] SqlProgram program,
-            [CanBeNull] SetBatchParametersDelegate setParameters,
+            [CanBeNull] SetParametersDelegate setParameters,
             CommandBehavior commandBehavior,
             bool suppressErrors,
             [CanBeNull] ExceptionHandler exceptionHandler,
@@ -189,7 +189,7 @@ namespace WebApplications.Utilities.Database
             Index = args.CommandIndex;
 
             // Get the parameters for the command
-            SqlBatchParametersCollection parameters = GetParametersForConnection(args.ConnectionString, args.CommandIndex);
+            ParametersCollection parameters = GetParametersForConnection(args.ConnectionString, args.CommandIndex);
 
             List<DbBatchParameter> dependentParams = null;
 
@@ -343,7 +343,9 @@ namespace WebApplications.Utilities.Database
             LoadBalancedConnection loadBalancedConnection = program.Connection;
             Connection connection = mapping.Connection;
 
-            // Need to wait on the semaphores for all the connections and databases
+            // Need to wait on the semaphores for all the programs, connections and databases
+            if (program.Semaphore != null)
+                args.ProgramSemaphores.Add(program.Semaphore);
             if (connection.Semaphore != null)
                 args.ConnectionSemaphores.Add(connection.Semaphore);
             if (loadBalancedConnection.ConnectionSemaphore != null)
@@ -361,14 +363,14 @@ namespace WebApplications.Utilities.Database
         /// <param name="commandIndex">Index of the command in the batch.</param>
         /// <returns>The collection of parameters.</returns>
         [NotNull]
-        private SqlBatchParametersCollection GetParametersForConnection(
+        private ParametersCollection GetParametersForConnection(
             [NotNull] string connectionString,
             ushort commandIndex)
         {
             SqlProgramMapping mapping = Program.Mappings.Single(m => m.Connection.ConnectionString == connectionString);
             Debug.Assert(mapping != null, "mapping != null");
 
-            SqlBatchParametersCollection parameters = new SqlBatchParametersCollection(mapping, this, commandIndex);
+            ParametersCollection parameters = new ParametersCollection(mapping, this, commandIndex);
 
             _setParameters?.Invoke(parameters);
 
@@ -382,7 +384,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="parameters">The parameters to execute with.</param>
         protected virtual void AppendExecuteSql(
             [NotNull] SqlStringBuilder builder,
-            [NotNull] SqlBatchParametersCollection parameters)
+            [NotNull] ParametersCollection parameters)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -482,7 +484,7 @@ namespace WebApplications.Utilities.Database
             public Scalar(
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
-                SetBatchParametersDelegate setParameters,
+                SetParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
@@ -569,7 +571,7 @@ namespace WebApplications.Utilities.Database
             public NonQuery(
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
-                SetBatchParametersDelegate setParameters,
+                SetParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
@@ -657,7 +659,7 @@ namespace WebApplications.Utilities.Database
             protected BaseReader(
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
-                [CanBeNull] SetBatchParametersDelegate setParameters,
+                [CanBeNull] SetParametersDelegate setParameters,
                 CommandBehavior commandBehavior,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors,
@@ -671,7 +673,7 @@ namespace WebApplications.Utilities.Database
             /// </summary>
             /// <param name="builder">The <see cref="SqlStringBuilder" /> to append the SQL to.</param>
             /// <param name="parameters">The parameters to execute with.</param>
-            protected override void AppendExecuteSql(SqlStringBuilder builder, SqlBatchParametersCollection parameters)
+            protected override void AppendExecuteSql(SqlStringBuilder builder, ParametersCollection parameters)
             {
                 // ReSharper disable StringLiteralTypo
                 if ((CommandBehavior & CommandBehavior.KeyInfo) == CommandBehavior.KeyInfo)
@@ -765,7 +767,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlProgram program,
                 [NotNull] ResultDelegateAsync resultAction,
                 CommandBehavior commandBehavior,
-                [CanBeNull] SetBatchParametersDelegate setParameters,
+                [CanBeNull] SetParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
@@ -834,7 +836,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlProgram program,
                 [NotNull] ResultDelegateAsync<TResult> resultFunc,
                 CommandBehavior commandBehavior,
-                [CanBeNull] SetBatchParametersDelegate setParameters,
+                [CanBeNull] SetParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
@@ -897,7 +899,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlProgram program,
                 [NotNull] ResultDisposableDelegateAsync resultAction,
                 CommandBehavior commandBehavior,
-                [CanBeNull] SetBatchParametersDelegate setParameters,
+                [CanBeNull] SetParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
@@ -966,7 +968,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlProgram program,
                 [NotNull] ResultDisposableDelegateAsync<TResult> resultFunc,
                 CommandBehavior commandBehavior,
-                [CanBeNull] SetBatchParametersDelegate setParameters,
+                [CanBeNull] SetParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
@@ -1031,7 +1033,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [NotNull] XmlResultDelegateAsync resultAction,
-                [CanBeNull] SetBatchParametersDelegate setParameters,
+                [CanBeNull] SetParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
@@ -1100,7 +1102,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [NotNull] XmlResultDelegateAsync<TResult> resultFunc,
-                [CanBeNull] SetBatchParametersDelegate setParameters,
+                [CanBeNull] SetParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
@@ -1163,7 +1165,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [NotNull] XmlResultDisposableDelegateAsync resultAction,
-                [CanBeNull] SetBatchParametersDelegate setParameters,
+                [CanBeNull] SetParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
@@ -1232,7 +1234,7 @@ namespace WebApplications.Utilities.Database
                 [NotNull] SqlBatch owner,
                 [NotNull] SqlProgram program,
                 [NotNull] XmlResultDisposableDelegateAsync<TResult> resultFunc,
-                [CanBeNull] SetBatchParametersDelegate setParameters,
+                [CanBeNull] SetParametersDelegate setParameters,
                 ExceptionHandler exceptionHandler,
                 bool suppressErrors)
                 : base(
