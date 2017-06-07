@@ -30,6 +30,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -51,6 +52,12 @@ namespace WebApplications.Utilities.Reflect
         public const BindingFlags AllMembersBindingFlags =
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.DeclaredOnly;
+
+        /// <summary>
+        /// The <see cref="object"/> type.
+        /// </summary>
+        [NotNull]
+        public static readonly Type ObjectType = typeof(object);
 
         /// <summary>
         /// Holds all known extended types.
@@ -1519,7 +1526,7 @@ namespace WebApplications.Utilities.Reflect
         /// <returns><see langword="true" /> if this instance can be cast to the specified type; otherwise, <see langword="false" />.</returns>
         public bool CanConvertTo(Type type)
         {
-            if (Type == type)
+            if (Type == type || type == ObjectType || Type == ObjectType)
                 return true;
 
             if ((type == null) ||
@@ -1528,7 +1535,7 @@ namespace WebApplications.Utilities.Reflect
                 return false;
 
             Debug.Assert(_convertToCache.Value != null);
-            return _convertToCache.Value.GetOrAdd(
+            bool canConvert = _convertToCache.Value.GetOrAdd(
                 type,
                 t =>
                 {
@@ -1537,16 +1544,31 @@ namespace WebApplications.Utilities.Reflect
 
                     // First we check to see if a cast is possible
                     if ((NonNullableType == dest.NonNullableType) ||
-                        (NonNullableType.IsEquivalentTo(NonNullableType)) ||
+                        (NonNullableType.IsEquivalentTo(dest.NonNullableType)) ||
+                        (dest.NonNullableType.IsInterface
+                            ? NonNullableType.ImplementsInterface(dest.NonNullableType)
+                            : NonNullableType.DescendsFrom(dest.NonNullableType)) ||
+                        (NonNullableType.IsInterface
+                            ? dest.NonNullableType.ImplementsInterface(NonNullableType)
+                            : dest.NonNullableType.DescendsFrom(NonNullableType)) ||
                         (dest.NonNullableType != typeof(bool) && IsConvertible && dest.IsConvertible) ||
                         (ImplementsCastTo(dest)) ||
                         (dest.ImplementsCastFrom(this)) ||
-                        (Implements(typeof(IConvertible)) && _iConvertibleMethods.ContainsKey(type)))
+                        (Implements(typeof(IConvertible)) && _iConvertibleMethods.ContainsKey(type)) ||
+                        (Type.GetTypeConverter(type, out _) != null))
                         return true;
 
-                    // TODO SUPPORT TYPE CONVERTERS
                     return false;
                 });
+
+            if (canConvert)
+                return true;
+
+            if (Type.GetTypeConverter(type, out _) == null)
+                return false;
+
+            _convertToCache.Value[type] = true;
+            return true;
         }
 
         /// <summary>
@@ -1613,88 +1635,64 @@ namespace WebApplications.Utilities.Reflect
 
             /*
              * TypeConverter support
-             * TODO MORE OPTIMISATION REQUIRED
              */
 
-            // Look for TypeConverter on output type.
-            bool useTo = false;
-            TypeConverterAttribute typeConverterAttribute = Type
-                .GetCustomAttributes(typeof(TypeConverterAttribute), false)
-                .OfType<TypeConverterAttribute>()
-                .FirstOrDefault();
+            TypeConverter converter = expression.Type.GetTypeConverter(Type, out bool useTo);
 
-            if ((typeConverterAttribute == null) ||
-                (string.IsNullOrWhiteSpace(typeConverterAttribute.ConverterTypeName)))
+            try
             {
-                // Look for TypeConverter on expression type.
-                useTo = true;
-                typeConverterAttribute = expression.Type
-                    .GetCustomAttributes(typeof(TypeConverterAttribute), false)
-                    .OfType<TypeConverterAttribute>()
-                    .FirstOrDefault();
-            }
-
-            if ((typeConverterAttribute != null) &&
-                (!string.IsNullOrWhiteSpace(typeConverterAttribute.ConverterTypeName)))
-                try
+                if ((converter != null) &&
+                    (useTo ? converter.CanConvertTo(Type) : converter.CanConvertFrom(expression.Type)))
                 {
-                    // Try to get the type for the typeconverter
-                    Type typeConverterType = FindType(typeConverterAttribute.ConverterTypeName);
+                    Type typeConverterType = converter.GetType();
 
-                    if (typeConverterType != null)
+                    // We have a converter that supports the necessary conversion
+                    MethodInfo mi = useTo
+                        ? typeConverterType.GetMethod(
+                            "ConvertTo",
+                            BindingFlags.Instance | BindingFlags.Public |
+                            BindingFlags.FlattenHierarchy,
+                            null,
+                            new[] { ObjectType, typeof(Type) },
+                            null)
+                        : typeConverterType.GetMethod(
+                            "ConvertFrom",
+                            BindingFlags.Instance | BindingFlags.Public |
+                            BindingFlags.FlattenHierarchy,
+                            null,
+                            new[] { ObjectType },
+                            null);
+
+                    if (mi != null)
                     {
-                        // Try to create an instance of the typeconverter without parameters
-                        TypeConverter converter = Activator.CreateInstance(typeConverterType) as TypeConverter;
-                        if ((converter != null) &&
-                            (useTo ? converter.CanConvertTo(Type) : converter.CanConvertFrom(expression.Type)))
-                        {
-                            // We have a converter that supports the necessary conversion
-                            MethodInfo mi = useTo
-                                ? typeConverterType.GetMethod(
-                                    "ConvertTo",
-                                    BindingFlags.Instance | BindingFlags.Public |
-                                    BindingFlags.FlattenHierarchy,
-                                    null,
-                                    new[] { typeof(object), typeof(Type) },
-                                    null)
-                                : typeConverterType.GetMethod(
-                                    "ConvertFrom",
-                                    BindingFlags.Instance | BindingFlags.Public |
-                                    BindingFlags.FlattenHierarchy,
-                                    null,
-                                    new[] { typeof(object) },
-                                    null);
-                            if (mi != null)
-                            {
-                                // The convert methods accepts the value as an object parameters, so we may need a cast.
-                                if (expression.Type != typeof(object))
-                                    expression = Expression.Convert(expression, typeof(object));
+                        // The convert methods accepts the value as an object parameters, so we may need a cast.
+                        if (expression.Type != ObjectType)
+                            expression = Expression.Convert(expression, ObjectType);
 
-                                // Create an expression which creates a new instance of the type converter and passes in
-                                // the existing expression as the first parameter to ConvertTo or ConvertFrom.
-                                outputExpression = useTo
-                                    ? Expression.Call(
-                                        Expression.New(typeConverterType),
-                                        mi,
-                                        expression,
-                                        Expression.Constant(Type, typeof(Type)))
-                                    : Expression.Call(
-                                        Expression.New(typeConverterType),
-                                        mi,
-                                        expression);
+                        // Create an expression which creates a new instance of the type converter and passes in
+                        // the existing expression as the first parameter to ConvertTo or ConvertFrom.
+                        outputExpression = useTo
+                            ? Expression.Call(
+                                Expression.New(typeConverterType),
+                                mi,
+                                expression,
+                                Expression.Constant(Type, typeof(Type)))
+                            : Expression.Call(
+                                Expression.New(typeConverterType),
+                                mi,
+                                expression);
 
-                                if (outputExpression.Type != Type)
-                                    outputExpression = Expression.Convert(outputExpression, Type);
+                        if (outputExpression.Type != Type)
+                            outputExpression = Expression.Convert(outputExpression, Type);
 
-                                return true;
-                            }
-                        }
+                        return true;
                     }
                 }
-                catch
-                {
-                    // Ignore exceptions
-                }
+            }
+            catch
+            {
+                // Ignore exceptions
+            }
 
             // Finally, if we want to output to string, call ToString() method.
             if (Type == typeof(string))

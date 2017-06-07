@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Globalization;
@@ -735,6 +736,34 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Gets a <see cref="TypeConverter"/> that can convert from one <paramref name="from">type</paramref> to <paramref name="to">another</paramref>.
+        /// </summary>
+        /// <param name="from">From.</param>
+        /// <param name="to">To.</param>
+        /// <param name="useTo">if set to <see langword="true" /> then the <see cref="M:System.ComponentModel.TypeConverter.ConvertTo"/> method should be used;
+        /// otherwise, use <see cref="M:System.ComponentModel.TypeConverter.ConvertFrom"/>.</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentNullException"><paramref name="from"/> or <paramref name="to"/> was <see langword="null"/>.</exception>
+        public static TypeConverter GetTypeConverter([NotNull] this Type from, [NotNull] Type to, out bool useTo)
+        {
+            if (from == null) throw new ArgumentNullException(nameof(from));
+            if (to == null) throw new ArgumentNullException(nameof(to));
+
+            TypeConverter converter = TypeDescriptor.GetConverter(from);
+
+            if (converter.CanConvertTo(to))
+            {
+                useTo = true;
+                return converter;
+            }
+
+            useTo = false;
+            converter = TypeDescriptor.GetConverter(to);
+
+            return converter.CanConvertFrom(from) ? converter : null;
+        }
+
+        /// <summary>
         ///   Gets the equivalent method on the new type specified.
         /// </summary>
         /// <param name="methodInfo">The method info.</param>
@@ -995,7 +1024,8 @@ namespace WebApplications.Utilities
             if (typeSearch.Type != null &&
                 (isOutputType
                     ? type.CanConvertTo(typeSearch.Type)
-                    : typeSearch.Type.CanConvertTo(type)))
+                    : typeSearch.Type.CanConvertTo(type)) ||
+                typeSearch.Type == typeof(void))
             {
                 requiresCast = true;
                 return true;

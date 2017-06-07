@@ -177,6 +177,9 @@ namespace WebApplications.Utilities.Scheduling.Test
                 Assert.IsTrue(task.IsCompleted);
                 Assert.AreSame(last, task.Result);
             }
+            
+            // Race condition due to the resolution of TimeHelpers.Clock, so sleep a bit
+            await Task.Delay(1);
 
             // Confirm still runs again
             ScheduledActionResult result = await action.ExecuteAsync();
@@ -186,7 +189,7 @@ namespace WebApplications.Utilities.Scheduling.Test
             Assert.IsNotNull(last);
             Assert.AreSame(last, result);
         }
-
+        
 #if false
         [TestMethod]
         public void TestSeconds()
@@ -730,5 +733,5 @@ namespace WebApplications.Utilities.Scheduling.Test
         }
 #endif
 #endif
-    }
+        }
 }

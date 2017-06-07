@@ -294,7 +294,10 @@ namespace WebApplications.Utilities.Configuration
                 if (useDefault)
                     value = p.RawDefaultValueSafe();
 
-                arguments.Add(Expression.Constant(value).Convert(p.ParameterType));
+                arguments.Add(
+                    value == null
+                        ? Expression.Constant(null, p.ParameterType)
+                        : Expression.Constant(value).Convert(p.ParameterType));
             }
 
             Expression create = Expression.New(constructor, arguments);
