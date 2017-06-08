@@ -313,6 +313,62 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The text is invalid: {0}.
+        ///Text:
+        ///{1}.
+        /// </summary>
+        internal static string DatabaseSchema_ValidateText_Invalid {
+            get {
+                return ResourceManager.GetString("DatabaseSchema_ValidateText_Invalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Must specify a parameter name for parameters to text programs..
+        /// </summary>
+        internal static string DatabaseSchema_ValidateText_MissingName {
+            get {
+                return ResourceManager.GetString("DatabaseSchema_ValidateText_MissingName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Must specify a parameter type for parameters to text programs..
+        /// </summary>
+        internal static string DatabaseSchema_ValidateText_MissingType {
+            get {
+                return ResourceManager.GetString("DatabaseSchema_ValidateText_MissingType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The SQL text contains a syntax error. {0}.
+        /// </summary>
+        internal static string DatabaseSchema_ValidateText_SyntaxError {
+            get {
+                return ResourceManager.GetString("DatabaseSchema_ValidateText_SyntaxError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to determine the SQL type to use for parameter &apos;{0}&apos; of type &apos;{1}&apos;..
+        /// </summary>
+        internal static string DatabaseSchema_ValidateText_UnknownParameterType {
+            get {
+                return ResourceManager.GetString("DatabaseSchema_ValidateText_UnknownParameterType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find a type with the name &apos;{0}&apos; for the &apos;{1}&apos; parameter..
+        /// </summary>
+        internal static string DatabaseSchema_ValidateTextAsync_UnknownTypeName {
+            get {
+                return ResourceManager.GetString("DatabaseSchema_ValidateTextAsync_UnknownTypeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The database with id &apos;{0}&apos; could not be found in the configuration..
         /// </summary>
         internal static string DatabasesConfiguration_GetSqlProgram_Unknown_Database {
@@ -435,6 +491,15 @@ namespace WebApplications.Utilities.Database {
         internal static string Out_SetParameter_AlreadyInUse {
             get {
                 return ResourceManager.GetString("Out_SetParameter_AlreadyInUse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At most one of mapTo, selectFrom, textPath or text can be specified..
+        /// </summary>
+        internal static string ProgramElement_PostDeserialize_MultipleSpecified {
+            get {
+                return ResourceManager.GetString("ProgramElement_PostDeserialize_MultipleSpecified", resourceCulture);
             }
         }
         
@@ -718,7 +783,7 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The program definitions for &apos;{0}&apos; could not be found..
+        ///   Looks up a localized string similar to The program definition with name &apos;{0}&apos; could not be found for the &apos;{1}&apos; program..
         /// </summary>
         internal static string SqlProgram_Validate_DefinitionsNotFound {
             get {
@@ -826,6 +891,24 @@ namespace WebApplications.Utilities.Database {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The SQL parameter type specified has a different name ({0}) to the actual parameter type ({1}) on the &apos;{2}&apos; program..
+        /// </summary>
+        internal static string SqlProgramDefinition_ValidateParameters_InvalidSqlTypeName {
+            get {
+                return ResourceManager.GetString("SqlProgramDefinition_ValidateParameters_InvalidSqlTypeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The SQL parameter type specified has a different size ({0}) to the actual parameter type ({1}) on the &apos;{2}&apos; program..
+        /// </summary>
+        internal static string SqlProgramDefinition_ValidateParameters_InvalidSqlTypeSize {
+            get {
+                return ResourceManager.GetString("SqlProgramDefinition_ValidateParameters_InvalidSqlTypeSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Must specify a parameter name when not validating parameter order of parameters on the program called &apos;{0}&apos;..
         /// </summary>
         internal static string SqlProgramDefinition_ValidateParameters_MustSpecifyParameterName {
@@ -849,6 +932,15 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist {
             get {
                 return ResourceManager.GetString("SqlProgramDefinition_ValidateParameters_ParameterDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameter &apos;{0}&apos; on the &apos;{1}&apos; program is not an output parameter..
+        /// </summary>
+        internal static string SqlProgramDefinition_ValidateParameters_ParameterNotOut {
+            get {
+                return ResourceManager.GetString("SqlProgramDefinition_ValidateParameters_ParameterNotOut", resourceCulture);
             }
         }
         
@@ -885,6 +977,24 @@ namespace WebApplications.Utilities.Database {
         internal static string SqlProgramNotRunException_ProgramNotRun {
             get {
                 return ResourceManager.GetString("SqlProgramNotRunException_ProgramNotRun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The table definition with name &apos;{0}&apos; could not be found for the &apos;{1}&apos; program..
+        /// </summary>
+        internal static string SqlTableMapping_GetMapping_DefinitionNotFound {
+            get {
+                return ResourceManager.GetString("SqlTableMapping_GetMapping_DefinitionNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Table programs do not support parameters..
+        /// </summary>
+        internal static string SqlTableMapping_ParametersNotSupported {
+            get {
+                return ResourceManager.GetString("SqlTableMapping_ParametersNotSupported", resourceCulture);
             }
         }
         

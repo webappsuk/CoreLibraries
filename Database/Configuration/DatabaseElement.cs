@@ -28,10 +28,13 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
@@ -133,7 +136,7 @@ namespace WebApplications.Utilities.Database.Configuration
             get { return GetProperty<ProgramCollection>("programs"); }
             set { SetProperty("programs", value); }
         }
-        
+
         /// <summary>
         /// Gets the <see cref="WebApplications.Utilities.Database.SqlProgram" /> with the specified name and parameters,
         /// respecting configured options.
@@ -154,12 +157,57 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <para>-or-</para>
         /// <para>A parameter with no name map was found.</para></exception>
         [NotNull]
-        public async Task<SqlProgram> GetSqlProgram(
+        public Task<SqlProgram> GetSqlProgram(
             [NotNull] string name,
-            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
+            [CanBeNull] IEnumerable<SqlParameterInfo> parameters = null,
             bool? ignoreValidationErrors = null,
             bool? checkOrder = null,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
+            TypeConstraintMode? constraintMode = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+            => GetSqlProgram(
+                name,
+                null,
+                CommandType.StoredProcedure,
+                parameters,
+                ignoreValidationErrors,
+                checkOrder,
+                defaultCommandTimeout,
+                constraintMode,
+                cancellationToken);
+
+        /// <summary>
+        /// Gets the <see cref="WebApplications.Utilities.Database.SqlProgram" /> with the specified name and parameters,
+        /// respecting configured options.
+        /// </summary>
+        /// <param name="name">The name of the program.</param>
+        /// <param name="text">The text for executing the program, depending on <paramref name="type"/>. 
+        /// If <see langword="null"/>, it will be set to <paramref name="name"/>, and <paramref name="type"/> 
+        /// will be set to <see cref="CommandType.StoredProcedure"/>.</param>
+        /// <param name="type">The type of the <paramref name="text"/>.</param>
+        /// <param name="parameters">The program parameters.</param>
+        /// <param name="ignoreValidationErrors">If set to <see langword="true" /> will ignore validation errors regardless of configuration.</param>
+        /// <param name="checkOrder">If set to <see langword="true" /> will check parameter order matches regardless of configuration.</param>
+        /// <param name="defaultCommandTimeout"><para>The default command timeout.</para>
+        /// <para>If set will override the configuration from <see cref="ProgramElement.DefaultCommandTimeout" />.</para></param>
+        /// <param name="constraintMode"><para>The constraint mode</para>
+        /// <para>If set will override the configuration from <see cref="ProgramElement.ConstraintMode" />.</para></param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The retrieved <see cref="WebApplications.Utilities.Database.SqlProgram" />.</returns>
+        /// <exception cref="WebApplications.Utilities.Logging.LoggingException">
+        /// </exception>
+        /// <exception cref="LoggingException"><para>Could not find a default load balanced connection for the database with this <see cref="Id" />.</para>
+        /// <para>-or-</para>
+        /// <para>A parameter with no name map was found.</para></exception>
+        [NotNull]
+        public async Task<SqlProgram> GetSqlProgram(
+            [NotNull] string name,
+            [CanBeNull] string text,
+            CommandType type,
+            [CanBeNull] IEnumerable<SqlParameterInfo> parameters = null,
+            bool? ignoreValidationErrors = null,
+            bool? checkOrder = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -174,14 +222,21 @@ namespace WebApplications.Utilities.Database.Configuration
                     () => Resources.DatabaseElement_GetSqlProgram_DefaultLoadBalanceConnectionNotFound,
                     Id);
 
+            // Default text to name if passed in as null
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                text = name;
+                type = CommandType.StoredProcedure;
+            }
+
             // Look for program mapping information
             ProgramElement prog = Programs[name];
             if (prog != null)
             {
-                // Check for name mapping
-                if (!String.IsNullOrWhiteSpace(prog.MapTo))
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    name = prog.MapTo;
+                // Get the text for the program from the config
+                // NOTE: GetText returns true if the text is in a file
+                if (GetText(prog, ref text, ref type, out string textPath))
+                    text = await ReadAllTextAsync(textPath, cancellationToken).ConfigureAwait(false);
 
                 // Set options if not already set.
                 ignoreValidationErrors = ignoreValidationErrors ?? prog.IgnoreValidationErrors;
@@ -207,18 +262,21 @@ namespace WebApplications.Utilities.Database.Configuration
                     prog.Parameters.Any())
                     parameters = parameters
                         .Select(
-                            kvp =>
+                            spi =>
                             {
                                 // ReSharper disable once AssignNullToNotNullAttribute
-                                ParameterElement param = prog.Parameters[kvp.Key];
-                                if (param == null) return kvp;
-                                if (String.IsNullOrWhiteSpace(param.MapTo))
+                                ParameterElement param = prog.Parameters[spi.Name];
+                                if (param == null) return spi;
+
+                                SqlTypeInfo sqlTypeInfo = param.SqlTypeInfo;
+
+                                if (String.IsNullOrWhiteSpace(param.MapTo) && sqlTypeInfo == null)
                                     throw new LoggingException(
                                         () => Resources.DatabaseElement_GetSqlProgram_MappingNotSpecified,
-                                        kvp.Key,
+                                        spi.Name,
                                         prog.Name);
 
-                                return new KeyValuePair<string, Type>(param.MapTo, kvp.Value);
+                                return spi.With(param.MapTo, sqlTypeInfo);
                             }).ToList();
             }
 
@@ -239,12 +297,75 @@ namespace WebApplications.Utilities.Database.Configuration
             return await SqlProgram.Create(
                 connection,
                 name,
+                text,
+                type,
                 parameters,
                 ignoreValidationErrors.Value,
                 checkOrder.Value,
                 defaultCommandTimeout,
                 (TypeConstraintMode)constraintMode,
                 cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets the text for a program from the program element given.
+        /// </summary>
+        /// <param name="prog">The program element.</param>
+        /// <param name="text">The text.</param>
+        /// <param name="type">The type of the text.</param>
+        /// <param name="textPath">The text file path, if there is one.</param>
+        /// <returns><see langword="true"/> if the text is in the file at the <paramref name="textPath"/>.</returns>
+        private static bool GetText(ProgramElement prog, ref string text, ref CommandType type, out string textPath)
+        {
+            // Check for name mapping
+            if (!String.IsNullOrWhiteSpace(prog.MapTo))
+            {
+                text = prog.MapTo;
+                type = CommandType.StoredProcedure;
+            }
+            else if (!String.IsNullOrWhiteSpace(prog.SelectFrom))
+            {
+                text = prog.SelectFrom;
+                type = CommandType.TableDirect;
+            }
+            else if (!String.IsNullOrWhiteSpace(prog.Text))
+            {
+                text = prog.Text;
+                type = CommandType.Text;
+            }
+            else if (!String.IsNullOrWhiteSpace(prog.TextPath))
+            {
+                if (!File.Exists(prog.TextPath))
+                    throw new LoggingException(
+                        () => "The path '{0}' to the text to load for the '{0}' program does not exist.",
+                        prog.TextPath,
+                        prog.Name);
+                textPath = prog.TextPath;
+                type = CommandType.Text;
+                return true;
+            }
+            textPath = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Reads all the text from the file at the path given asynchronously.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        [NotNull]
+        [ItemNotNull]
+        private static async Task<string> ReadAllTextAsync([NotNull] string path, CancellationToken cancellationToken)
+        {
+            using (FileStream stream = new FileStream(
+                path,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read,
+                4096,
+                FileOptions.Asynchronous | FileOptions.SequentialScan))
+            using (StreamReader reader = new StreamReader(stream)) 
+                return await reader.ReadToEndAsync().WithCancellation(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

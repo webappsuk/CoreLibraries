@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Schema;
@@ -36,10 +34,9 @@ using WebApplications.Utilities.Logging;
 namespace WebApplications.Utilities.Database
 {
     /// <summary>
-    /// Maps a <see cref="SqlProgram"/> to a <see cref="SqlProgramDefinition"/>.
+    /// Maps a <see cref="SqlProgram"/> to a <see cref="SqlTableDefinition"/>.
     /// </summary>
-    [PublicAPI]
-    public class SqlProgramMapping : DbMapping
+    public class SqlTableMapping : DbMapping
     {
         /// <summary>
         /// Gets the mapping for the <paramref name="program"/> given from the specified <paramref name="schema"/>.
@@ -47,101 +44,76 @@ namespace WebApplications.Utilities.Database
         /// <param name="program">The program to get the mapping for.</param>
         /// <param name="connection">The connection the mapping is for.</param>
         /// <param name="schema">The schema to get the mapping from.</param>
-        /// <param name="checkOrder">If set to <see langword="true" /> check the order of the parameters.</param>
         /// <returns>The mapping.</returns>
-        internal static SqlProgramMapping GetMapping(
+        internal static SqlTableMapping GetMapping(
             [NotNull] SqlProgram program,
             [NotNull] Connection connection,
-            [NotNull] DatabaseSchema schema,
-            bool checkOrder)
+            [NotNull] DatabaseSchema schema)
         {
             // Find the program
-            if (!schema.ProgramsByName.TryGetValue(program.Text, out SqlProgramDefinition programDefinition))
+            if (!schema.TablesByName.TryGetValue(program.Text, out SqlTableDefinition tableDefinition))
                 throw new LoggingException(
                     LoggingLevel.Critical,
-                    () => Resources.SqlProgram_Validate_DefinitionsNotFound,
+                    () => Resources.SqlTableMapping_GetMapping_DefinitionNotFound,
                     program.Text,
                     program.Name);
-            Debug.Assert(programDefinition != null);
+            Debug.Assert(tableDefinition != null);
 
-            // Validate parameters
-            IReadOnlyList<SqlProgramParameter> parameters =
-                programDefinition.ValidateParameters(program.Parameters, checkOrder);
+            if (program.ParameterCount > 0)
+                throw new LoggingException(
+                    LoggingLevel.Critical,
+                    () => Resources.SqlTableMapping_ParametersNotSupported,
+                    program.Text,
+                    program.Name);
 
-            return new SqlProgramMapping(connection, programDefinition, parameters);
+            return new SqlTableMapping(connection, tableDefinition);
         }
 
         /// <summary>
-        ///   The underlying <see cref="SqlProgramDefinition">program definition</see>.
+        /// The underlying <see cref="SqlTableDefinition"/>.
         /// </summary>
         [NotNull]
-        public readonly SqlProgramDefinition Definition;
+        public readonly SqlTableDefinition Definition;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlProgramMapping" /> class.
+        /// Initializes a new instance of the <see cref="DbMapping" /> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="definition">The definition.</param>
-        /// <param name="parameters">The parameters.</param>
-        private SqlProgramMapping(
-            [NotNull] Connection connection,
-            [NotNull] SqlProgramDefinition definition,
-            [NotNull] IReadOnlyList<SqlProgramParameter> parameters)
-            : base(connection, parameters, definition.ParameterNameComparer)
+        public SqlTableMapping([NotNull] Connection connection, SqlTableDefinition definition)
+            : base(connection, Array<SqlProgramParameter>.Empty, StringComparer.Ordinal)
         {
             Definition = definition ?? throw new ArgumentNullException(nameof(definition));
         }
 
         /// <summary>
-        /// Appends the text for executing the program to the <paramref name="builder"/> given.
+        /// Appends the SQL for executing the program to the <paramref name="builder"/> given.
         /// </summary>
         /// <param name="builder">The builder to append to.</param>
         /// <param name="parameters">The parameters passed to the program.</param>
         public override void AppendExecute(SqlStringBuilder builder, ParametersCollection parameters)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            builder
+                .Append("SELECT");
 
-            SqlProgramDefinition def = Definition;
-
-            builder.Append("EXECUTE ");
-
-            // If there is a return value parameter, need to assign the result to it
-            if (parameters.ReturnValueParameter != null)
+            bool first = true;
+            foreach (SqlColumn column in Definition.Columns)
             {
+                if (first) first = false;
+                else builder.AppendLine(",");
+
                 builder
-                    .Append(parameters.ReturnValueParameter.BaseParameter.ParameterName)
-                    .Append(" = ");
+                    .Append('\t')
+                    .AppendIdentifier(column.FullName);
             }
 
             builder
-                .AppendIdentifier(def.SqlSchema.FullName)
+                .AppendLine()
+                .Append("FROM\t")
+                .AppendIdentifier(Definition.SqlSchema.FullName)
                 .Append('.')
-                .AppendIdentifier(def.Name);
-
-            bool first = true;
-            foreach (DbBatchParameter parameter in parameters.Parameters)
-            {
-                // Already dealt with return value parameter
-                if (parameter.Direction == ParameterDirection.ReturnValue)
-                    continue;
-
-                if (first) first = false;
-                else builder.Append(',');
-
-                builder
-                    .AppendLine()
-                    .Append('\t')
-                    .Append(parameter.ProgramParameter.FullName)
-                    .Append(" = ")
-                    .Append(parameter.BaseParameter.ParameterName);
-
-                // If the parameter value is Out<T>, need to add OUT to actually get the return value
-                if (parameter.IsOutputUsed)
-                    builder.Append(" OUT");
-            }
-
-            builder.AppendLine(";");
+                .AppendIdentifier(Definition.Name)
+                .AppendLine(";");
         }
     }
 }

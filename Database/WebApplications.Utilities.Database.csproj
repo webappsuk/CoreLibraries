@@ -53,6 +53,7 @@
     <Compile Include="Connection.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DbBatchDataReader.cs" />
+    <Compile Include="DbMapping.cs" />
     <Compile Include="Exceptions\ContextReservations.cs" />
     <Compile Include="Exceptions\DatabaseSchemaException.cs" />
     <Compile Include="Exceptions\SqlBatchExecutionException.cs" />
@@ -193,6 +194,7 @@
     <Compile Include="Generated\SqlProgramGeneric2.Generated.cs">
       <DependentUpon>SqlProgramGeneric.Generated.txt4</DependentUpon>
     </Compile>
+    <Compile Include="SqlParameterInfo.cs" />
     <Compile Include="SqlProgramMapping.cs" />
     <Compile Include="SQLResources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -205,6 +207,8 @@
     <Compile Include="Schema\SqlTypeSize.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="SqlStringBuilder.cs" />
+    <Compile Include="SqlTableMapping.cs" />
+    <Compile Include="SqlTextMapping.cs" />
     <Compile Include="TransactionType.cs" />
     <Compile Include="ValidationFailMode.cs" />
   </ItemGroup>

@@ -1,4 +1,31 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +36,21 @@ using WebApplications.Testing;
 using WebApplications.Utilities.Database.Configuration;
 using WebApplications.Utilities.Database.Exceptions;
 
-namespace WebApplications.Utilities.Database.Test.TestSqlProgram
+// ReSharper disable ConsiderUsingConfigureAwait
+// ReSharper disable InconsistentNaming
+#pragma warning disable 1591 // Missing XML commend
+#pragma warning disable 0618 // Type or member is obsolete
+
+namespace WebApplications.Utilities.Database.Test
 {
     public partial class SqlProgramTests
     {
         [TestMethod]
         public async Task ExecuteReader_ExecutesSuccessfully()
         {
-            SqlProgram readerTest = await SqlProgram.Create((Connection) DifferentLocalDatabaseConnectionString,
-                                           name: "spUltimateSproc");
+            SqlProgram readerTest = await SqlProgram.Create(
+                DifferentLocalDatabaseConnection,
+                "spUltimateSproc");
 
             readerTest.ExecuteReader();
         }
@@ -25,10 +58,12 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public async Task ExecuteReaderAll_ExecutesSuccessfully()
         {
-
             SqlProgram readerTest =
-                await SqlProgram.Create(connection: new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
-                       name: "spNonQuery");
+                await SqlProgram.Create(
+                    new LoadBalancedConnection(
+                        LocalDatabaseConnectionString,
+                        LocalDatabaseCopyConnectionString),
+                    "spNonQuery");
 
             readerTest.ExecuteReaderAll();
 
@@ -38,8 +73,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public async Task ExecuteReader_WithReturnResultSet_ExecutesSuccessfully()
         {
-            SqlProgram readerTest = await SqlProgram.Create((Connection) DifferentLocalDatabaseConnectionString,
-                                           name: "spUltimateSproc");
+            SqlProgram readerTest = await SqlProgram.Create(
+                DifferentLocalDatabaseConnection,
+                "spUltimateSproc");
 
             dynamic result = readerTest.ExecuteReader<dynamic>(
                 reader =>
@@ -73,7 +109,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteReader_WithAllParametersSet_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram<string, int, decimal, bool> readerTest =
-                await SqlProgram<string, int, decimal, bool>.Create((Connection)DifferentLocalDatabaseConnectionString, "spUltimateSproc");
+                await SqlProgram<string, int, decimal, bool>.Create(
+                    DifferentLocalDatabaseConnection,
+                    "spUltimateSproc");
 
             dynamic result = readerTest.ExecuteReader<dynamic>(
                 c =>
@@ -113,7 +151,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteReader_WithEnumerableIntParameter_ReturnsSingleColumnTableMatchingTheParameterType()
         {
             SqlProgram<IEnumerable<int>> tableTypeTest =
-                await SqlProgram<IEnumerable<int>>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesIntTable");
+                await SqlProgram<IEnumerable<int>>.Create(
+                    DifferentLocalDatabaseConnection,
+                    "spTakesIntTable");
 
             IList<int> result = tableTypeTest.ExecuteReader(
                 reader =>
@@ -131,10 +171,13 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
         [TestMethod]
-        public async Task ExecuteReader_WithEnumerableKeyValuePairParameter_ReturnsTwoColumnTableMatchingTheParameterTypes()
+        public async Task
+            ExecuteReader_WithEnumerableKeyValuePairParameter_ReturnsTwoColumnTableMatchingTheParameterTypes()
         {
             SqlProgram<IEnumerable<KeyValuePair<int, string>>> tableTypeTest =
-                await SqlProgram<IEnumerable<KeyValuePair<int, string>>>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesKvpTable");
+                await SqlProgram<IEnumerable<KeyValuePair<int, string>>>.Create(
+                    DifferentLocalDatabaseConnection,
+                    "spTakesKvpTable");
 
             string str1 = Random.RandomString(10, false);
             string str2 = Random.RandomString(10, false);
@@ -149,11 +192,11 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                     return resultSet;
                 },
                 new Dictionary<int, string>
-                    {
-                        {0, str1},
-                        {1, str2},
-                        {2, str3}
-                    });
+                {
+                    { 0, str1 },
+                    { 1, str2 },
+                    { 2, str3 }
+                });
 
             Assert.AreEqual(3, result.Count);
             Assert.AreEqual(str1, result[0]);
@@ -165,7 +208,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteReader_WithTupleParameter_ExecutesSuccessfully()
         {
             SqlProgram<IEnumerable<Tuple<int, string, bool>>> tableTypeTest =
-                await SqlProgram<IEnumerable<Tuple<int, string, bool>>>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesTupleTable");
+                await SqlProgram<IEnumerable<Tuple<int, string, bool>>>.Create(
+                    DifferentLocalDatabaseConnection,
+                    "spTakesTupleTable");
 
             string str1 = Random.RandomString(10, false);
             string str2 = Random.RandomString(10, false);
@@ -179,20 +224,20 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                         {
                             resultSet.Add(
                                 new
-                                    {
-                                        IntColumn = reader.GetValue<int>(0),
-                                        StringColumn = reader.GetValue<string>(1),
-                                        BoolColumn = reader.GetValue<bool>(2)
-                                    });
+                                {
+                                    IntColumn = reader.GetValue<int>(0),
+                                    StringColumn = reader.GetValue<string>(1),
+                                    BoolColumn = reader.GetValue<bool>(2)
+                                });
                         }
 
                         return resultSet;
                     },
                     new List<Tuple<int, string, bool>>
-                        {
-                            new Tuple<int, string, bool>(1, str1, false),
-                            new Tuple<int, string, bool>(2, str2, true)
-                        });
+                    {
+                        new Tuple<int, string, bool>(1, str1, false),
+                        new Tuple<int, string, bool>(2, str2, true)
+                    });
 
             Assert.AreEqual(2, result.Count);
             Assert.AreEqual(1, result[0].IntColumn);
@@ -206,7 +251,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public async Task ExecuteReader_WithByteArrayParameter_ReturnsSameArrayInReader()
         {
-            SqlProgram<byte[]> byteArrayTest = await SqlProgram<byte[]>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakeByteArrayLength10");
+            SqlProgram<byte[]> byteArrayTest = await SqlProgram<byte[]>.Create(
+                DifferentLocalDatabaseConnection,
+                "spTakeByteArrayLength10");
 
             int length = Random.Next(1, 10);
             byte[] testParam = new byte[length];
@@ -214,14 +261,14 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 
             byteArrayTest.ExecuteReader(
                 reader =>
+                {
+                    if (reader.Read())
                     {
-                        if (reader.Read())
-                        {
-                            CollectionAssert.AreEqual(
-                                testParam,
-                                (ICollection) reader.GetValue(0));
-                        }
-                    },
+                        CollectionAssert.AreEqual(
+                            testParam,
+                            (ICollection)reader.GetValue(0));
+                    }
+                },
                 testParam);
         }
 
@@ -255,73 +302,73 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public async Task ExecuteReader_WithSerializableObjectParameter_ReturnsByteArray()
         {
-            SqlProgram<TestSerializableObject> serializeObjectTest = await  SqlProgram<TestSerializableObject>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakeByteArray");
+            SqlProgram<TestSerializableObject> serializeObjectTest = await SqlProgram<TestSerializableObject>.Create(
+                DifferentLocalDatabaseConnection,
+                "spTakeByteArray");
 
-            TestSerializableObject objecToSerialize = new TestSerializableObject { String1 = Random.RandomString(), String2 = Random.RandomString() };
+            TestSerializableObject objecToSerialize =
+                new TestSerializableObject { String1 = Random.RandomString(), String2 = Random.RandomString() };
             serializeObjectTest.ExecuteReader(
                 reader =>
-                    {
-                        Assert.IsTrue(reader.Read());
-                        Assert.IsInstanceOfType(reader.GetValue(0), typeof(byte[]));
+                {
+                    Assert.IsTrue(reader.Read());
+                    Assert.IsInstanceOfType(reader.GetValue(0), typeof(byte[]));
 
-                        // Deserialize object
-                        TestSerializableObject deserializedObject =
-                            (TestSerializableObject) reader.GetObjectByName(reader.GetName(0));
+                    // Deserialize object
+                    TestSerializableObject deserializedObject =
+                        (TestSerializableObject)reader.GetObjectByName(reader.GetName(0));
 
-                        // Check we don't have same object instance.
-                        Assert.IsFalse(ReferenceEquals(objecToSerialize, deserializedObject));
+                    // Check we don't have same object instance.
+                    Assert.IsFalse(ReferenceEquals(objecToSerialize, deserializedObject));
 
-                        // Check equality of object instances using equality method.
-                        Assert.AreEqual(objecToSerialize, deserializedObject);
-                    },
+                    // Check equality of object instances using equality method.
+                    Assert.AreEqual(objecToSerialize, deserializedObject);
+                },
                 objecToSerialize);
         }
 
         [TestMethod]
         public async Task ExecuteReader_WithNestedTupleParameter_ExecutesSuccessfully()
         {
-            SqlProgram<IEnumerable<Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short, TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>>> tupleTableTypeTest =
-                await SqlProgram<IEnumerable<Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short, TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>>>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesMultiTupleTable");
+            SqlProgram<IEnumerable<Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short,
+                    TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>>>
+                tupleTableTypeTest =
+                    await SqlProgram<IEnumerable<Tuple<int, string, bool, bool, decimal, decimal, double,
+                        Tuple<string, short, TestSerializableObject, byte, DateTime, DateTime, XElement,
+                            Tuple<int, long, int, int>>>>>.Create(
+                        DifferentLocalDatabaseConnection,
+                        "spTakesMultiTupleTable");
 
-            var rows =
-                new List
-                    <
-                        Tuple
-                            <int, string, bool, bool, decimal, decimal, double,
-                                Tuple
-                                    <string, short, TestSerializableObject, byte, DateTime, DateTime, XElement,
-                                        Tuple<int, long, int, int>>>>();
+            var rows = new List<Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short,
+                TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>>();
 
             for (int i = 0; i < Random.Next(3, 10); i++)
             {
-                rows.Add(ExtendedTuple.Create(
-                    Random.RandomInt32(),
-                    Random.RandomString(50, false),
-                    false,
-                    true,
-                    RandomSqlSafeDecimal(),
-                    RandomSqlSafeDecimal(),
-                    Random.RandomDouble(),
-                    Random.RandomString(),
-                    Random.RandomInt16(),
-                    new TestSerializableObject { String1 = Random.RandomString(), String2 = Random.RandomString() },
-                    Random.RandomByte(),
-                    RandomSqlSafeDateTime(),
-                    RandomSqlSafeDateTime(),
-                    new XElement("Test", new XAttribute("attribute", Random.Next())),
-                    Random.RandomInt32(),
-                    Random.RandomInt64(),
-                    Random.RandomInt32(),
-                    Random.RandomInt32()));
+                rows.Add(
+                    ExtendedTuple.Create(
+                        Random.RandomInt32(),
+                        Random.RandomString(50, false),
+                        false,
+                        true,
+                        RandomSqlSafeDecimal(),
+                        RandomSqlSafeDecimal(),
+                        Random.RandomDouble(),
+                        Random.RandomString(),
+                        Random.RandomInt16(),
+                        new TestSerializableObject { String1 = Random.RandomString(), String2 = Random.RandomString() },
+                        Random.RandomByte(),
+                        RandomSqlSafeDateTime(),
+                        RandomSqlSafeDateTime(),
+                        new XElement("Test", new XAttribute("attribute", Random.Next())),
+                        Random.RandomInt32(),
+                        Random.RandomInt64(),
+                        Random.RandomInt32(),
+                        Random.RandomInt32()));
             }
 
-            var indexer =
-                typeof(
-                    Tuple
-                        <int, string, bool, bool, decimal, decimal, double,
-                            Tuple<string, short, TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>
-                            >
-                    ).GetTupleIndexer();
+            var indexer = typeof(Tuple<int, string, bool, bool, decimal, decimal, double, Tuple<string, short,
+                    TestSerializableObject, byte, DateTime, DateTime, XElement, Tuple<int, long, int, int>>>)
+                .GetTupleIndexer();
 
             tupleTableTypeTest.ExecuteReader(
                 reader =>
@@ -355,7 +402,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                             {
                                 // Deserialize object
                                 TestSerializableObject deserializedObject =
-                                    (TestSerializableObject) reader.GetObjectByName(reader.GetName(c));
+                                    (TestSerializableObject)reader.GetObjectByName(reader.GetName(c));
 
                                 // Check we don't have same object instance.
                                 Assert.IsFalse(ReferenceEquals(serializedObject, deserializedObject));
@@ -380,12 +427,14 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
                 },
                 rows);
         }
-        
+
         [TestMethod]
         public async Task ExecuteReader_WithOutputParameters_ExecutesSuccessfully()
         {
             SqlProgram<int, Out<int>, Out<int>> program =
-                await SqlProgram<int, Out<int>, Out<int>>.Create((Connection)LocalDatabaseConnectionString, "spOutputParameters");
+                await SqlProgram<int, Out<int>, Out<int>>.Create(
+                    LocalDatabaseConnection,
+                    "spOutputParameters");
 
             const int inputVal = 123;
             const int inputOutputVal = 321;
@@ -433,10 +482,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             Out<int> output = new Out<int>();
 
             program.ExecuteReaderAll(
-                (reader) =>
-                {
-                    Assert.Fail("Shouldnt reach this point.");
-                },
+                (reader) => { Assert.Fail("Shouldnt reach this point."); },
                 inputVal,
                 inputOutput,
                 output);
@@ -518,10 +564,11 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             /// <remarks></remarks>
             public override string ToString()
             {
-                return String.Format("String1: {1}{0}String2: {2}",
-                                     Environment.NewLine,
-                                     String1,
-                                     String2);
+                return String.Format(
+                    "String1: {1}{0}String2: {2}",
+                    Environment.NewLine,
+                    String1,
+                    String2);
             }
 
             /// <summary>
@@ -559,7 +606,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             {
                 unchecked
                 {
-                    return ((String1 != null ? String1.GetHashCode() : 0)*397) ^ (String2 != null ? String2.GetHashCode() : 0);
+                    return ((String1 != null ? String1.GetHashCode() : 0) * 397) ^
+                           (String2 != null ? String2.GetHashCode() : 0);
                 }
             }
         }

@@ -27,6 +27,7 @@
 
 using System.Configuration;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Schema;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 
 namespace WebApplications.Utilities.Database.Configuration
@@ -36,6 +37,13 @@ namespace WebApplications.Utilities.Database.Configuration
     /// </summary>
     public class ParameterElement : ConfigurationElement
     {
+        private const string NameName = "name";
+        private const string MapToName = "mapTo";
+        private const string SqlTypeNameName = "sqlType";
+        private const string ScaleName = "scale";
+        private const string PrecisionName = "precision";
+        private const string MaxLengthName = "maxLength";
+
         /// <summary>
         ///   Gets or sets the identifier for the parameter.
         /// </summary>
@@ -43,13 +51,13 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [ConfigurationProperty("name", IsRequired = true)]
+        [ConfigurationProperty(NameName, IsRequired = true)]
         [NotNull]
         public string Name
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            get { return GetProperty<string>("name"); }
-            set { SetProperty("name", value); }
+            get => GetProperty<string>(NameName);
+            set => SetProperty(NameName, value);
         }
 
         /// <summary>
@@ -60,13 +68,95 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [ConfigurationProperty("mapTo", IsRequired = true)]
-        [NotNull]
+        [ConfigurationProperty(MapToName)]
+        [CanBeNull]
         public string MapTo
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            get { return GetProperty<string>("mapTo"); }
-            set { SetProperty("mapTo", value); }
+            get => GetProperty<string>(MapToName);
+            set => SetProperty(MapToName, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the SQL type for the parameter.
+        /// </summary>
+        /// <value>
+        /// The name of the SQL type.
+        /// </value>
+        [ConfigurationProperty(SqlTypeNameName)]
+        [CanBeNull]
+        public string SqlTypeName
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get => GetProperty<string>(SqlTypeNameName);
+            set => SetProperty(SqlTypeNameName, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the scale of the parameters SQL type.
+        /// </summary>
+        /// <value>
+        /// The scale.
+        /// </value>
+        [ConfigurationProperty(ScaleName)]
+        [CanBeNull]
+        public byte? Scale
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get => GetProperty<byte?>(ScaleName);
+            set => SetProperty(ScaleName, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the precision of the parameters SQL type.
+        /// </summary>
+        /// <value>
+        /// The precision.
+        /// </value>
+        [ConfigurationProperty(PrecisionName)]
+        [CanBeNull]
+        public byte? Precision
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get => GetProperty<byte?>(PrecisionName);
+            set => SetProperty(PrecisionName, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum length of the parameters SQL type.
+        /// </summary>
+        /// <value>
+        /// The maximum length.
+        /// </value>
+        [ConfigurationProperty(MaxLengthName)]
+        [CanBeNull]
+        public short? MaxLength
+        {
+            // ReSharper disable once AssignNullToNotNullAttribute
+            get => GetProperty<short?>(MaxLengthName);
+            set => SetProperty(MaxLengthName, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the SQL type information.
+        /// </summary>
+        /// <value>
+        /// The SQL type information.
+        /// </value>
+        public SqlTypeInfo SqlTypeInfo
+        {
+            get => SqlTypeInfo.Create(
+                SqlTypeName,
+                Scale.HasValue || Precision.HasValue || MaxLength.HasValue
+                    ? new SqlTypeSize(MaxLength ?? 0, Precision ?? 0, Scale ?? 0)
+                    : (SqlTypeSize?)null);
+            set
+            {
+                SqlTypeName = value?.Name;
+                Scale = value?.Size?.Scale;
+                Precision = value?.Size?.Precision;
+                MaxLength = value?.Size?.MaximumLength;
+            }
         }
     }
 }

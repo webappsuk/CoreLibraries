@@ -1,11 +1,43 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 
-namespace WebApplications.Utilities.Database.Test.TestSqlProgram
+// ReSharper disable ConsiderUsingConfigureAwait
+// ReSharper disable InconsistentNaming
+#pragma warning disable 1591 // Missing XML commend
+#pragma warning disable 0618 // Type or member is obsolete
+
+namespace WebApplications.Utilities.Database.Test
 {
     public partial class SqlProgramTests
     {
@@ -13,7 +45,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteScalarAsync_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram scalarTest =
-                await SqlProgram.Create((Connection)DifferentLocalDatabaseConnectionString, "spReturnsScalar");
+                await SqlProgram.Create(DifferentLocalDatabaseConnection, "spReturnsScalar");
 
             Task<string> task = scalarTest.ExecuteScalarAsync<string>();
             Assert.IsNotNull(task);
@@ -26,13 +58,13 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteScalarAsyncAll_ExecutesAndReturnsExpectedResult()
         {
             string[] connectionStrings =
-                    {
-                        LocalDatabaseConnectionString,
-                        LocalDatabaseCopyConnectionString
-                    };
+            {
+                LocalDatabaseConnectionString,
+                LocalDatabaseCopyConnectionString
+            };
 
             SqlProgram scalarTest =
-            await SqlProgram.Create(new LoadBalancedConnection(connectionStrings), "spReturnsScalarString");
+                await SqlProgram.Create(new LoadBalancedConnection(connectionStrings), "spReturnsScalarString");
 
             Task<IEnumerable<string>> tasks = scalarTest.ExecuteScalarAllAsync<string>();
             Assert.AreEqual(2, tasks.Result.Count());
@@ -47,7 +79,10 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteScalarAsync_WithParameter_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram<string> scalarTest =
-                await SqlProgram<string>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesParamAndReturnsScalar", "@firstName");
+                await SqlProgram<string>.Create(
+                    DifferentLocalDatabaseConnection,
+                    "spTakesParamAndReturnsScalar",
+                    "@firstName");
 
             string randomString = Random.RandomString(10, false);
             Task<string> task = scalarTest.ExecuteScalarAsync<string>(randomString);
@@ -62,7 +97,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteScalarAsync_WithParameterSetViaAction_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram<string> scalarTest =
-                await SqlProgram<string>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesParamAndReturnsScalar");
+                await SqlProgram<string>.Create(DifferentLocalDatabaseConnection, "spTakesParamAndReturnsScalar");
             string name = Random.RandomString(10, false);
             Task<string> task = scalarTest.ExecuteScalarAsync<string>(c => c.SetParameter("@firstName", name));
             Assert.IsNotNull(task);
@@ -72,12 +107,12 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             // Note we won't get the full GUID back as the name is truncated.
             Assert.AreEqual("Hello " + name, task.Result);
         }
-        
+
         [TestMethod]
         public async Task ExecuteScalarAsync_WithOutputParameters_ExecutesSuccessfully()
         {
             SqlProgram<int, Out<int>, Out<int>> program =
-                await SqlProgram<int, Out<int>, Out<int>>.Create((Connection)LocalDatabaseConnectionString, "spOutputParameters");
+                await SqlProgram<int, Out<int>, Out<int>>.Create(LocalDatabaseConnection, "spOutputParameters");
 
             const int inputVal = 123;
             const int inputOutputVal = 321;
@@ -127,7 +162,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             MultiOut<int> inputOutput = new MultiOut<int>(inputOutputVal);
             MultiOut<int> output = new MultiOut<int>();
 
-            string[] scalarResult = (await program.ExecuteScalarAllAsync<string>(inputVal, inputOutput, output)).ToArray();
+            string[] scalarResult =
+                (await program.ExecuteScalarAllAsync<string>(inputVal, inputOutput, output)).ToArray();
             Assert.AreEqual(2, scalarResult.Length);
             Assert.IsTrue(scalarResult.All(i => i == "<foo>bar</foo>"));
 

@@ -140,7 +140,7 @@ namespace WebApplications.Utilities.Database
                     {
                         Debug.Assert(program != null);
 
-                        Id programId = new Id(databaseId, string.IsNullOrWhiteSpace(program.MapTo) ? program.Name : program.MapTo);
+                        Id programId = new Id(databaseId, program.Name);
 
                         Debug.Assert(!programs.Contains(programId));
                         programs.Add(programId);

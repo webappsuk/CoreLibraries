@@ -302,7 +302,7 @@ namespace WebApplications.Utilities.Database
                     .Append("DECLARE @Cmd")
                     .Append(args.CommandIndex)
                     .Append("Success bit");
-                if (args.ServerVersion.Major > 9)
+                if (args.ServerVersion.Major > DatabaseSchema.Sql2005Version.Major)
                     args.SqlBuilder.AppendLine(" = 1;");
                 else
                 {
@@ -338,10 +338,9 @@ namespace WebApplications.Utilities.Database
                 .AppendLine("SELECT 'End';")
                 .AppendLine();
 
-            SqlProgramMapping mapping = parameters.Mapping;
             SqlProgram program = Program;
             LoadBalancedConnection loadBalancedConnection = program.Connection;
-            Connection connection = mapping.Connection;
+            Connection connection = parameters.Mapping.Connection;
 
             // Need to wait on the semaphores for all the programs, connections and databases
             if (program.Semaphore != null)
@@ -367,7 +366,7 @@ namespace WebApplications.Utilities.Database
             [NotNull] string connectionString,
             ushort commandIndex)
         {
-            SqlProgramMapping mapping = Program.Mappings.Single(m => m.Connection.ConnectionString == connectionString);
+            DbMapping mapping = Program.Mappings.Single(m => m.Connection.ConnectionString == connectionString);
             Debug.Assert(mapping != null, "mapping != null");
 
             ParametersCollection parameters = new ParametersCollection(mapping, this, commandIndex);
@@ -385,51 +384,7 @@ namespace WebApplications.Utilities.Database
         protected virtual void AppendExecuteSql(
             [NotNull] SqlStringBuilder builder,
             [NotNull] ParametersCollection parameters)
-        {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
-
-            SqlProgramDefinition def = parameters.Mapping.Definition;
-
-            builder.Append("EXECUTE ");
-
-            // If there is a return value parameter, need to assign the result to it
-            if (parameters.ReturnValueParameter != null)
-            {
-                builder
-                    .Append(parameters.ReturnValueParameter.BaseParameter.ParameterName)
-                    .Append(" = ");
-            }
-
-            builder
-                .AppendIdentifier(def.SqlSchema.FullName)
-                .Append('.')
-                .AppendIdentifier(def.Name);
-
-            bool first = true;
-            foreach (DbBatchParameter parameter in parameters.Parameters)
-            {
-                // Already dealt with return value parameter
-                if (parameter.Direction == ParameterDirection.ReturnValue)
-                    continue;
-
-                if (first) first = false;
-                else builder.Append(',');
-
-                builder
-                    .AppendLine()
-                    .Append('\t')
-                    .Append(parameter.ProgramParameter.FullName)
-                    .Append(" = ")
-                    .Append(parameter.BaseParameter.ParameterName);
-
-                // If the parameter value is Out<T>, need to add OUT to actually get the return value
-                if (parameter.IsOutputUsed)
-                    builder.Append(" OUT");
-            }
-
-            builder.AppendLine(";");
-        }
+            => parameters.Mapping.AppendExecute(builder, parameters);
 
         /// <summary>
         /// Starts the reader.

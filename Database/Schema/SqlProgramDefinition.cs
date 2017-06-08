@@ -165,7 +165,7 @@ namespace WebApplications.Utilities.Database.Schema
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-            return ValidateParameters(parameters.Select(p => new KeyValuePair<string, Type>(p, null)), validateOrder);
+            return ValidateParameters(parameters.Select(p => new SqlParameterInfo(p)), validateOrder);
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] IEnumerable<string> parameters,
             bool validateOrder = false)
         {
-            return ValidateParameters(parameters.Select(p => new KeyValuePair<string, Type>(p, null)), validateOrder);
+            return ValidateParameters(parameters.Select(p => new SqlParameterInfo(p)), validateOrder);
         }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         public IReadOnlyList<SqlProgramParameter> ValidateParameters([NotNull] params Type[] parameters)
         {
-            return ValidateParameters(parameters.Select(t => new KeyValuePair<string, Type>(null, t)), true);
+            return ValidateParameters(parameters.Select(t => new SqlParameterInfo(t)), true);
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         public IReadOnlyList<SqlProgramParameter> ValidateParameters([NotNull] IEnumerable<Type> parameters)
         {
-            return ValidateParameters(parameters.Select(t => new KeyValuePair<string, Type>(null, t)), true);
+            return ValidateParameters(parameters.Select(t => new SqlParameterInfo(t)), true);
         }
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The supplied <paramref name="names"/> count did not match the <paramref name="types"/> count.
         /// </exception>
         [NotNull]
-        internal static IEnumerable<KeyValuePair<string, Type>> ToKvp(
+        internal static IEnumerable<SqlParameterInfo> ToSqlParameterInfo(
             [NotNull] IEnumerable<string> names,
             [NotNull] params Type[] types)
         {
@@ -248,11 +248,11 @@ namespace WebApplications.Utilities.Database.Schema
                     namesArr.Length,
                     types.Length);
 
-            KeyValuePair<string, Type>[] parameters = new KeyValuePair<string, Type>[namesArr.Length];
+            SqlParameterInfo[] parameters = new SqlParameterInfo[namesArr.Length];
 
             for (int i = 0; i < namesArr.Length; i++)
             {
-                parameters[i] = new KeyValuePair<string, Type>(namesArr[i], types[i]);
+                parameters[i] = new SqlParameterInfo(namesArr[i], types[i]);
             }
 
             return parameters;
@@ -273,7 +273,7 @@ namespace WebApplications.Utilities.Database.Schema
             [NotNull] params Type[] types)
         {
             // Validate the parameters
-            return ValidateParameters(ToKvp(names, types));
+            return ValidateParameters(ToSqlParameterInfo(names, types));
         }
 
         /// <summary>
@@ -300,7 +300,7 @@ namespace WebApplications.Utilities.Database.Schema
         /// </exception>
         [NotNull]
         public IReadOnlyList<SqlProgramParameter> ValidateParameters(
-            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters,
+            [CanBeNull] IEnumerable<SqlParameterInfo> parameters,
             bool validateOrder = false)
         {
             if (parameters == null)
@@ -308,25 +308,25 @@ namespace WebApplications.Utilities.Database.Schema
 
             parameters = parameters.Enumerate();
 
-            int sCount = parameters.Count();
-            if (sCount < 1)
+            int suppliedCount = parameters.Count();
+            if (suppliedCount < 1)
                 return Array<SqlProgramParameter>.Empty;
 
-            int dCount = Parameters.Count();
-            if (dCount < sCount)
+            int definedCount = Parameters.Count();
+            if (definedCount < suppliedCount)
                 throw new LoggingException(
                     LoggingLevel.Critical,
                     () => Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
                     FullName,
-                    dCount,
-                    sCount);
+                    definedCount,
+                    suppliedCount);
 
             // Create list of parameters for output
-            List<SqlProgramParameter> sqlParameters = new List<SqlProgramParameter>(sCount);
+            List<SqlProgramParameter> sqlParameters = new List<SqlProgramParameter>(suppliedCount);
 
             if (validateOrder)
                 using (IEnumerator<SqlProgramParameter> p1 = Parameters.GetEnumerator())
-                using (IEnumerator<KeyValuePair<string, Type>> p2 = parameters.GetEnumerator())
+                using (IEnumerator<SqlParameterInfo> p2 = parameters.GetEnumerator())
                     do
                     {
                         if (!p1.MoveNext())
@@ -337,8 +337,8 @@ namespace WebApplications.Utilities.Database.Schema
                                     LoggingLevel.Critical,
                                     () => Resources.SqlProgramDefinition_ValidateParameters_ParameterCountsNotEqual,
                                     FullName,
-                                    dCount,
-                                    sCount);
+                                    definedCount,
+                                    suppliedCount);
 
                             // We're done.
                             return sqlParameters;
@@ -354,9 +354,9 @@ namespace WebApplications.Utilities.Database.Schema
                         // Add parameter to return enumeration
                         sqlParameters.Add(parameter);
 
-                        string name = p2.Current.Key;
+                        string name = p2.Current.Name;
                         // Only check name if not null.
-                        if ((name != null) &&
+                        if (name != null &&
                             !ParameterNameComparer.Equals(parameter.FullName, name))
                             throw new LoggingException(
                                 LoggingLevel.Critical,
@@ -364,10 +364,49 @@ namespace WebApplications.Utilities.Database.Schema
                                 name,
                                 FullName);
 
-                        Type type = p2.Current.Value;
+                        // Validate the SQL type of the parameter
+                        SqlTypeInfo typeInfo = p2.Current.SqlType;
+                        if (typeInfo != null)
+                        {
+                            // TODO Should parse name to do proper check (eg dbo.Type == [dbo].[Type], but would fail here)
+                            if (typeInfo.Name != null && 
+                                !ParameterNameComparer.Equals(typeInfo.Name, parameter.Type.Name) && 
+                                !ParameterNameComparer.Equals(typeInfo.Name, parameter.Type.FullName))
+                            {
+                                throw new LoggingException(
+                                    LoggingLevel.Critical,
+                                    () => Resources.SqlProgramDefinition_ValidateParameters_InvalidSqlTypeName,
+                                    typeInfo.Name,
+                                    parameter.Type.FullName,
+                                    FullName);
+                            }
+
+                            if (typeInfo.Size.HasValue &&
+                                typeInfo.Size.Value != parameter.Type.Size)
+                            {
+                                throw new LoggingException(
+                                    LoggingLevel.Critical,
+                                    () => Resources.SqlProgramDefinition_ValidateParameters_InvalidSqlTypeSize,
+                                    typeInfo.Size,
+                                    parameter.Type.Size,
+                                    FullName);
+                            }
+                        }
+
+                        Type type = p2.Current.Type;
                         // Only check type if not null.
                         if (type == null)
                             continue;
+
+                        // Check if the type is an output type
+                        if (type.IsOutputType(out type) && parameter.Direction == ParameterDirection.Input)
+                        {
+                            throw new LoggingException(
+                                LoggingLevel.Critical,
+                                () => Resources.SqlProgramDefinition_ValidateParameters_ParameterNotOut,
+                                name,
+                                FullName);
+                        }
 
                         // Check to see if parameter accepts type
                         if (!parameter.Type.AcceptsCLRType(type))
@@ -381,17 +420,17 @@ namespace WebApplications.Utilities.Database.Schema
                     } while (true);
 
             // We are not validating order
-            foreach (KeyValuePair<string, Type> kvp in parameters)
+            foreach (SqlParameterInfo spi in parameters)
             {
                 // If we have a null parameter name, cannot possibly match.
-                if (kvp.Key == null)
+                if (spi.Name == null)
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         () => Resources.SqlProgramDefinition_ValidateParameters_MustSpecifyParameterName,
                         FullName);
 
                 SqlProgramParameter parameter;
-                string name = kvp.Key;
+                string name = spi.Name;
                 if (!_parametersByName.TryGetValue(name, out parameter))
                     throw new LoggingException(
                         LoggingLevel.Critical,
@@ -403,9 +442,49 @@ namespace WebApplications.Utilities.Database.Schema
                 // Add parameter to return enumeration
                 sqlParameters.Add(parameter);
 
-                Type type = kvp.Value;
-                if ((type != null) &&
-                    (!parameter.Type.AcceptsCLRType(type)))
+                // Validate the SQL type of the parameter
+                SqlTypeInfo typeInfo = spi.SqlType;
+                if (typeInfo != null)
+                {
+                    // TODO Should parse name to do proper check (eg dbo.Type == [dbo].[Type], but would fail here)
+                    if (typeInfo.Name != null &&
+                        !ParameterNameComparer.Equals(typeInfo.Name, parameter.Type.Name) &&
+                        !ParameterNameComparer.Equals(typeInfo.Name, parameter.Type.FullName))
+                    {
+                        throw new LoggingException(
+                            LoggingLevel.Critical,
+                            () => Resources.SqlProgramDefinition_ValidateParameters_InvalidSqlTypeName,
+                            typeInfo.Name,
+                            parameter.Type.FullName,
+                            FullName);
+                    }
+
+                    if (typeInfo.Size.HasValue &&
+                        typeInfo.Size.Value != parameter.Type.Size)
+                    {
+                        throw new LoggingException(
+                            LoggingLevel.Critical,
+                            () => Resources.SqlProgramDefinition_ValidateParameters_InvalidSqlTypeSize,
+                            typeInfo.Size,
+                            parameter.Type.Size,
+                            FullName);
+                    }
+                }
+
+                Type type = spi.Type;
+                if (type == null) continue;
+                
+                // Check if the type is an output type
+                if (type.IsOutputType(out type) && parameter.Direction == ParameterDirection.Input)
+                {
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
+                        () => Resources.SqlProgramDefinition_ValidateParameters_ParameterNotOut,
+                        name,
+                        FullName);
+                }
+
+                if (!parameter.Type.AcceptsCLRType(type))
                     throw new LoggingException(
                         LoggingLevel.Critical,
                         () => Resources.SqlProgramDefinition_ValidateParameters_TypeDoesNotAcceptClrType,

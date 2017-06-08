@@ -28,6 +28,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Exceptions;
@@ -76,6 +77,11 @@ namespace WebApplications.Utilities.Database.Schema
         public readonly SqlType Type;
 
         /// <summary>
+        ///    Whether the size of the type of the parameter is exactly known.
+        /// </summary>
+        internal readonly bool ExactSize;
+
+        /// <summary>
         ///   Initializes a new instance of the <see cref="SqlProgramParameter"/> class.
         /// </summary>
         /// <param name="ordinal">
@@ -96,7 +102,7 @@ namespace WebApplications.Utilities.Database.Schema
             int ordinal,
             [NotNull] string name,
             [NotNull] SqlType type,
-            SqlTypeSize size,
+            SqlTypeSize? size,
             ParameterDirection direction,
             bool isReadOnly)
             : base(name)
@@ -106,7 +112,10 @@ namespace WebApplications.Utilities.Database.Schema
             Ordinal = ordinal;
             IsReadOnly = isReadOnly;
             Direction = direction;
-            Type = type.Size.Equals(size) ? type : new SqlType(type, size);
+            ExactSize = size.HasValue;
+            Type = !size.HasValue || type.Size.Equals(size.Value)
+                ? type
+                : new SqlType(type, size.Value);
         }
 
         /// <summary>
@@ -118,16 +127,24 @@ namespace WebApplications.Utilities.Database.Schema
         [NotNull]
         public SqlParameter CreateSqlParameter()
         {
-            SqlParameter parameter = new SqlParameter(FullName, Type.SqlDbType, Type.Size.MaximumLength);
-            if (Type.Size.Precision != 0)
-                parameter.Precision = Type.Size.Precision;
-            if (Type.Size.Scale != 0)
-                parameter.Scale = Type.Size.Scale;
+            SqlParameter parameter = new SqlParameter(FullName, Type.SqlDbType);
+
+            if (ExactSize)
+            {
+                parameter.Size = Type.Size.MaximumLength;
+                if (Type.Size.Precision != 0)
+                    parameter.Precision = Type.Size.Precision;
+                if (Type.Size.Scale != 0)
+                    parameter.Scale = Type.Size.Scale;
+            }
+
             if (Type.SqlDbType == SqlDbType.Udt)
                 parameter.UdtTypeName = Type.Name;
             else if (Type.SqlDbType == SqlDbType.Structured)
                 parameter.TypeName = Type.Name;
+
             parameter.Direction = Direction;
+
             return parameter;
         }
 
@@ -310,6 +327,34 @@ namespace WebApplications.Utilities.Database.Schema
         public object CastSQLValue<T>(T value, TypeConstraintMode mode = TypeConstraintMode.Warn)
         {
             return Type.CastSQLValue(value, mode);
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString() => ToString(Type.Size);
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="size">The size of the type.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        public string ToString(SqlTypeSize size)
+        {
+            if (Type.IsTable)
+            {
+                Debug.Assert(IsReadOnly);
+                return FullName + " " + Type.ToString(size) + " READONLY";
+            }
+            Debug.Assert(!IsReadOnly);
+
+            if (Direction == ParameterDirection.Input)
+                return FullName + " " + Type.ToString(size);
+            return FullName + " " + Type.ToString(size) + " OUTPUT";
         }
     }
 }

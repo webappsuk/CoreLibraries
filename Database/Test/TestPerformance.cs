@@ -30,7 +30,7 @@ namespace WebApplications.Utilities.Database.Test
 
         private static double TicksToMs(double ticks)
         {
-            return (double)ticks / TimeSpan.TicksPerMillisecond;
+            return (double)ticks / Stopwatch.Frequency;
         }
 
         [TestMethod]

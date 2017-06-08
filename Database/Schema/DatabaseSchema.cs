@@ -50,10 +50,46 @@ namespace WebApplications.Utilities.Database.Schema
     public partial class DatabaseSchema : ISchema
     {
         /// <summary>
+        /// The SQL Server 2005 version number (9.0).
+        /// </summary>
+        [NotNull]
+        public static readonly Version Sql2005Version = new Version(9, 0);
+
+        /// <summary>
+        /// The SQL Server 2008 version number (10.0).
+        /// </summary>
+        [NotNull]
+        public static readonly Version Sql2008Version = new Version(10, 0);
+
+        /// <summary>
+        /// The SQL Server 2008 R2 version number (10.5).
+        /// </summary>
+        [NotNull]
+        public static readonly Version Sql2008R2Version = new Version(10, 5);
+
+        /// <summary>
+        /// The SQL Server 2012 version number (11.0).
+        /// </summary>
+        [NotNull]
+        public static readonly Version Sql2012Version = new Version(11, 0);
+
+        /// <summary>
+        /// The SQL Server 2014 version number (12.0).
+        /// </summary>
+        [NotNull]
+        public static readonly Version Sql2014Version = new Version(12, 0);
+
+        /// <summary>
+        /// The SQL Server 2016 version number (13.0).
+        /// </summary>
+        [NotNull]
+        public static readonly Version Sql2016Version = new Version(13, 0);
+
+        /// <summary>
         /// The minimum supported server version.
         /// </summary>
         [NotNull]
-        public static readonly Version MinimumSupportedServerVersion = new Version(9, 0);
+        public static readonly Version MinimumSupportedServerVersion = Sql2005Version;
 
         /// <summary>
         ///   Holds schemas against connections strings.
@@ -315,7 +351,7 @@ namespace WebApplications.Utilities.Database.Schema
 
         /// <summary>
         ///   Holds all the program definitions (<see cref="SqlProgramDefinition"/>) for the schema, which are stored with the <see cref="T:WebApplications.Utilities.Database.Schema.SqlProgramDefinition.FullName">full
-        ///   name</see> and <see cref="SqlProgramDefinition.Name">name</see> as the keys and the <see cref="SqlType"/> as the value.
+        ///   name</see> and <see cref="SqlProgramDefinition.Name">name</see> as the keys and the <see cref="SqlProgramDefinition"/> as the value.
         /// </summary>
         public IReadOnlyDictionary<string, SqlProgramDefinition> ProgramsByName => Current.ProgramsByName;
 
@@ -938,6 +974,158 @@ namespace WebApplications.Utilities.Database.Schema
             // ReSharper restore AssignNullToNotNullAttribute, PossibleNullReferenceException
         }
 
+        /// <summary>
+        /// Attempts to get the <see cref="SqlType"/> for the CLR <see cref="Type"/> given.
+        /// </summary>
+        /// <param name="clrType">The CLR type to get the SQL type of.</param>
+        /// <param name="sqlType">The SQL type if found.</param>
+        /// <returns></returns>
+        public bool TryGetSqlType(Type clrType, out SqlType sqlType)
+        {
+            Schema schema = Current;
+
+            // Check if the type is a known type
+            if (SqlType.TryGetSqlTypeName(clrType, out string sqlTypeName) &&
+                schema.TypesByName.TryGetValue(sqlTypeName, out sqlType))
+                return true;
+
+            sqlType = schema.SqlTypeByClrType.GetOrAdd(
+                clrType,
+                type =>
+                {
+                    List<SqlType> candidates = new List<SqlType>();
+
+                    foreach (SqlType stype in schema.Types)
+                    {
+                        if (!stype.IsTable && stype.IsUserDefined)
+                            continue;
+
+                        if (stype.AcceptsCLRType(type))
+                            candidates.Add(stype);
+                    }
+
+                    if (candidates.Count < 1)
+                        return null;
+
+                    if (candidates.Count == 1)
+                        return candidates[0];
+
+                    return candidates
+                        // Group by the type kind, choose the most specific kind
+                        .GroupBy(t => t.Kind)
+                        .OrderByDescending(g => g.Key)
+                        .First()
+
+                        // Group by the precedence within the kind, choose best one
+                        .GroupBy(t => t.Precedence)
+                        .OrderBy(g => g.Key)
+                        .First()
+
+                        // If there is a single type, use that, otherwise its ambiguous
+                        .HasSingle(out SqlType st) ? st : null;
+                });
+            return sqlType != null;
+        }
+
+        /// <summary>
+        /// Validates that the given text is valid.
+        /// </summary>
+        /// <param name="text">The text to validate.</param>
+        /// <param name="parameters">The parameters to the text.</param>
+        /// <param name="cancellationToken">A cancellation token.</param>
+        [NotNull]
+        [ItemNotNull]
+        public async Task<IReadOnlyList<SqlProgramParameter>> ValidateTextAsync(
+            [NotNull] string text,
+            [NotNull] IEnumerable<SqlParameterInfo> parameters,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (text == null) throw new ArgumentNullException(nameof(text));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
+            List<SqlProgramParameter> validParams = new List<SqlProgramParameter>();
+
+            int ordinal = 0;
+            foreach (SqlParameterInfo parameter in parameters)
+            {
+                if (parameter.Name == null)
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
+                        () => Resources.DatabaseSchema_ValidateText_MissingName);
+                if (parameter.Type == null && parameter.SqlType == null)
+                    throw new LoggingException(
+                        LoggingLevel.Critical,
+                        () => Resources.DatabaseSchema_ValidateText_MissingType);
+
+                string name = parameter.Name;
+                Type type = parameter.Type;
+                SqlTypeInfo sqlTypeInfo = parameter.SqlType;
+
+                bool isOutput = false;
+                SqlType sqlType;
+
+                if (sqlTypeInfo?.Name != null)
+                {
+                    if (!TypesByName.TryGetValue(sqlTypeInfo.Name, out sqlType))
+                        throw new LoggingException(
+                            LoggingLevel.Critical,
+                            () => Resources.DatabaseSchema_ValidateTextAsync_UnknownTypeName,
+                            sqlTypeInfo.Name,
+                            name);
+                }
+                else
+                {
+                    isOutput = type != null && type.IsOutputType(out type);
+
+                    if (!TryGetSqlType(type, out sqlType))
+                        throw new LoggingException(
+                            LoggingLevel.Critical,
+                            () => Resources.DatabaseSchema_ValidateText_UnknownParameterType,
+                            name,
+                            type.FullName);
+                }
+
+                SqlProgramParameter sqlProgramParameter = new SqlProgramParameter(
+                    ordinal++,
+                    name,
+                    sqlType,
+                    sqlTypeInfo?.Size,
+                    isOutput ? ParameterDirection.InputOutput : ParameterDirection.Input,
+                    sqlType.IsTable);
+
+                validParams.Add(sqlProgramParameter);
+            }
+
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+
+                using (SqlCommand command = new SqlCommand(null, connection))
+                {
+                    command.CommandText = "SET PARSEONLY ON;\r\n" + text;
+
+                    foreach (SqlProgramParameter parameter in validParams)
+                        command.Parameters.Add(parameter.CreateSqlParameter());
+
+                    try
+                    {
+                        await command.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
+                    }
+                    catch (SqlException e)
+                    {
+                        throw new LoggingException(
+                            e,
+                            LoggingLevel.Critical,
+                            () => Resources.DatabaseSchema_ValidateText_Invalid,
+                            e.Message,
+                            text);
+                    }
+
+                    return validParams;
+                }
+            }
+        }
+
         #region Equalities
         /// <summary>Determines whether the specified object is equal to the current object.</summary>
         /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
@@ -956,4 +1144,4 @@ namespace WebApplications.Utilities.Database.Schema
         /// <returns>A hash code for the current object.</returns>
         public override int GetHashCode() => Current.GetHashCode();
     }
-}
+};

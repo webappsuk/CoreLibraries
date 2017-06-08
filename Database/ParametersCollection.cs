@@ -54,7 +54,7 @@ namespace WebApplications.Utilities.Database
         private readonly ushort _commandIndex;
 
         [NotNull]
-        private readonly SqlProgramMapping _mapping;
+        private readonly DbMapping _mapping;
 
         [NotNull]
         private readonly List<DbBatchParameter> _parameters = new List<DbBatchParameter>();
@@ -95,7 +95,7 @@ namespace WebApplications.Utilities.Database
         /// </summary>
         /// <value>The mapping.</value>
         [NotNull]
-        internal SqlProgramMapping Mapping => _mapping;
+        internal DbMapping Mapping => _mapping;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ParametersCollection" /> class.
@@ -103,7 +103,7 @@ namespace WebApplications.Utilities.Database
         /// <param name="mapping">The mapping.</param>
         /// <param name="command">The command.</param>
         /// <param name="commandIndex">Index of the command.</param>
-        internal ParametersCollection([NotNull] SqlProgramMapping mapping, [NotNull] SqlBatchCommand command, ushort commandIndex)
+        internal ParametersCollection([NotNull] DbMapping mapping, [NotNull] SqlBatchCommand command, ushort commandIndex)
         {
             _mapping = mapping;
             _command = command;
@@ -118,7 +118,7 @@ namespace WebApplications.Utilities.Database
         [NotNull]
         private DbBatchParameter GetOrAddParameter([NotNull] SqlProgramParameter programParameter)
         {
-            IEqualityComparer<string> comparer = _mapping.Definition.ParameterNameComparer;
+            IEqualityComparer<string> comparer = _mapping.ParameterNameComparer;
             int index = _parameters.FindIndex(p => comparer.Equals(p.ParameterName, programParameter.FullName));
             if (index >= 0)
                 return _parameters[index];
@@ -182,7 +182,7 @@ namespace WebApplications.Utilities.Database
 
             // Find parameter definition
             SqlProgramParameter parameterDefinition;
-            if (!_mapping.Definition.TryGetParameter(parameterName, out parameterDefinition))
+            if (!_mapping.TryGetParameter(parameterName, out parameterDefinition))
                 throw new LoggingException(
                     LoggingLevel.Critical,
                     () => Resources.SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter,
@@ -236,7 +236,7 @@ namespace WebApplications.Utilities.Database
 
             // Find parameter definition
             SqlProgramParameter parameterDefinition;
-            if (!_mapping.Definition.TryGetParameter(parameterName, out parameterDefinition))
+            if (!_mapping.TryGetParameter(parameterName, out parameterDefinition))
                 throw new LoggingException(
                     LoggingLevel.Critical,
                     () => Resources.SqlProgramCommand_SetParameter_ProgramDoesNotHaveParameter,

@@ -1,5 +1,5 @@
-#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -28,68 +28,64 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Database.Schema;
-using WebApplications.Utilities.Logging;
 
 namespace WebApplications.Utilities.Database
 {
     /// <summary>
-    /// Maps a <see cref="SqlProgram"/> to a <see cref="SqlProgramDefinition"/>.
+    /// Maps a <see cref="SqlProgram"/> to text.
     /// </summary>
     [PublicAPI]
-    public class SqlProgramMapping : DbMapping
+    public class SqlTextMapping : DbMapping
     {
         /// <summary>
-        /// Gets the mapping for the <paramref name="program"/> given from the specified <paramref name="schema"/>.
+        /// Gets the mapping for the <paramref name="program" /> given from the specified <paramref name="schema" />.
         /// </summary>
         /// <param name="program">The program to get the mapping for.</param>
         /// <param name="connection">The connection the mapping is for.</param>
         /// <param name="schema">The schema to get the mapping from.</param>
-        /// <param name="checkOrder">If set to <see langword="true" /> check the order of the parameters.</param>
-        /// <returns>The mapping.</returns>
-        internal static SqlProgramMapping GetMapping(
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>
+        /// The mapping.
+        /// </returns>
+        internal static async Task<SqlTextMapping> GetMapping(
             [NotNull] SqlProgram program,
             [NotNull] Connection connection,
             [NotNull] DatabaseSchema schema,
-            bool checkOrder)
+            CancellationToken cancellationToken)
         {
-            // Find the program
-            if (!schema.ProgramsByName.TryGetValue(program.Text, out SqlProgramDefinition programDefinition))
-                throw new LoggingException(
-                    LoggingLevel.Critical,
-                    () => Resources.SqlProgram_Validate_DefinitionsNotFound,
-                    program.Text,
-                    program.Name);
-            Debug.Assert(programDefinition != null);
+            IReadOnlyList<SqlProgramParameter> parameters = await schema
+                .ValidateTextAsync(program.Text, program.Parameters, cancellationToken)
+                .ConfigureAwait(false);
 
-            // Validate parameters
-            IReadOnlyList<SqlProgramParameter> parameters =
-                programDefinition.ValidateParameters(program.Parameters, checkOrder);
-
-            return new SqlProgramMapping(connection, programDefinition, parameters);
+            return new SqlTextMapping(connection, program.Text, parameters, schema.ServerCollation);
         }
 
         /// <summary>
         ///   The underlying <see cref="SqlProgramDefinition">program definition</see>.
         /// </summary>
         [NotNull]
-        public readonly SqlProgramDefinition Definition;
+        public readonly string Text;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlProgramMapping" /> class.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        /// <param name="definition">The definition.</param>
+        /// <param name="text">The text.</param>
         /// <param name="parameters">The parameters.</param>
-        private SqlProgramMapping(
+        /// <param name="parameterNameComparer">The parameter name comparer.</param>
+        private SqlTextMapping(
             [NotNull] Connection connection,
-            [NotNull] SqlProgramDefinition definition,
-            [NotNull] IReadOnlyList<SqlProgramParameter> parameters)
-            : base(connection, parameters, definition.ParameterNameComparer)
+            [NotNull] string text,
+            [NotNull] IReadOnlyList<SqlProgramParameter> parameters,
+            [NotNull] IEqualityComparer<string> parameterNameComparer)
+            : base(connection, parameters, parameterNameComparer)
         {
-            Definition = definition ?? throw new ArgumentNullException(nameof(definition));
+            Text = text ?? throw new ArgumentNullException(nameof(text));
         }
 
         /// <summary>
@@ -102,8 +98,6 @@ namespace WebApplications.Utilities.Database
             if (builder == null) throw new ArgumentNullException(nameof(builder));
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-            SqlProgramDefinition def = Definition;
-
             builder.Append("EXECUTE ");
 
             // If there is a return value parameter, need to assign the result to it
@@ -115,22 +109,60 @@ namespace WebApplications.Utilities.Database
             }
 
             builder
-                .AppendIdentifier(def.SqlSchema.FullName)
-                .Append('.')
-                .AppendIdentifier(def.Name);
+                .Append("[sys].[sp_executesql] ")
+                .AppendNVarChar(Text);
 
-            bool first = true;
+            // If there are no parameters, just return now.
+            if (parameters.Parameters.Count < 1)
+            {
+                builder.AppendLine(";");
+                return;
+            }
+
+            string GetParameterDefinition(DbBatchParameter p)
+            {
+                if (p.ProgramParameter.ExactSize)
+                    return p.ProgramParameter.ToString();
+
+                short maximumLength;
+                if (p.Size > short.MaxValue)
+                    maximumLength = -1;
+
+                // Despite what the description of the property says, Size is the length of the string in chars for unicode strings,
+                // so need to double it as SqlTypeSize expects byte length
+                else if (p.DbType == DbType.String || p.DbType == DbType.StringFixedLength)
+                    maximumLength = p.Size > short.MaxValue / 2 ? (short)-1 : (short)(p.Size * 2);
+                else
+                    maximumLength = (short)p.Size;
+                
+                return p.ProgramParameter.ToString(
+                    // Need to calculate the actual size, as the size for Text parameters is not always exactly known
+                    new SqlTypeSize(
+                        maximumLength,
+                        p.Precision,
+                        p.Scale));
+            }
+
+            builder
+                .AppendLine(",")
+                .Append("\t")
+
+                // Append the definition of the parameters.
+                .AppendNVarChar(
+                    string.Join(
+                        ",\r\n\t",
+                        parameters.Parameters
+                            .Where(p => p.Direction != ParameterDirection.ReturnValue)
+                            .Select(GetParameterDefinition)));
+
             foreach (DbBatchParameter parameter in parameters.Parameters)
             {
                 // Already dealt with return value parameter
                 if (parameter.Direction == ParameterDirection.ReturnValue)
                     continue;
 
-                if (first) first = false;
-                else builder.Append(',');
-
                 builder
-                    .AppendLine()
+                    .AppendLine(",")
                     .Append('\t')
                     .Append(parameter.ProgramParameter.FullName)
                     .Append(" = ")

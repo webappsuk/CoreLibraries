@@ -2156,13 +2156,13 @@ namespace WebApplications.Utilities.Database
 
             foreach (SqlBatchCommand command in this)
             {
-                SqlProgramMapping[] mappings = command.Program.Mappings
+                DbMapping[] mappings = command.Program.Mappings
                     .Where(m => commonConnections.Contains(m.Connection))
                     .ToArray();
 
                 double totWeight = mappings.Sum(m => m.Connection.Weight);
 
-                foreach (SqlProgramMapping mapping in mappings)
+                foreach (DbMapping mapping in mappings)
                 {
                     if (!connWeightCounts.TryGetValue(mapping.Connection, out var counter))
                     {

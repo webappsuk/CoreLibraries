@@ -25,9 +25,11 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endregion
 
-using System;
 using System.Configuration;
+using System.Xml.Linq;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Configuration.Validators;
 using WebApplications.Utilities.Database.Schema;
 using ConfigurationElement = WebApplications.Utilities.Configuration.ConfigurationElement;
 
@@ -38,6 +40,21 @@ namespace WebApplications.Utilities.Database.Configuration
     /// </summary>
     public class ProgramElement : ConfigurationElement
     {
+        private const string NameName = "name";
+        private const string MapToName = "mapTo";
+        private const string SelectFromName = "selectFrom";
+        private const string TextPathName = "textPath";
+        private const string TextName = "text";
+        private const string ConnectionName = "connection";
+        private const string IgnoreValidationErrorsName = "ignoreValidationErrors";
+        private const string CheckOrderName = "checkOrder";
+        private const string DefaultCommandTimeoutName = "defaultCommandTimeout";
+        private const string ConstraintModeName = "constraintMode";
+        private const string MaxConcurrencyName = "maxConcurrency";
+
+        [NotNull]
+        private static readonly XName _textXName = TextName;
+
         /// <summary>
         ///   Gets a name for the <see cref="WebApplications.Utilities.Database.SqlProgram"/>.
         /// </summary>
@@ -47,28 +64,84 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [ConfigurationProperty("name", IsRequired = true, IsKey = true)]
+        [ConfigurationProperty(NameName, IsRequired = true, IsKey = true)]
         [NotNull]
         public string Name
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            get { return GetProperty<string>("name"); }
-            set { SetProperty("name", value); }
+            get => GetProperty<string>(NameName);
+            set => SetProperty(NameName, value);
         }
 
         /// <summary>
-        ///   Gets or sets the mapTo property, which maps the element to the
-        ///   <see cref="WebApplications.Utilities.Database.SqlProgram"/> it represents.
+        ///   Gets or sets the name of the stored procedure or function that this program maps to.
         /// </summary>
+        /// <remarks>
+        /// Only one of <see cref="MapTo"/>, <see cref="SelectFrom"/>, <see cref="TextPath"/>, and <see cref="Text"/>
+        /// can have a value at any time. Setting this property to a non-null value will set the other properties to <see langword="null"/>.
+        /// </remarks>
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [ConfigurationProperty("mapTo", DefaultValue = null, IsRequired = false)]
+        [ConfigurationProperty(MapToName, DefaultValue = null, IsRequired = false)]
         [CanBeNull]
         public string MapTo
         {
-            get { return GetProperty<string>("mapTo"); }
-            set { SetProperty("mapTo", value); }
+            get => GetProperty<string>(MapToName);
+            set => SetImplProperty(MapToName, value);
+        }
+
+        /// <summary>
+        ///   Gets or sets the name of the table that this program should select data from.
+        /// </summary>
+        /// <remarks>
+        /// Only one of <see cref="MapTo"/>, <see cref="SelectFrom"/>, <see cref="TextPath"/>, and <see cref="Text"/>
+        /// can have a value at any time. Setting this property to a non-null value will set the other properties to <see langword="null"/>.
+        /// </remarks>
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
+        ///   The property is read-only or locked.
+        /// </exception>
+        [ConfigurationProperty(SelectFromName, DefaultValue = null, IsRequired = false)]
+        [CanBeNull]
+        public string SelectFrom
+        {
+            get => GetProperty<string>(SelectFromName);
+            set => SetImplProperty(SelectFromName, value);
+        }
+
+        /// <summary>
+        ///   Gets or sets the path to the file containing the raw text that the program should execute.
+        /// </summary>
+        /// <remarks>
+        /// Only one of <see cref="MapTo"/>, <see cref="SelectFrom"/>, <see cref="TextPath"/>, and <see cref="Text"/>
+        /// can have a value at any time. Setting this property to a non-null value will set the other properties to <see langword="null"/>.
+        /// </remarks>
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
+        ///   The property is read-only or locked.
+        /// </exception>
+        [ConfigurationProperty(TextPathName, DefaultValue = null, IsRequired = false)]
+        [CanBeNull]
+        public string TextPath
+        {
+            get => GetProperty<string>(TextPathName);
+            set => SetImplProperty(TextPathName, value);
+        }
+
+        /// <summary>
+        /// Gets or sets the raw text that the program should execute.
+        /// </summary>
+        /// <remarks>
+        /// Only one of <see cref="MapTo"/>, <see cref="SelectFrom"/>, <see cref="TextPath"/>, and <see cref="Text"/>
+        /// can have a value at any time. Setting this property to a non-null value will set the other properties to <see langword="null"/>.
+        /// </remarks>
+        /// <exception cref="System.Configuration.ConfigurationErrorsException">
+        ///   The property is read-only or locked.
+        /// </exception>
+        [CanBeNull]
+        public string Text
+        {
+            get => GetElement(_textXName)?.Value;
+            set => SetImplProperty(TextName, value);
         }
 
         /// <summary>
@@ -80,12 +153,12 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [ConfigurationProperty("connection", DefaultValue = null, IsRequired = false)]
+        [ConfigurationProperty(ConnectionName, DefaultValue = null, IsRequired = false)]
         [CanBeNull]
         public string Connection
         {
-            get { return GetProperty<string>("connection"); }
-            set { SetProperty("connection", value); }
+            get => GetProperty<string>(ConnectionName);
+            set => SetProperty(ConnectionName, value);
         }
 
         /// <summary>
@@ -105,8 +178,8 @@ namespace WebApplications.Utilities.Database.Configuration
         public ParameterCollection Parameters
         {
             // ReSharper disable once AssignNullToNotNullAttribute
-            get { return GetProperty<ParameterCollection>(string.Empty); }
-            set { SetProperty(string.Empty, value); }
+            get => GetProperty<ParameterCollection>(string.Empty);
+            set => SetProperty(string.Empty, value);
         }
 
         /// <summary>
@@ -118,11 +191,11 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [ConfigurationProperty("ignoreValidationErrors", DefaultValue = false, IsRequired = false)]
+        [ConfigurationProperty(IgnoreValidationErrorsName, DefaultValue = false, IsRequired = false)]
         public bool IgnoreValidationErrors
         {
-            get { return GetProperty<bool>("ignoreValidationErrors"); }
-            set { SetProperty("ignoreValidationErrors", value); }
+            get => GetProperty<bool>(IgnoreValidationErrorsName);
+            set => SetProperty(IgnoreValidationErrorsName, value);
         }
 
         /// <summary>
@@ -134,11 +207,11 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [ConfigurationProperty("checkOrder", DefaultValue = false, IsRequired = false)]
+        [ConfigurationProperty(CheckOrderName, DefaultValue = false, IsRequired = false)]
         public bool CheckOrder
         {
-            get { return GetProperty<bool>("checkOrder"); }
-            set { SetProperty("checkOrder", value); }
+            get => GetProperty<bool>(CheckOrderName);
+            set => SetProperty(CheckOrderName, value);
         }
 
         /// <summary>
@@ -150,12 +223,12 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [ConfigurationProperty("defaultCommandTimeout", DefaultValue = "00:00:30", IsRequired = false)]
-        [TimeSpanValidator(MinValueString = "00:00:00.5", MaxValueString = "00:10:00")]
-        public TimeSpan DefaultCommandTimeout
+        [ConfigurationProperty(DefaultCommandTimeoutName, DefaultValue = "00:00:30", IsRequired = false)]
+        [DurationValidator(MinValueString = "00:00:00.5", MaxValueString = "00:10:00")]
+        public Duration DefaultCommandTimeout
         {
-            get { return GetProperty<TimeSpan>("defaultCommandTimeout"); }
-            set { SetProperty("defaultCommandTimeout", value); }
+            get => GetProperty<Duration>(DefaultCommandTimeoutName);
+            set => SetProperty(DefaultCommandTimeoutName, value);
         }
 
         /// <summary>
@@ -167,11 +240,11 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [ConfigurationProperty("constraintMode", DefaultValue = TypeConstraintMode.Warn, IsRequired = false)]
+        [ConfigurationProperty(ConstraintModeName, DefaultValue = TypeConstraintMode.Warn, IsRequired = false)]
         public TypeConstraintMode ConstraintMode
         {
-            get { return GetProperty<TypeConstraintMode>("constraintMode"); }
-            set { SetProperty("constraintMode", value); }
+            get => GetProperty<TypeConstraintMode>(ConstraintModeName);
+            set => SetProperty(ConstraintModeName, value);
         }
 
         /// <summary>
@@ -184,11 +257,76 @@ namespace WebApplications.Utilities.Database.Configuration
         /// <exception cref="System.Configuration.ConfigurationErrorsException">
         ///   The property is read-only or locked.
         /// </exception>
-        [ConfigurationProperty("maxConcurrency", DefaultValue = -1, IsRequired = false)]
+        [ConfigurationProperty(MaxConcurrencyName, DefaultValue = -1, IsRequired = false)]
         public int MaximumConcurrency
         {
-            get { return GetProperty<int>("maxConcurrency"); }
-            set { SetProperty("maxConcurrency", value); }
+            get => GetProperty<int>(MaxConcurrencyName);
+            set => SetProperty(MaxConcurrencyName, value);
+        }
+
+        /// <summary>
+        /// Sets the implementation property given, nulling out the other properties.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="value">The value.</param>
+        private void SetImplProperty([NotNull] string name, string value)
+        {
+            // If the value is null, only set the single property
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                SetProperty(name, value);
+                return;
+            }
+
+            string mapTo = null;
+            string selectFrom = null;
+            string textPath = null;
+            string text = null;
+            bool cdata = false;
+
+            switch (name)
+            {
+                case MapToName:
+                    mapTo = value;
+                    break;
+                case SelectFromName:
+                    selectFrom = value;
+                    break;
+                case TextPathName:
+                    textPath = value;
+                    break;
+                case TextName:
+                    text = value;
+                    // If the text contains any <, > or & characters, it should be wrapped in CDATA
+                    cdata = text.IndexOfAny("<>&".ToCharArray()) >= 0;
+                    break;
+                default:
+                    SetProperty(name, value);
+                    return;
+            }
+
+            SetProperty(MapToName, mapTo);
+            SetProperty(SelectFromName, selectFrom);
+            SetProperty(TextPathName, textPath);
+            if (string.IsNullOrWhiteSpace(text))
+                RemoveElement(_textXName);
+            else
+                SetElement(_textXName, new XElement(_textXName, cdata ? (object)new XCData(text) : text));
+        }
+
+        /// <summary>Called after deserialization.</summary>
+        protected override void PostDeserialize()
+        {
+            base.PostDeserialize();
+
+            int notNullCount =
+                (string.IsNullOrWhiteSpace(MapTo) ? 0 : 1) +
+                (string.IsNullOrWhiteSpace(SelectFrom) ? 0 : 1) +
+                (string.IsNullOrWhiteSpace(TextPath) ? 0 : 1) +
+                (string.IsNullOrWhiteSpace(Text) ? 0 : 1);
+
+            if (notNullCount > 1)
+                throw new ConfigurationErrorsException(Resources.ProgramElement_PostDeserialize_MultipleSpecified);
         }
     }
 }

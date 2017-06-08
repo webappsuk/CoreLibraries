@@ -1827,6 +1827,35 @@ namespace WebApplications.Utilities
         }
 
         /// <summary>
+        /// Normalises the line endings in the given string.
+        /// </summary>
+        /// <param name="input">The input to normalise.</param>
+        /// <param name="lineEnding">The line ending to use. 
+        /// If <see langword="null"/> then <see cref="Environment.NewLine"/> will be used.</param>
+        /// <returns></returns>
+        [NotNull]
+        public static string NormaliseLineEndings([NotNull] this string input, string lineEnding = null)
+        {
+            if (input == null) throw new ArgumentNullException(nameof(input));
+
+            StringReader reader = new StringReader(input);
+            StringBuilder builder = new StringBuilder(input.Length);
+            lineEnding = lineEnding ?? Environment.NewLine;
+
+            bool first = true;
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (first) first = false;
+                else builder.Append(lineEnding);
+
+                builder.Append(line);
+            }
+
+            return builder.ToString();
+        }
+
+        /// <summary>
         /// Lowers the case of the first letter.
         /// </summary>
         /// <param name="input">The input.</param>
@@ -4052,10 +4081,11 @@ namespace WebApplications.Utilities
         /// <summary>
         /// Performs a cross product on two enumerables.
         /// </summary>
-        /// <typeparam name="T1">The type of the first enumerable.</typeparam>
-        /// <typeparam name="T2">The type of the second enumerable.</typeparam>
+        /// <typeparam name="T1">The type of the elements in the first enumerable.</typeparam>
+        /// <typeparam name="T2">The type of the elements in the second enumerable.</typeparam>
         /// <param name="enumerable1">The first enumerable.</param>
         /// <param name="enumerable2">The second enumerable.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="enumerable1"/>, <paramref name="enumerable2"/> or <paramref name="resultSelector"/> is null.</exception>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="Tuple{T1, T2}"/> containing all possible pairs of the elements in the two enumerables.</returns>
         /// <remarks>The order of the elements of the enumerables will be maintained.</remarks>
         [NotNull]
@@ -4065,13 +4095,40 @@ namespace WebApplications.Utilities
         {
             if (enumerable1 == null) throw new ArgumentNullException(nameof(enumerable1));
             if (enumerable2 == null) throw new ArgumentNullException(nameof(enumerable2));
-            return CrossIterator(enumerable1, enumerable2);
+            return CrossIterator(enumerable1, enumerable2, Tuple.Create);
+        }
+
+        /// <summary>
+        /// Performs a cross product on two enumerables.
+        /// </summary>
+        /// <typeparam name="T1">The type of the elements in the first enumerable.</typeparam>
+        /// <typeparam name="T2">The type of the elements in the second enumerable.</typeparam>
+        /// <typeparam name="TResult">The type of the elements of the result.</typeparam>
+        /// <param name="enumerable1">The first enumerable.</param>
+        /// <param name="enumerable2">The second enumerable.</param>
+        /// <param name="resultSelector">The result selector.</param>
+        /// <returns>
+        /// An <see cref="IEnumerable{T}" /> of <typeparamref name="TResult"/> containing all possible pairs of the elements in the two enumerables.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="enumerable1"/>, <paramref name="enumerable2"/> or <paramref name="resultSelector"/> is null.</exception>
+        /// <remarks>The order of the elements of the enumerables will be maintained.</remarks>
+        [NotNull]
+        public static IEnumerable<TResult> Cross<T1, T2, TResult>(
+            [NotNull] this IEnumerable<T1> enumerable1,
+            [NotNull] IEnumerable<T2> enumerable2,
+            [NotNull] Func<T1, T2, TResult> resultSelector)
+        {
+            if (enumerable1 == null) throw new ArgumentNullException(nameof(enumerable1));
+            if (enumerable2 == null) throw new ArgumentNullException(nameof(enumerable2));
+            if (resultSelector == null) throw new ArgumentNullException(nameof(resultSelector));
+            return CrossIterator(enumerable1, enumerable2, resultSelector);
         }
 
         [NotNull]
-        private static IEnumerable<Tuple<T1, T2>> CrossIterator<T1, T2>(
+        private static IEnumerable<TResult> CrossIterator<T1, T2, TResult>(
             [NotNull] IEnumerable<T1> enumerable1,
-            [NotNull] IEnumerable<T2> enumerable2)
+            [NotNull] IEnumerable<T2> enumerable2,
+            [NotNull] Func<T1, T2, TResult> resultSelector)
         {
             ICollection<T2> collection = enumerable2 as ICollection<T2>;
             if (collection == null)
@@ -4084,7 +4141,7 @@ namespace WebApplications.Utilities
                 if (enumerable2 == null)
                 {
                     foreach (T2 item2 in collection)
-                        yield return new Tuple<T1, T2>(item1, item2);
+                        yield return resultSelector(item1, item2);
                     continue;
                 }
 
@@ -4092,7 +4149,7 @@ namespace WebApplications.Utilities
                 foreach (T2 item2 in enumerable2)
                 {
                     collection.Add(item2);
-                    yield return new Tuple<T1, T2>(item1, item2);
+                    yield return resultSelector(item1, item2);
                 }
 
                 // ReSharper disable once AssignNullToNotNullAttribute

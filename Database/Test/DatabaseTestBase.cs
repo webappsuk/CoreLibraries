@@ -22,6 +22,8 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Concurrent;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -35,11 +37,46 @@ namespace WebApplications.Utilities.Database.Test
     [DeploymentItem("Resources\\", "Resources")]
     public abstract class DatabaseTestBase : TestBase
     {
+        public const string LocalDatabaseConnectionName = "LocalData";
+        public const string LocalDatabaseCopyConnectionName = "LocalDataCopy";
+        public const string DifferentLocalDatabaseConnectionName = "DifferentLocalData";
+
+        [NotNull]
         protected static readonly Random Random = new Random();
 
-        protected readonly string LocalDatabaseConnectionString = CreateConnectionString("LocalData");
-        protected readonly string LocalDatabaseCopyConnectionString = CreateConnectionString("LocalDataCopy");
-        protected readonly string DifferentLocalDatabaseConnectionString = CreateConnectionString("DifferentLocalData");
+        [NotNull]
+        public static string GetConnectionString([NotNull] string connectionName)
+        {
+            switch (connectionName?.ToLowerInvariant())
+            {
+                case "localdata": return LocalDatabaseConnectionString;
+                case "localdatacopy": return LocalDatabaseCopyConnectionString;
+                case "differentlocaldata": return DifferentLocalDatabaseConnectionString;
+                default: return connectionName;
+            }
+        }
+
+        [NotNull]
+        protected static readonly string LocalDatabaseConnectionString = CreateConnectionString(LocalDatabaseConnectionName);
+
+        [NotNull]
+        protected static readonly string LocalDatabaseCopyConnectionString = CreateConnectionString(LocalDatabaseCopyConnectionName);
+
+        [NotNull]
+        protected static readonly string DifferentLocalDatabaseConnectionString = CreateConnectionString(DifferentLocalDatabaseConnectionName);
+
+        [NotNull]
+        protected static readonly Connection LocalDatabaseConnection = new Connection(LocalDatabaseConnectionString);
+
+        [NotNull]
+        protected static readonly Connection LocalDatabaseCopyConnection = new Connection(LocalDatabaseCopyConnectionString);
+
+        [NotNull]
+        protected static readonly Connection DifferentLocalDatabaseConnection = new Connection(DifferentLocalDatabaseConnectionString);
+
+        [NotNull]
+        private static readonly ConcurrentDictionary<(string con, string prog), string> _programText =
+            new ConcurrentDictionary<(string, string), string>();
 
         private double _testStartTicks, _testEndTicks;
 
@@ -80,7 +117,7 @@ namespace WebApplications.Utilities.Database.Test
 
         protected DatabaseTestBase()
         {
-            _conn = new Lazy<LoadBalancedConnection>(() => new LoadBalancedConnection(CreateConnectionString("LocalData")));
+            _conn = new Lazy<LoadBalancedConnection>(() => new LoadBalancedConnection(LocalDatabaseConnectionString));
         }
 
         /// <summary>
@@ -105,6 +142,38 @@ namespace WebApplications.Utilities.Database.Test
                     }.mdf;Integrated Security=True;Connect Timeout=30;";
         }
 
+        /// <summary>
+        /// Gets the program text.
+        /// </summary>
+        /// <param name="programName">Name of the program.</param>
+        /// <param name="connectionString">The connection string.</param>
+        /// <returns></returns>
+        [NotNull]
+        public static string GetProgramText([NotNull] string programName, [NotNull] string connectionString)
+        {
+            connectionString = GetConnectionString(connectionString);
+
+            return _programText.GetOrAdd(
+                (connectionString, programName.ToLowerInvariant()),
+                _ =>
+                {
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+
+                        const string sql = "SELECT [definition] FROM sys.sql_modules WHERE [object_id] = OBJECT_ID(@name);";
+                        using (SqlCommand command = new SqlCommand(sql, connection))
+                        {
+                            command.Parameters.AddWithValue("@name", programName);
+                            string def = (string)command.ExecuteScalar();
+                            int start = def.IndexOf("AS", StringComparison.InvariantCultureIgnoreCase);
+                            Debug.Assert(start > 0);
+                            return def.Substring(start + 2);
+                        }
+                    }
+                });
+        }
+
         public TestContext TestContext { get; set; }
 
         [TestInitialize]
@@ -122,7 +191,8 @@ namespace WebApplications.Utilities.Database.Test
             _testEndTicks = Stopwatch.GetTimestamp();
             Trace.WriteLine(
                 $"Ending test: {TestContext.TestName}, time taken {1000 * (_testEndTicks - _testStartTicks) / Stopwatch.Frequency:N3}ms");
-            Log.Flush().Wait();
+            Log.Flush().GetAwaiter().GetResult();
         }
+
     }
 }

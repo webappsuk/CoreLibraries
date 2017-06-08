@@ -1,24 +1,55 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NodaTime;
 using WebApplications.Utilities.Database.Exceptions;
 using WebApplications.Utilities.IO;
 
-namespace WebApplications.Utilities.Database.Test.TestSqlProgram
+// ReSharper disable ConsiderUsingConfigureAwait
+// ReSharper disable InconsistentNaming
+#pragma warning disable 1591 // Missing XML commend
+#pragma warning disable 0618 // Type or member is obsolete
+
+namespace WebApplications.Utilities.Database.Test
 {
     public partial class SqlProgramTests
     {
         [TestMethod]
         public async Task ExecuteReaderAsync_ExecutesAndReturnsExpectedResult()
         {
-            SqlProgram readerTest = await SqlProgram.Create((Connection)DifferentLocalDatabaseConnectionString, "spUltimateSproc");
+            SqlProgram readerTest = await SqlProgram.Create(DifferentLocalDatabaseConnection, "spUltimateSproc");
             Task readerTask = readerTest.ExecuteReaderAsync();
             Assert.IsNotNull(readerTask);
         }
@@ -26,7 +57,9 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         [TestMethod]
         public async Task ExecuteReaderAllAsync_ExecutesAndReturnsExpectedResult()
         {
-            SqlProgram program = await SqlProgram.Create(new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString), "spReturnsTable");
+            SqlProgram program = await SqlProgram.Create(
+                new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
+                "spReturnsTable");
 
             Task readerTask = program.ExecuteReaderAllAsync();
             Assert.IsNotNull(readerTask);
@@ -36,18 +69,18 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteReaderAsync_WithReturnType_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram readerTest =
-                await SqlProgram.Create((Connection)DifferentLocalDatabaseConnectionString, "spUltimateSproc");
+                await SqlProgram.Create(DifferentLocalDatabaseConnection, "spUltimateSproc");
 
             Task<dynamic> result = readerTest.ExecuteReaderAsync(
                 async (reader, token) =>
+                {
+                    if (await reader.ReadAsync(token))
                     {
-                        if (await reader.ReadAsync(token))
-                        {
-                            return CreateDatabaseResult(reader);
-                        }
+                        return CreateDatabaseResult(reader);
+                    }
 
-                        throw new Exception("Critical Test Error");
-                    });
+                    throw new Exception("Critical Test Error");
+                });
 
             Assert.IsNotNull(result);
             // Read the sproc defaults.
@@ -61,25 +94,27 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteReaderAsync_WithAllParametersSet_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram<string, int, decimal, bool> readerTest =
-                await SqlProgram<string, int, decimal, bool>.Create((Connection)DifferentLocalDatabaseConnectionString, "spUltimateSproc");
+                await SqlProgram<string, int, decimal, bool>.Create(
+                    DifferentLocalDatabaseConnection,
+                    "spUltimateSproc");
 
             Task<dynamic> result = readerTest.ExecuteReaderAsync(
                 c =>
-                    {
-                        c.SetParameter("@stringParam", AString);
-                        c.SetParameter("@intParam", AInt);
-                        c.SetParameter("@decimalParam", ADecimal);
-                        c.SetParameter("@boolParam", ABool);
-                    },
+                {
+                    c.SetParameter("@stringParam", AString);
+                    c.SetParameter("@intParam", AInt);
+                    c.SetParameter("@decimalParam", ADecimal);
+                    c.SetParameter("@boolParam", ABool);
+                },
                 async (reader, token) =>
+                {
+                    if (await reader.ReadAsync(token))
                     {
-                        if (await reader.ReadAsync(token))
-                        {
-                            return CreateDatabaseResult(reader);
-                        }
+                        return CreateDatabaseResult(reader);
+                    }
 
-                        throw new Exception("Critical Test Error");
-                    });
+                    throw new Exception("Critical Test Error");
+                });
 
             Assert.IsNotNull(result);
             result.Wait();
@@ -94,7 +129,8 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteReaderAllAsync_WithAllParametersSet_ExecutesAndReturnsExpectedResult()
         {
             SqlProgram<string, int, decimal, bool> readerTest = await SqlProgram<string, int, decimal, bool>.Create(
-                new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString), "spReturnsTable");
+                new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
+                "spReturnsTable");
 
             Task<IEnumerable<dynamic>> result = readerTest.ExecuteReaderAllAsync(
                 c =>
@@ -138,12 +174,11 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         }
 
 
-
         [TestMethod]
         public async Task ExecuteReaderAsync_WithManualDisposal_ExecutesAndAllowsStreaming()
         {
             SqlProgram<byte[]> readerTest =
-                await SqlProgram<byte[]>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakeByteArray");
+                await SqlProgram<byte[]>.Create(DifferentLocalDatabaseConnection, "spTakeByteArray");
 
             byte[] data = Encoding.UTF8.GetBytes(AString);
             string resultString;
@@ -173,15 +208,15 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             SqlProgram<int> timeoutTest =
                 await
                     SqlProgram<int>.Create(
-                        (Connection)DifferentLocalDatabaseConnectionString,
+                        DifferentLocalDatabaseConnection,
                         "spTimeoutTest",
                         defaultCommandTimeout: commandTimeout);
 
             // Expose all the properties from the inner lambda.
             dynamic result = await timeoutTest.ExecuteReaderAsync(
-                (reader, disposable, token) =>
-                    Task.FromResult(new { Reader = reader, Disposable = disposable, Token = token }),
-                10)
+                    (reader, disposable, token) =>
+                        Task.FromResult(new { Reader = reader, Disposable = disposable, Token = token }),
+                    10)
                 .ConfigureAwait(false);
         }
 
@@ -189,7 +224,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task ExecuteReaderAsync_WithOutputParameters_ExecutesSuccessfully()
         {
             SqlProgram<int, Out<int>, Out<int>> program =
-                await SqlProgram<int, Out<int>, Out<int>>.Create((Connection)LocalDatabaseConnectionString, "spOutputParameters");
+                await SqlProgram<int, Out<int>, Out<int>>.Create(LocalDatabaseConnection, "spOutputParameters");
 
             const int inputVal = 123;
             const int inputOutputVal = 321;
@@ -237,10 +272,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
             Out<int> output = new Out<int>();
 
             await program.ExecuteReaderAllAsync(
-                async (reader, token) =>
-                {
-                    Assert.Fail("Shouldnt reach this point.");
-                },
+                async (reader, token) => Assert.Fail("Shouldnt reach this point."),
                 inputVal,
                 inputOutput,
                 output);

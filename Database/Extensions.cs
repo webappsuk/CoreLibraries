@@ -35,7 +35,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using WebApplications.Utilities.Annotations;
+using WebApplications.Utilities.Database.Schema;
 using WebApplications.Utilities.Logging;
+using WebApplications.Utilities.Reflect;
 using WebApplications.Utilities.Serialization;
 
 namespace WebApplications.Utilities.Database
@@ -256,7 +258,7 @@ namespace WebApplications.Utilities.Database
                 // If the error isnt being suppressed, rethrow it for any outer catches to handle it
                 if (!item.SuppressErrors)
                 {
-                    if (args.ServerVersion.Major < 11)
+                    if (args.ServerVersion < DatabaseSchema.Sql2012Version)
                     {
                         // Cant rethrow the actual error, so raise a special error message
                         SqlBatch.AppendInfo(args, Constants.ExecuteState.ReThrow, "%d", "@CmdIndex", true);
@@ -357,5 +359,34 @@ namespace WebApplications.Utilities.Database
             } while (item != null);
         }
 
+        /// <summary>
+        /// Determines whether the type given is an <see cref="Out{T}"/>, and gets the value type if it is.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <param name="valueType">The value type, if the type is an <see cref="Out{T}"/>; otherwise <paramref name="type"/>.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the type is an <see cref="Out{T}"/>; otherwise, <see langword="false" />.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">type</exception>
+        public static bool IsOutputType([NotNull] this Type type, [NotNull] out Type valueType)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            if (!type.IsConstructedGenericType)
+            {
+                valueType = type;
+                return false;
+            }
+
+            Type typeDef = type.GetGenericTypeDefinition();
+            if (typeDef == typeof(Out<>))
+            {
+                valueType = type.GetGenericArguments()[0];
+                return true;
+            }
+
+            valueType = type;
+            return false;
+        }
     }
 }

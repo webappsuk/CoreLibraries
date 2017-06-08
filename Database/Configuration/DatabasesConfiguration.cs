@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Configuration;
 using WebApplications.Utilities.Database.Schema;
@@ -241,10 +242,10 @@ namespace WebApplications.Utilities.Database.Configuration
         public static Task<SqlProgram> GetConfiguredSqlProgram(
             [NotNull] string database,
             [NotNull] string name,
-            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
+            [CanBeNull] IEnumerable<SqlParameterInfo> parameters = null,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -282,10 +283,10 @@ namespace WebApplications.Utilities.Database.Configuration
         public Task<SqlProgram> GetSqlProgram(
             [NotNull] string database,
             [NotNull] string name,
-            [CanBeNull] IEnumerable<KeyValuePair<string, Type>> parameters = null,
+            [CanBeNull] IEnumerable<SqlParameterInfo> parameters = null,
             bool ignoreValidationErrors = false,
             bool checkOrder = false,
-            TimeSpan? defaultCommandTimeout = null,
+            Duration? defaultCommandTimeout = null,
             TypeConstraintMode? constraintMode = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {

@@ -32,6 +32,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Xml;
@@ -52,6 +54,56 @@ namespace WebApplications.Utilities.Database.Schema
     [PublicAPI]
     public class SqlType : DatabaseSchemaEntity<SqlType>
     {
+        private enum SystemType
+        {
+            VarBinary        = SqlDbType.VarBinary        | TypeKind.Binary << 8   | (0 << 16),
+            Binary           = SqlDbType.Binary           | TypeKind.Binary << 8   | (1 << 16),
+            Image            = SqlDbType.Image            | TypeKind.Binary << 8   | (2 << 16),
+            Timestamp        = SqlDbType.Timestamp        | TypeKind.Binary << 8   | (3 << 16),
+            DateTime2        = SqlDbType.DateTime2        | TypeKind.DateTime << 8 | (0 << 16),
+            DateTimeOffset   = SqlDbType.DateTimeOffset   | TypeKind.DateTime << 8 | (1 << 16),
+            DateTime         = SqlDbType.DateTime         | TypeKind.DateTime << 8 | (2 << 16),
+            SmallDateTime    = SqlDbType.SmallDateTime    | TypeKind.DateTime << 8 | (3 << 16),
+            Date             = SqlDbType.Date             | TypeKind.DateTime << 8 | (4 << 16),
+            Time             = SqlDbType.Time             | TypeKind.DateTime << 8 | (4 << 16),
+            BigInt           = SqlDbType.BigInt           | TypeKind.Number << 8   | (0 << 16),
+            Decimal          = SqlDbType.Decimal          | TypeKind.Number << 8   | (0 << 16),
+            Float            = SqlDbType.Float            | TypeKind.Number << 8   | (0 << 16),
+            Int              = SqlDbType.Int              | TypeKind.Number << 8   | (1 << 16),
+            Money            = SqlDbType.Money            | TypeKind.Number << 8   | (1 << 16),
+            Real             = SqlDbType.Real             | TypeKind.Number << 8   | (1 << 16),
+            SmallInt         = SqlDbType.SmallInt         | TypeKind.Number << 8   | (2 << 16),
+            SmallMoney       = SqlDbType.SmallMoney       | TypeKind.Number << 8   | (2 << 16),
+            TinyInt          = SqlDbType.TinyInt          | TypeKind.Number << 8   | (3 << 16),
+            Udt              = SqlDbType.Udt              | TypeKind.Object << 8   | (0 << 16),
+            Bit              = SqlDbType.Bit              | TypeKind.Object << 8   | (1 << 16),
+            UniqueIdentifier = SqlDbType.UniqueIdentifier | TypeKind.Object << 8   | (1 << 16),
+            Xml              = SqlDbType.Xml              | TypeKind.Object << 8   | (1 << 16),
+            NVarChar         = SqlDbType.NVarChar         | TypeKind.String << 8   | (0 << 16),
+            VarChar          = SqlDbType.VarChar          | TypeKind.String << 8   | (1 << 16),
+            NChar            = SqlDbType.NChar            | TypeKind.String << 8   | (2 << 16),
+            Char             = SqlDbType.Char             | TypeKind.String << 8   | (3 << 16),
+            NText            = SqlDbType.NText            | TypeKind.String << 8   | (4 << 16),
+            Text             = SqlDbType.Text             | TypeKind.String << 8   | (5 << 16),
+            Structured       = SqlDbType.Structured       | TypeKind.Table << 8    | (0 << 16),
+            Variant          = SqlDbType.Variant          | TypeKind.Variant << 8  | (0 << 16),
+
+            SqlDbTypeMask = 255,
+            TypeKindMask = 255 << 8,
+            PrecedenceMask = 255 << 16
+        }
+
+        internal enum TypeKind : byte
+        {
+            Variant,
+            Binary,
+            String,
+            Number,
+            DateTime,
+            Object,
+            Table
+        }
+
         /// <summary>
         /// The properties used for calculating differences.
         /// </summary>
@@ -64,7 +116,8 @@ namespace WebApplications.Utilities.Database.Schema
             t => t.IsUserDefined,
             t => t.IsTable,
             t => t.Size,
-            t => t.BaseType
+            t => t.BaseType,
+            t => t.FullName
         };
 
         /// <summary>
@@ -97,44 +150,101 @@ namespace WebApplications.Utilities.Database.Schema
         ///   Holds the SQL data type to <see cref="SqlDbType"/> mapping.
         /// </summary>
         [NotNull]
-        private static readonly Dictionary<string, SqlDbType> _systemTypes =
-            new Dictionary<string, SqlDbType>(StringComparer.InvariantCultureIgnoreCase)
+        private static readonly Dictionary<string, SystemType> _systemTypes =
+            new Dictionary<string, SystemType>(StringComparer.InvariantCultureIgnoreCase)
             {
-                { "bigint", SqlDbType.BigInt },
-                { "binary", SqlDbType.Binary },
-                { "bit", SqlDbType.Bit },
-                { "char", SqlDbType.Char },
-                { "date", SqlDbType.Date },
-                { "datetime", SqlDbType.DateTime },
-                { "datetime2", SqlDbType.DateTime2 },
-                { "datetimeoffset", SqlDbType.DateTimeOffset },
-                { "decimal", SqlDbType.Decimal },
-                { "float", SqlDbType.Float },
-                { "geography", SqlDbType.Udt },
-                { "geometry", SqlDbType.Udt },
-                { "hierarchyid", SqlDbType.Udt },
-                { "image", SqlDbType.Image },
-                { "int", SqlDbType.Int },
-                { "money", SqlDbType.Money },
-                { "nchar", SqlDbType.NChar },
-                { "ntext", SqlDbType.NText },
-                { "numeric", SqlDbType.Decimal },
-                { "nvarchar", SqlDbType.NVarChar },
-                { "real", SqlDbType.Real },
-                { "smalldatetime", SqlDbType.SmallDateTime },
-                { "smallint", SqlDbType.SmallInt },
-                { "smallmoney", SqlDbType.SmallMoney },
-                { "sql_variant", SqlDbType.Variant },
-                { "sysname", SqlDbType.NVarChar },
-                { "text", SqlDbType.Text },
-                { "time", SqlDbType.Time },
-                { "timestamp", SqlDbType.Timestamp },
-                { "tinyint", SqlDbType.TinyInt },
-                { "uniqueidentifier", SqlDbType.UniqueIdentifier },
-                { "varbinary", SqlDbType.VarBinary },
-                { "varchar", SqlDbType.VarChar },
-                { "xml", SqlDbType.Xml }
+                { "bigint", SystemType.BigInt },
+                { "binary", SystemType.Binary },
+                { "bit", SystemType.Bit },
+                { "char", SystemType.Char },
+                { "date", SystemType.Date },
+                { "datetime", SystemType.DateTime },
+                { "datetime2", SystemType.DateTime2 },
+                { "datetimeoffset", SystemType.DateTimeOffset },
+                { "decimal", SystemType.Decimal },
+                { "float", SystemType.Float },
+                { "geography", SystemType.Udt },
+                { "geometry", SystemType.Udt },
+                { "hierarchyid", SystemType.Udt },
+                { "image", SystemType.Image },
+                { "int", SystemType.Int },
+                { "money", SystemType.Money },
+                { "nchar", SystemType.NChar },
+                { "ntext", SystemType.NText },
+                { "numeric", SystemType.Decimal },
+                { "nvarchar", SystemType.NVarChar },
+                { "real", SystemType.Real },
+                { "smalldatetime", SystemType.SmallDateTime },
+                { "smallint", SystemType.SmallInt },
+                { "smallmoney", SystemType.SmallMoney },
+                { "sql_variant", SystemType.Variant },
+                { "sysname", SystemType.NVarChar },
+                { "text", SystemType.Text },
+                { "time", SystemType.Time },
+                { "timestamp", SystemType.Timestamp },
+                { "tinyint", SystemType.TinyInt },
+                { "uniqueidentifier", SystemType.UniqueIdentifier },
+                { "varbinary", SystemType.VarBinary },
+                { "varchar", SystemType.VarChar },
+                { "xml", SystemType.Xml }
             };
+
+        /// <summary>
+        /// Holds the name of the SQL type to use for built in CLR types.
+        /// </summary>
+        [NotNull]
+        private static readonly Dictionary<Type, string> _clrTypes = new Dictionary<Type, string>
+        {
+            { typeof(SqlBinary), "varbinary" },
+            { typeof(SqlBytes), "varbinary" },
+            { typeof(SqlBoolean), "bit" },
+            { typeof(SqlByte), "tinyint" },
+            { typeof(SqlChars), "nvarchar" },
+            { typeof(SqlString), "nvarchar" },
+            { typeof(SqlDateTime), "datetime2" },
+            { typeof(SqlDecimal), "decimal" },
+            { typeof(SqlDouble), "float" },
+            { typeof(SqlGuid), "uniqueidentifier" },
+            { typeof(SqlInt16), "smallint" },
+            { typeof(SqlInt32), "int" },
+            { typeof(SqlInt64), "bigint" },
+            { typeof(SqlMoney), "money" },
+            { typeof(SqlSingle), "real" },
+            { typeof(SqlXml), "xml" },
+
+            { typeof(byte[]), "varbinary" },
+            { typeof(bool), "bit" },
+            { typeof(byte), "tinyint" },
+            { typeof(Guid), "uniqueidentifier" },
+            { typeof(string), "nvarchar" },
+            { typeof(char), "nvarchar" },
+            { typeof(char[]), "nvarchar" },
+            { typeof(TimeSpan), "time" },
+            { typeof(DateTimeOffset), "datetimeoffset" },
+            { typeof(Stream), "varbinary" },
+            { typeof(TextReader), "nvarchar" },
+            { typeof(XmlReader), "xml" },
+            { typeof(short), "smallint" },
+            { typeof(int), "int" },
+            { typeof(long), "bigint" },
+            { typeof(float), "real" },
+            { typeof(double), "float" },
+            { typeof(decimal), "decimal" },
+            { typeof(DateTime), "datetime2" },
+
+            { typeof(SqlGeography), "geography" },
+            { typeof(SqlGeometry), "geometry" },
+            { typeof(SqlHierarchyId), "hierarchyid" },
+        };
+
+        /// <summary>
+        /// Attempts to get the SQL type name for the CLR type given.
+        /// </summary>
+        /// <param name="type">The CLR type.</param>
+        /// <param name="typeName">The name of the SQL type, if found.</param>
+        /// <returns></returns>
+        internal static bool TryGetSqlTypeName(Type type, out string typeName)
+            => _clrTypes.TryGetValue(type, out typeName);
 
         /// <summary>
         ///   The base type (if any).
@@ -172,6 +282,27 @@ namespace WebApplications.Utilities.Database.Schema
         ///   The <see cref="SqlTypeSize">size</see> of the type.
         /// </summary>
         public readonly SqlTypeSize Size;
+
+        private readonly SystemType _sysType;
+
+        /// <summary>
+        ///   Gets the corresponding <see cref="SqlDbType"/>.
+        /// </summary>
+        /// <value>The corresponding <see cref="SqlDbType"/>.</value>
+        public SqlDbType SqlDbType => (SqlDbType)(_sysType & SystemType.SqlDbTypeMask);
+
+        /// <summary>
+        /// Gets the kind of the type (string, binary, etc).
+        /// </summary>
+        internal TypeKind Kind => (TypeKind)((int)(_sysType & SystemType.TypeKindMask) >> 8);
+
+        /// <summary>
+        /// Gets the precedence of the type within its <see cref="Kind"/>.
+        /// </summary>
+        /// <remarks>For table types, the precedence is based on the number of columns in the table.</remarks>
+        internal int Precedence => IsTable
+            ? ((SqlTableType)this).TableDefinition.ColumnCount
+            : ((int)(_sysType & SystemType.PrecedenceMask) >> 16);
 
         /// <summary>
         ///   The CLR type converters for this type.
@@ -259,16 +390,15 @@ namespace WebApplications.Utilities.Database.Schema
             Size = size;
             BaseType = baseType;
 
-            // Calculate our underlying SqlDbType
+            // Calculate our underlying SqlDbType (represented by SystemType)
             if (!IsUserDefined)
             {
-                SqlDbType sqlDbType;
                 // We are a system type, look up.
-                if (_systemTypes.TryGetValue(Name, out sqlDbType))
-                    SqlDbType = sqlDbType;
+                if (_systemTypes.TryGetValue(Name, out SystemType sysType))
+                    _sysType = sysType;
                 else if (BaseType != null)
                     // Get the base type
-                    SqlDbType = BaseType.SqlDbType;
+                    _sysType = BaseType._sysType;
                 else
                 {
                     // Log error and return NVarChar as fall back.
@@ -277,14 +407,14 @@ namespace WebApplications.Utilities.Database.Schema
                         LoggingLevel.Warning,
                         () => Resources.SqlType_UnknownSqlSystemType,
                         FullName);
-                    SqlDbType = SqlDbType.NVarChar;
+                    _sysType = SystemType.NVarChar;
                 }
             }
             else if (IsTable)
-                SqlDbType = SqlDbType.Structured;
+                _sysType = SystemType.Structured;
             else if (BaseType != null)
                 // Get the base type
-                SqlDbType = BaseType.SqlDbType;
+                _sysType = BaseType._sysType;
             else
             {
                 // Log error and return NVarChar as fall back.
@@ -293,7 +423,7 @@ namespace WebApplications.Utilities.Database.Schema
                     LoggingLevel.Critical,
                     () => Resources.SqlType_UnknownSqlSystemType,
                     FullName);
-                SqlDbType = SqlDbType.NVarChar;
+                _sysType = SystemType.NVarChar;
             }
         }
 
@@ -312,14 +442,8 @@ namespace WebApplications.Utilities.Database.Schema
             IsNullable = baseType.IsNullable;
             BaseType = baseType;
             Size = size;
-            SqlDbType = baseType.SqlDbType;
+            _sysType = baseType._sysType;
         }
-
-        /// <summary>
-        ///   Gets the corresponding <see cref="SqlDbType"/>.
-        /// </summary>
-        /// <value>The corresponding <see cref="SqlDbType"/>.</value>
-        public SqlDbType SqlDbType { get; private set; }
 
         /* TODO AcceptsCLRType and the converter methods should mirror to/from SQL checking
          *  For example, you might be able to convert a type to a byte[], but not from a byte[]
@@ -1688,6 +1812,80 @@ namespace WebApplications.Utilities.Database.Schema
             return toInputType != null
                 ? (Func<object, TypeConstraintMode, object>)((c, m) => converter(toInputType(c), m))
                 : null;
+        }
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString() => ToString(Size);
+
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <param name="size">The size of the type.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        [NotNull]
+        public string ToString(SqlTypeSize size)
+        {
+            if (IsUserDefined)
+                return FullName;
+
+            switch (SqlDbType)
+            {
+                case SqlDbType.BigInt:
+                case SqlDbType.Bit:
+                case SqlDbType.DateTime:
+                case SqlDbType.Image:
+                case SqlDbType.Int:
+                case SqlDbType.Money:
+                case SqlDbType.NText:
+                case SqlDbType.UniqueIdentifier:
+                case SqlDbType.SmallDateTime:
+                case SqlDbType.SmallInt:
+                case SqlDbType.SmallMoney:
+                case SqlDbType.Text:
+                case SqlDbType.Timestamp:
+                case SqlDbType.TinyInt:
+                case SqlDbType.Variant:
+                case SqlDbType.Xml:
+                case SqlDbType.Udt:
+                case SqlDbType.Structured:
+                case SqlDbType.Date:
+                    return Name;
+
+                case SqlDbType.Binary:
+                case SqlDbType.Char:
+                    return Name + "(" + size.MaximumLength.ToString(CultureInfo.InvariantCulture) + ")";
+                case SqlDbType.NChar:
+                    return Name + "(" + (size.MaximumLength / 2).ToString(CultureInfo.InvariantCulture) + ")";
+
+                case SqlDbType.VarBinary:
+                case SqlDbType.VarChar:
+                    if (size.MaximumLength > 8000 || size.MaximumLength < 0) return Name + "(MAX)";
+                    return Name + "(" + size.MaximumLength.ToString(CultureInfo.InvariantCulture) + ")";
+                case SqlDbType.NVarChar:
+                    if (size.MaximumLength > 8000 || size.MaximumLength < 0) return Name + "(MAX)";
+                    return Name + "(" + (size.MaximumLength / 2).ToString(CultureInfo.InvariantCulture) + ")";
+
+                case SqlDbType.Decimal:
+                    return Name + "(" + size.Precision.ToString(CultureInfo.InvariantCulture) + "," + size.Scale.ToString(CultureInfo.InvariantCulture) + ")";
+
+                case SqlDbType.Float:
+                case SqlDbType.Real:
+                    return size.Precision <= 24 ? "real" : "float";
+
+                case SqlDbType.Time:
+                case SqlDbType.DateTime2:
+                case SqlDbType.DateTimeOffset:
+                    return Name + "(" + size.Scale.ToString(CultureInfo.InvariantCulture) + ")";
+
+                default:
+                    Debug.Fail($"SqlDbType '{SqlDbType}'");
+                    throw new ArgumentOutOfRangeException(nameof(SqlDbType));
+            }
         }
     }
 }

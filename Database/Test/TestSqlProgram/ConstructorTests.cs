@@ -1,42 +1,81 @@
-﻿using System;
+﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of Web Applications UK Ltd nor the
+//       names of its contributors may be used to endorse or promote products
+//       derived from this software without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#endregion
+
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NodaTime;
 using WebApplications.Utilities.Logging;
 
-namespace WebApplications.Utilities.Database.Test.TestSqlProgram
+// ReSharper disable ConsiderUsingConfigureAwait
+// ReSharper disable InconsistentNaming
+#pragma warning disable 1591 // Missing XML commend
+#pragma warning disable 0618 // Type or member is obsolete
+
+namespace WebApplications.Utilities.Database.Test
 {
     [TestClass]
-    public partial class SqlProgramTests : SqlProgramTestBase
+    public partial class SqlProgramTests : DatabaseTestBase
     {
+        private const string AString = "John Dough";
+        private const int AInt = 30;
+        private const decimal ADecimal = -200.15M;
+        private const bool ABool = true;
+
         [TestMethod]
         public async Task Constructor_WithDefaults_SetsCommandTimeoutToThirtySeconds()
         {
-            SqlProgram program = await SqlProgram.Create((Connection) LocalDatabaseConnectionString, "spNonQuery");
+            SqlProgram program = await SqlProgram.Create(LocalDatabaseConnection, "spNonQuery");
             Assert.IsNotNull(program);
-            Assert.AreEqual(TimeSpan.FromSeconds(30), program.DefaultCommandTimeout);
+            Assert.AreEqual(Duration.FromSeconds(30), program.DefaultCommandTimeout);
         }
 
         [TestMethod]
         public async Task Constructor_WithNegativeTimeOutValue_SetsCommandTimeoutToThirtySeconds()
         {
-            SqlProgram program = await SqlProgram.Create((Connection)LocalDatabaseConnectionString,
-                                        name: "spNonQuery",
-                                        defaultCommandTimeout: TimeSpan.FromSeconds(-1));
+            SqlProgram program = await SqlProgram.Create(
+                LocalDatabaseConnection,
+                "spNonQuery",
+                defaultCommandTimeout: Duration.FromSeconds(-1));
 
             Assert.IsNotNull(program);
-            Assert.AreEqual(TimeSpan.FromSeconds(30), program.DefaultCommandTimeout);
+            Assert.AreEqual(Duration.FromSeconds(30), program.DefaultCommandTimeout);
         }
 
         [TestMethod]
         public async Task Constructor_WithDefaultCommmandTimeoutParameter_SetsCommandTimeoutToParameterValue()
         {
             const int timeoutSeconds = 40;
-            SqlProgram program = await SqlProgram.Create((Connection)LocalDatabaseConnectionString,
-                                        name: "spNonQuery",
-                                        defaultCommandTimeout: TimeSpan.FromSeconds(timeoutSeconds));
+            SqlProgram program = await SqlProgram.Create(
+                LocalDatabaseConnection,
+                "spNonQuery",
+                defaultCommandTimeout: Duration.FromSeconds(timeoutSeconds));
 
             Assert.IsNotNull(program);
-            Assert.AreEqual(TimeSpan.FromSeconds(timeoutSeconds), program.DefaultCommandTimeout);
+            Assert.AreEqual(Duration.FromSeconds(timeoutSeconds), program.DefaultCommandTimeout);
         }
 
         [TestMethod]
@@ -44,7 +83,7 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
         public async Task Constructor_WithInvalidProgramName_ThrowsLoggingException()
         {
             SqlProgram<int> timeoutTest = await SqlProgram<int>.Create(
-                (Connection)DifferentLocalDatabaseConnectionString,
+                DifferentLocalDatabaseConnection,
                 "invalidProgramName");
             Assert.IsNotNull(timeoutTest);
         }

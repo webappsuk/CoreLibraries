@@ -53,6 +53,13 @@ namespace WebApplications.Utilities.Database.Schema
                 new ConcurrentDictionary<Guid, Schema>();
 
             /// <summary>
+            /// The SQL types by CLR type.
+            /// </summary>
+            [NotNull]
+            internal readonly ConcurrentDictionary<Type, SqlType> SqlTypeByClrType =
+                new ConcurrentDictionary<Type, SqlType>();
+
+            /// <summary>
             /// Holds all the SQL schemas (<see cref="SqlSchema"/>, using the <see cref="SqlSchema.ID"/> as the key.
             /// </summary>
             [PublicAPI]

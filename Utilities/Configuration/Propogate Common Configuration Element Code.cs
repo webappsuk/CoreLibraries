@@ -1,4 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
+﻿#line 1 "ConfigurationElement - Common.cs"
+#region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
 // Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
 // 
@@ -342,6 +343,31 @@ namespace WebApplications.Utilities.Configuration
             ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"<{elementName}>"));
         }
 
+        /// <summary>
+        /// Removes the configuration element's child element.
+        /// </summary>
+        /// <param name="elementName">Name of the child element.</param>
+        /// <returns><see langword="true"/> if the child element was removed; <see langword="false"/> if the element didn't exist.</returns>
+        /// <exception cref="ObjectDisposedException">The current section <see cref="IsDisposed">is disposed</see>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="elementName"/> is <see langword="null" />.</exception>
+        /// <exception cref="ConfigurationErrorsException">The configuration is read only.</exception>
+        protected bool RemoveElement([NotNull] XName elementName)
+        {
+            if (IsDisposed) throw new ObjectDisposedException(ToString());
+            if (elementName == null) throw new ArgumentNullException(nameof(elementName));
+
+            if (IsReadOnly())
+                throw new ConfigurationErrorsException(Resources.XmlConfigurationSection_SetElement_ReadOnly);
+
+            bool removed;
+            lock (_elements)
+                removed = _elements.Remove(elementName);
+
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"<{elementName}>"));
+
+            return removed;
+        }
+
         /// <inheritdoc />
         /// <exception cref="InvalidOperationException">The <see cref="T:System.Xml.XmlReader" /> is not positioned on a recognized node type.</exception>
         /// <exception cref="XmlException">The underlying <see cref="T:System.Xml.XmlReader" /> throws an exception.</exception>
@@ -488,6 +514,7 @@ namespace WebApplications.Utilities.Configuration
         public override string ToString() => FullPath;
     }
 }
+#line 1 "ConfigurationElement - Common.cs"
 #region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
 // Copyright (c) 2015, Web Applications UK Ltd
 // All rights reserved.
@@ -830,6 +857,31 @@ namespace WebApplications.Utilities.Configuration
                 _elements[element.Name] = elementStr;
             }
             ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"<{elementName}>"));
+        }
+
+        /// <summary>
+        /// Removes the configuration element's child element.
+        /// </summary>
+        /// <param name="elementName">Name of the child element.</param>
+        /// <returns><see langword="true"/> if the child element was removed; <see langword="false"/> if the element didn't exist.</returns>
+        /// <exception cref="ObjectDisposedException">The current section <see cref="IsDisposed">is disposed</see>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="elementName"/> is <see langword="null" />.</exception>
+        /// <exception cref="ConfigurationErrorsException">The configuration is read only.</exception>
+        protected bool RemoveElement([NotNull] XName elementName)
+        {
+            if (IsDisposed) throw new ObjectDisposedException(ToString());
+            if (elementName == null) throw new ArgumentNullException(nameof(elementName));
+
+            if (IsReadOnly())
+                throw new ConfigurationErrorsException(Resources.XmlConfigurationSection_SetElement_ReadOnly);
+
+            bool removed;
+            lock (_elements)
+                removed = _elements.Remove(elementName);
+
+            ((IInternalConfigurationElement)this).OnChanged(this.GetFullPath($"<{elementName}>"));
+
+            return removed;
         }
 
         /// <inheritdoc />

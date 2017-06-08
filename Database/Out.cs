@@ -88,6 +88,23 @@ namespace WebApplications.Utilities.Database
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Out{T}"/> class.
+        /// </summary>
+        /// <param name="parameter">The parameter.</param>
+        internal Out(DbParameter parameter) => _parameter = parameter;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Out{T}"/> class.
+        /// </summary>
+        /// <param name="inputValue">The input value.</param>
+        /// <param name="parameter">The parameter.</param>
+        internal Out(T inputValue, DbParameter parameter)
+        {
+            _inputValue = new Optional<T>(inputValue);
+            _parameter = parameter;
+        }
+
+        /// <summary>
         /// Gets the type of the value.
         /// </summary>
         /// <value>

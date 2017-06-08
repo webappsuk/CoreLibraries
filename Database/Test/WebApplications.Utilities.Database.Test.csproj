@@ -56,8 +56,14 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SqlProgramTableTests.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="TestBatching.cs" />
+    <Compile Include="TestSqlProgramText\ConstructorTests.cs" />
+    <Compile Include="TestSqlProgramText\ExecuteNonQueryAsyncAndExecuteNonQueryAllAsyncTests.cs" />
+    <Compile Include="TestSqlProgramText\ExecuteReaderAsyncAndExecuteReaderAllAsync.cs" />
+    <Compile Include="TestSqlProgramText\ExecuteScalarAsyncAndExecuteScalarAllAsyncTests.cs" />
+    <Compile Include="TestSqlProgramText\ExecuteXmlReaderAsyncAndExecuteXmlReaderAllAsyncTests.cs" />
     <Compile Include="TestSqlProgram\ConstructorTests.cs" />
     <Compile Include="TestSqlProgram\ExecuteNonQueryAndExecuteNonQueryAll.cs" />
     <Compile Include="TestSqlProgram\ExecuteNonQueryAsyncAndExecuteNonQueryAllAsyncTests.cs" />
@@ -65,7 +71,6 @@
     <Compile Include="TestSqlProgram\ExecuteXmlReaderAsyncAndExecuteXmlReaderAllAsyncTests.cs" />
     <Compile Include="TestSqlProgram\ExecuteXmlReaderAndExecuteXmlReaderAllTests.cs" />
     <Compile Include="TestSqlProgram\ExecuteScalarAsyncAndExecuteScalarAllAsyncTests.cs" />
-    <Compile Include="TestSqlProgram\SqlProgramTestBase.cs" />
     <Compile Include="TestSqlProgram\ExecuteReaderAsyncAndExecuteReaderAllAsync.cs" />
     <Compile Include="TestSqlProgram\ExecuteScalarAndExecuteScalarAllTests.cs" />
     <Compile Include="DatabaseTestBase.cs" />

@@ -106,14 +106,18 @@ namespace WebApplications.Utilities.Database
         protected internal override void SetParameter(DbParameter parameter)
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
-            Out<T> output;
-            if (_outputs.TryGetValue(parameter, out output))
-                throw new InvalidOperationException(Resources.Out_SetParameter_AlreadyInUse);
+            lock (_outputs)
+            {
+                Out<T> output;
+                if (_outputs.TryGetValue(parameter, out output))
+                    throw new InvalidOperationException(Resources.Out_SetParameter_AlreadyInUse);
 
-            output = InputValue.IsAssigned ? new Out<T>(InputValue.Value) : new Out<T>();
-            output.SetParameter(parameter);
+                output = InputValue.IsAssigned
+                    ? new Out<T>(InputValue.Value, parameter) 
+                    : new Out<T>(parameter);
 
-            _outputs.Add(parameter, output);
+                _outputs.Add(parameter, output);
+            }
         }
 
         /// <summary>
@@ -127,8 +131,7 @@ namespace WebApplications.Utilities.Database
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 
-            Out<T> output;
-            if (_outputs.TryGetValue(parameter, out output))
+            if (_outputs.TryGetValue(parameter, out Out<T> output))
                 output.SetOutputValue(value, parameter);
             else
                 throw new ArgumentException(Resources.MultiOut_SetOutputValue_ParameterMismatch);
@@ -145,8 +148,7 @@ namespace WebApplications.Utilities.Database
         {
             if (parameter == null) throw new ArgumentNullException(nameof(parameter));
 
-            Out<T> output;
-            if (_outputs.TryGetValue(parameter, out output))
+            if (_outputs.TryGetValue(parameter, out Out<T> output))
                 output.SetOutputError(exception, parameter);
             else
                 throw new ArgumentException(Resources.MultiOut_SetOutputValue_ParameterMismatch);

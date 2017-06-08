@@ -1,51 +1,37 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
-// Copyright (c) 2017, Web Applications UK Ltd
-// All rights reserved.
-// 
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are met:
-//     * Redistributions of source code must retain the above copyright
-//       notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above copyright
-//       notice, this list of conditions and the following disclaimer in the
-//       documentation and/or other materials provided with the distribution.
-//     * Neither the name of Web Applications UK Ltd nor the
-//       names of its contributors may be used to endorse or promote products
-//       derived from this software without specific prior written permission.
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL WEB APPLICATIONS UK LTD BE LIABLE FOR ANY
-// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#endregion
-
-using System;
+﻿using System;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebApplications.Utilities.Annotations;
 
 // ReSharper disable ConsiderUsingConfigureAwait
 // ReSharper disable InconsistentNaming
 #pragma warning disable 1591 // Missing XML commend
 #pragma warning disable 0618 // Type or member is obsolete
-#pragma warning disable 1998 // Async member lacks await
 
 namespace WebApplications.Utilities.Database.Test
 {
-    public partial class SqlProgramTests
+    public partial class SqlProgramTextTests
     {
+        [NotNull]
+        private static readonly string Different_spReturnsXml =
+            GetProgramText("spReturnsXml", DifferentLocalDatabaseConnectionString);
+
+        [NotNull]
+        private static readonly string Different_spTakesXml =
+            GetProgramText("spTakesXml", DifferentLocalDatabaseConnectionString);
+
         [TestMethod]
         public async Task ExecuteXmlReaderAsync_WithNoParameters_ExecuteReturnsExpectedString()
         {
-            SqlProgram program = await SqlProgram.Create(DifferentLocalDatabaseConnection, "spReturnsXml");
-
+            SqlProgram program = await SqlProgram.Create(
+                DifferentLocalDatabaseConnection,
+                "spReturnsXml",
+                Different_spReturnsXml,
+                CommandType.Text);
+            
             XElement result = await program.ExecuteXmlReaderAsync(async (reader, token) => XElement.Load(reader));
             Assert.AreEqual("<foo>bar</foo>", result.ToString());
         }
@@ -55,14 +41,16 @@ namespace WebApplications.Utilities.Database.Test
         {
             SqlProgram program = await SqlProgram.Create(
                 new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
-                "spReturnsXml");
-
+                "spReturnsXml",
+                Different_spReturnsXml,
+                CommandType.Text);
+            
             XElement[] results = (await program.ExecuteXmlReaderAllAsync(async (reader, token) => XElement.Load(reader))).ToArray();
             Assert.AreEqual(2, results.Length);
 
             foreach (XElement result in results)
                 Assert.AreEqual("<foo>bar</foo>", result.ToString());
-        }
+        } 
 
         [TestMethod]
         public async Task ExecuteXmlReaderAsync_WithParameters_ReturnedExpectedXml()
@@ -70,12 +58,14 @@ namespace WebApplications.Utilities.Database.Test
             SqlProgram<XElement> program =
                 await SqlProgram<XElement>.Create(
                     DifferentLocalDatabaseConnection,
-                    "spTakesXml");
+                    "spTakesXml",
+                    "@xmlParam",
+                    Different_spTakesXml,
+                    CommandType.Text);
 
             XElement element = XElement.Parse("<foo>bar</foo>");
 
-            XElement result =
-                await program.ExecuteXmlReaderAsync(async (reader, token) => XElement.Load(reader), element);
+            XElement result = await program.ExecuteXmlReaderAsync(async (reader, token) => XElement.Load(reader), element);
 
             Assert.AreEqual(element.ToString(), result.ToString());
         }
@@ -86,13 +76,14 @@ namespace WebApplications.Utilities.Database.Test
             SqlProgram<XElement> program =
                 await SqlProgram<XElement>.Create(
                     new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
-                    "spTakesXml");
+                    "spTakesXml",
+                    "@xmlParam",
+                    Different_spTakesXml,
+                    CommandType.Text);
 
             XElement element = XElement.Parse("<foo>bar</foo>");
-
-            XElement[] results =
-                (await program.ExecuteXmlReaderAllAsync(async (reader, token) => XElement.Load(reader), element))
-                .ToArray();
+            
+            XElement[] results = (await program.ExecuteXmlReaderAllAsync(async (reader, token) => XElement.Load(reader), element)).ToArray();
             Assert.AreEqual(2, results.Length);
 
             foreach (XElement result in results)
@@ -103,7 +94,14 @@ namespace WebApplications.Utilities.Database.Test
         public async Task ExecuteXmlReaderAsync_WithOutputParameters_ExecutesSuccessfully()
         {
             SqlProgram<int, Out<int>, Out<int>> program =
-                await SqlProgram<int, Out<int>, Out<int>>.Create(LocalDatabaseConnection, "spOutputParameters");
+                await SqlProgram<int, Out<int>, Out<int>>.Create(
+                    LocalDatabaseConnection,
+                    "spOutputParameters",
+                    "@inputParam",
+                    "@inputOutputParam",
+                    "@outputParam",
+                    Local_spOutputParameters,
+                    CommandType.Text);
 
             const int inputVal = 123;
             const int inputOutputVal = 321;
@@ -133,7 +131,12 @@ namespace WebApplications.Utilities.Database.Test
             SqlProgram<int, Out<int>, Out<int>> program =
                 await SqlProgram<int, Out<int>, Out<int>>.Create(
                     new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
-                    "spOutputParameters");
+                    "spOutputParameters",
+                    "@inputParam",
+                    "@inputOutputParam",
+                    "@outputParam",
+                    Local_spOutputParameters,
+                    CommandType.Text);
 
             const int inputVal = 123;
             const int inputOutputVal = 321;
@@ -154,7 +157,12 @@ namespace WebApplications.Utilities.Database.Test
             SqlProgram<int, Out<int>, Out<int>> program =
                 await SqlProgram<int, Out<int>, Out<int>>.Create(
                     new LoadBalancedConnection(LocalDatabaseConnectionString, LocalDatabaseCopyConnectionString),
-                    "spOutputParameters");
+                    "spOutputParameters",
+                    "@inputParam",
+                    "@inputOutputParam",
+                    "@outputParam",
+                    Local_spOutputParameters,
+                    CommandType.Text);
 
             const int inputVal = 123;
             const int inputOutputVal = 321;

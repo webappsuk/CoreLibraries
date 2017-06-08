@@ -11,6 +11,7 @@
    foreach (string c in classes)
    {
 	   #>
+#line 1 "ConfigurationElement - Common.cs"
 <#= regexObj.Replace(content, "public abstract partial class "+c) #>
 <#
    }
