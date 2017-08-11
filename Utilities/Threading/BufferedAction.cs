@@ -51,6 +51,11 @@ namespace WebApplications.Utilities.Threading
         public readonly long Duration;
 
         /// <summary>
+        /// The number of executions to buffer.
+        /// </summary>
+        public readonly int Count;
+
+        /// <summary>
         /// The current buffer (if any).
         /// </summary>
         private ActionBuffer _buffer;
@@ -60,12 +65,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<object[][]> action,
-            Duration duration)
-            : this(action, (long)duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long)duration.TotalMilliseconds(), count)
         {
         }
 
@@ -74,12 +85,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<object[][]> action,
-            TimeSpan duration)
-            : this(action, (long)duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long)duration.TotalMilliseconds, count)
         {
         }
 
@@ -88,20 +105,27 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
         /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<object[][]> action,
-            long duration)
+            long duration,
+            int count = 0)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
-            if (duration <= 0)
+            if (duration <= 0 && duration != Timeout.Infinite && count <= 0)
                 throw new ArgumentOutOfRangeException(
                     nameof(duration),
                     Resources.BufferedAction_BufferedAction_Invalid_Duration);
 
             _action = action;
             Duration = duration;
+            Count = count;
         }
 
         /// <summary>
@@ -116,6 +140,15 @@ namespace WebApplications.Utilities.Threading
                     _buffer = new ActionBuffer(this);
                 _buffer.Add(arguments);
             }
+        }
+
+        /// <summary>
+        /// Flushes the buffer, calling the underlying action.
+        /// </summary>
+        public void Flush()
+        {
+            lock (_action)
+                _buffer?.RunAction();
         }
 
         /// <summary>
@@ -170,23 +203,42 @@ namespace WebApplications.Utilities.Threading
             public ActionBuffer([NotNull] BufferedAction action)
             {
                 _action = action;
-                _timer = new Timer(OnTick, this, action.Duration, Timeout.Infinite);
+                if (action.Duration >= 0)
+                    _timer = new Timer(OnTick, this, action.Duration, Timeout.Infinite);
             }
 
             public void Add(object[] arguments)
             {
                 lock (_arguments)
+                {
                     _arguments.Add(arguments);
+
+                    if (_action.Count > 0 && _arguments.Count >= _action.Count)
+                        RunAction();
+                }
             }
 
             /// <summary>
             /// Called when we have a timer tick.
             /// </summary>
             /// <param name="state">The state.</param>
-            private void OnTick(object state)
+            private void OnTick(object state) => RunAction();
+
+            /// <summary>
+            /// Runs the action and clears the buffer.
+            /// </summary>
+            public void RunAction()
             {
+                if (_action._buffer == null)
+                    return;
+
                 lock (_action._action)
+                {
+                    if (_action._buffer == null)
+                        return;
+
                     _action._buffer = null;
+                }
 
                 object[][] arguments;
                 lock (_arguments)
