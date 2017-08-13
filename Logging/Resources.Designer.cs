@@ -97,6 +97,15 @@ namespace WebApplications.Utilities.Logging {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurred when sending a log email..
+        /// </summary>
+        internal static string EmailLogger_SendLogs_Error {
+            get {
+                return ResourceManager.GetString("EmailLogger_SendLogs_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to At least one to/CC/BCC address must be given..
         /// </summary>
         internal static string EmailLogger_ToAddressMissing {

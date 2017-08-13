@@ -1,5 +1,5 @@
-﻿#region © Copyright Web Applications (UK) Ltd, 2016.  All rights reserved.
-// Copyright (c) 2016, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2017.  All rights reserved.
+// Copyright (c) 2017, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -44,15 +43,15 @@ using WebApplications.Utilities.Threading;
 namespace WebApplications.Utilities.Logging.Loggers
 {
     /// <summary>
-    /// Sents logs via email.
+    /// Sends logs via email.
     /// </summary>
     /// <seealso cref="WebApplications.Utilities.Logging.Loggers.LoggerBase" />
     public class EmailLogger : LoggerBase
     {
         /// <summary>
-        /// The default timeout of 5 seconds.
+        /// The default timeout of 100 seconds.
         /// </summary>
-        private const int DefaultTimeout = 5000;
+        private const int DefaultTimeout = 100000;
 
         /// <summary>
         /// The default buffer duration.
@@ -82,12 +81,11 @@ namespace WebApplications.Utilities.Logging.Loggers
             .AppendFormat("{Application:{value}}: {Level:{value}} - {Message:{value}}{More: (+{count} more)}")
             .MakeReadOnly();
 
+        //language=CSS
         /// <summary>
-        /// The default HTML email body.
+        /// The CSS style for the <see cref="DefaultBodyHtml"/>
         /// </summary>
-        [NotNull]
-        public static readonly FormatBuilder DefaultBodyHtml = new FormatBuilder()
-            .AppendLine(@"<style>
+        private const string DefaultBodyStyle = @"
 body { font-family: 'Segoe UI', sans-serif }
 table { border-spacing: 0; border-collapse: collapse }
 tr:first-child, td:first-child { font-weight: bold }
@@ -98,9 +96,21 @@ td { vertical-align: top; border-left: 1px solid #ccc; padding: 0 6px; }
 .Error { color: red } 
 .Critical { color: purple } 
 .Emergency { color: fuchsia }
-</style>")
-            .AppendFormatLine("{Logs:{<items>:{<item>:{html}}}{<join>:\r\n<hr/>\r\n}}")
-            .AppendLine("<hr/><p><span style=\"font-style:italic;font-size:0.6em\">This email was automatically generated.</span><p>")
+.Footer { font-style: italic; font-size:0.6em }
+";
+
+        /// <summary>
+        /// The default HTML email body.
+        /// </summary>
+        [NotNull]
+        public static readonly FormatBuilder DefaultBodyHtml = new FormatBuilder()
+            .AppendFormat(
+                /* language=HTML */
+                @"<style>{0}</style>
+{Logs:{<items>:{<item>:{html}}}{<join>:\r\n<hr/>\r\n}}
+<hr/>
+<p><span class=""Footer"">This email was automatically generated.</span><p>",
+                DefaultBodyStyle)
             .MakeReadOnly();
 
         /// <summary>
@@ -231,7 +241,7 @@ td { vertical-align: top; border-left: 1px solid #ccc; padding: 0 6px; }
         /// <param name="validLevels">The valid levels.</param>
         /// <remarks>The SMTP connection settings will be pulled from the <c>&lt;system.net&gt;/&lt;mailSettings&gt;/&lt;smtp&gt;</c> 
         /// configuration section if the parameters are left as their default values. 
-        /// (See https://msdn.microsoft.com/en-us/library/ms164240(v=vs.110).aspx for details)</remarks>
+        /// (See https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/network/smtp-element-network-settings for details)</remarks>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException">At least one to/CC/BCC address must be given.
         /// or
@@ -365,7 +375,7 @@ td { vertical-align: top; border-left: 1px solid #ccc; padding: 0 6px; }
             }
             catch (Exception e)
             {
-                Log.Add(e, LoggingLevel.Error, () => "An error occured when sending a log email.");
+                Log.Add(e, LoggingLevel.Error, () => Resources.EmailLogger_SendLogs_Error);
             }
         }
 
@@ -374,7 +384,7 @@ td { vertical-align: top; border-left: 1px solid #ccc; padding: 0 6px; }
         /// </summary>
         public override Task Flush(CancellationToken token = new CancellationToken())
         {
-            _bufferedSend.Flush();
+            _bufferedSend?.Flush();
             return TaskResult.Completed;
         }
 

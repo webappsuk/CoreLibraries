@@ -423,4 +423,7 @@
   <data name="EmailLogger_InvalidBufferCount" xml:space="preserve">
     <value>The bufferCount must be greater than zero when an infinite bufferDuration is used.</value>
   </data>
+  <data name="EmailLogger_SendLogs_Error" xml:space="preserve">
+    <value>An error occurred when sending a log email.</value>
+  </data>
 </root>

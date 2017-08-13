@@ -88,9 +88,12 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder EnumerableElementHTMLFormat = new FormatBuilder()
-            .AppendLine("<tr>")
-            .AppendFormatLine("<td>{KeyXml}</td><td><ul>{valuehtml:{<items>:<li>{<item>}</li>}{<join>:\r\n}}</ul></td>")
-            .AppendLine("</tr>")
+            .AppendFormatLine(
+/* language=HTML */ @"
+<tr>
+    <td>{KeyXml}</td>
+    <td><ul>{valuehtml:{<items>:<li>{<item>}</li>}{<join>:\r\n}}</ul></td>
+</tr>")
             .MakeReadOnly();
 
         private class LogEnumerableElement : ResolvableWriteable

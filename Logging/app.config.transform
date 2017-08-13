@@ -3,5 +3,180 @@
   <configSections>
     <section name="logging" type="WebApplications.Utilities.Logging.Configuration.LoggingConfiguration, WebApplications.Utilities.Logging"/>
   </configSections>
-  <logging logCacheExpiry="00:00:00" />
+  <logging logCacheExpiry="00:00:00">
+    <!--
+    The following attributes are allowed on the logging element (defaults shown):
+           enabled="true"
+           applicationName=""
+           applicationGuid=(random GUID)
+           validLevels="All"
+           logCacheExpiry="00:10:00"
+           logCacheMaximumEntries="10000"
+           generateStackTrace="false"
+
+    The logging system uses an internal MemoryCache to hold recent logs for quick retrieval.
+    
+    You can optionally initialise additional loggers by adding a loggers node.  The library includes the following loggers, but you can create new ones
+    by implementing the "WebApplications.Utiltities.Logging.Interfaces.ILogger" interface.
+    
+    <loggers>
+      The name attribute is required and must be unique.
+      The type attribute is also required, and must descend from "WebApplications.Utiltities.Logging.Interfaces.ILogger"
+      All attributes and any parameters listed are available to the constructor of the type specified.
+      
+      By default, the system adds a Trace Logger, to remove it uncomment the following:
+      <remove name="Trace Logger" />
+
+      The file logger logs to file.
+      <add name="File Logger" type="WebApplications.Utilities.Logging.Loggers.FileLogger, WebApplications.Utilities.Logging" enabled="true" validLevels="All">
+        <parameters>
+          The file logger supports the following parameters:
+          
+          <add name="directory" value="C:\Logs" />
+            Only the directory is required.
+            
+          <add name="maxLog" value="1000" />
+            The maximum number of individual logs in a single log file.
+          
+          <add name="maxDuration" value="1.0:0:0" />
+            The maximum period covered by log entries in a single log file (defaults to 1 day).
+          
+          <add name="format" value="Verbose,Xml" />
+            Any format string accepted by Log.ToString() is acceptable.  Examples include:
+              Verbose,Xml
+              All,Json
+              Basic,Header
+              Message
+              {Level} {TimeStamp}: {Message}
+          
+          <add name="fileNameFormat" value="{ApplicationName}-{DateTime:yyMMddHHmmssffff}" />
+            The following substitutions are allowed in the fileNameFormat:
+              ApplicationName = The application name (see as an attribute on the logging element
+              ApplicationGuid = The application GUID (see as an attribute on the logging element
+              DateTime = The date and time the log file was created.
+            
+            Note that the actual format will look like {directory}\{format}{de-dupe}.{extension}
+            where de-dupe takes the form " (i)", where i is an integer.  De-dupe is added only 
+            when a file name conflict is discovered.
+          
+          <add name="extension" value="" />
+            If the extension is not specified then .xml is used for XML formats (only where the format
+            is an explicit LogFormat including the LogFormat.Xml flag), .json is used for JSON formats
+            (with the same proviso) and .log is used for everything else.
+          
+          <add name="buffer" value="65536" />
+            The number of bytes used to buffer data being written out to files.
+            
+          <add name="autoFlush" value="false" />
+            If set to true then the file will be flushed for each batch (~once per second).  This has
+            a small performance impact.
+        </parameters>
+      </add>
+
+      The event logger logs to the event viewer - in this example we only log Critical levels and 
+      the logger is disabled:
+      <add name="Event Logger" type="WebApplications.Utilities.Logging.Loggers.EventLogger, WebApplications.Utilities.Logging" validLevels="Critical" enabled="false">
+        <parameters>
+          <add name="eventLog" value="Application" />
+            Specifies which event log to use, the source is always the ApplicationName as specified on
+            the <logger> node.  Note that the event log must already exist to be used here.
+            
+          <add name="machineName" value="." />
+            Specifies the machine to log to - you must have access to writing event logs on the
+            specified machine.
+                    
+          <add name="format" value="Verbose,Xml" />
+            Any format string accepted by Log.ToString() is acceptable.
+          
+        </parameters>
+      </add>
+
+
+      The email logger sends logs to one or more email addresses - in this example we only log Critical levels and 
+      the logger is disabled:
+      
+      *Note: SMTP settings will default to the values in the <system.net>/<mailSettings>/<smtp> section if present.
+        See https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/network/smtp-element-network-settings for more details)
+        
+      <add name="Email Logger" type="WebApplications.Utilities.Logging.Loggers.EmailLogger, WebApplications.Utilities.Logging" validLevels="AtLeastCritical" enabled="false">
+        <parameters>
+          <add name="fromAddress" value="from.address@mail.com" />
+            Specifies the email address to send the email from.
+            The value can also be in the form "Display Name <email@address.com>".
+            Optional (see *Note above).
+            
+          <add name="senderAddress" value="sender.address@mail.com" />
+            Specifies the email address of the sender of the email. If specified, the email will appear as
+            "From: sender.address@mail.com on behalf of from.address@mail.com", or similar depending on the email client.
+            
+          <add name="toAddresses" value="to1@mail.com,to2@mail.com" />
+            Comma separated list of email addresses that the log emails will be sent to.
+            
+          <add name="ccAddresses" value="cc1@mail.com,cc2@mail.com" />
+            Comma separated list of email addresses that the log emails will be CC'd to.
+            
+          <add name="bccAddresses" value="bcc1@mail.com,bcc2@mail.com" />
+            Comma separated list of email addresses that the log emails will be BCC'd to.
+            
+            Note: At least one of toAddresses, ccAddresses or bccAddresses must be specified.
+                    
+          <add name="subject" value="{Application:{value}}: {Level:{value}} - {Message:{value}}{More: (+{count} more)}" />
+            The format string to use for the email subject. Any format string accepted by Log.ToString() is acceptable (the most severe
+            log that occurred will be used. The tag {more:{count}} can also be used to get the number of extra logs in the email, if more than one.
+            Optional (defaults to the above value).
+          
+          <add name="bodyHtml" value="{Logs:{<items>:{<item>:{html}}}{<join>:\r\n<hr/>\r\n}}" />
+            The format string to use for the HTML body of the email. The {Logs:...} tag can be used to get the list of tags,
+            inside of which any format string accepted by Log.ToString() is acceptable.
+            The value given above, for example, will emit the logs as HTML tables with <hr> tags between each one. 
+            Optional (defaults to the above value, with styling added).
+            
+          <add name="bodyPlainText" value="{Logs:{<items>:{<item>:{verbose}}}{<join>:\r\n}}" />
+            The format string to use for the plain text body of the email. The {Logs:...} tag can be used to get the list of tags,
+            inside of which any format string accepted by Log.ToString() is acceptable. 
+            Optional (if omitted, no plain text version of the email will be sent).
+            
+          <add name="bufferCount" value="10" />
+            Specifies how many logs to send in a single email. The logger will wait for this many logs (or for the bufferDuration) to be added before sending
+            the email. Optional (defaults to 10).
+            
+          <add name="bufferDuration" value="00:00:01" />
+            Specifies how long to wait before sending logs. The logger will wait for this amount of time (or for bufferCount of logs to be added) before sending
+            the email. Optional (defaults to 1 second).
+            
+          <add name="host" value="smtp.mail.com" />
+            The name or IP address of the host to use for SMTP. Optional (see *Note above).
+          
+          <add name="port" value="587" />
+            The port to use on the SMTP host. Optional (see *Note above, defaults to 25).
+            
+          <add name="timeout" value="00:00:30" />
+            The SMTP timeout duration. Optional (defaults to 100 seconds).
+            
+          <add name="ssl" value="true" />
+            Indicates if SSL should be used for sending the email. Optional (see *Note above, defaults to false).
+            
+          <add name="deliveryMethod" value="Network" />
+            Specifies how outgoing emails will be handled.
+            Valid values: Network, SpecifiedPickupDirectory, PickupDirectoryFromIis
+            Optional (see *Note above, defaults to Network).
+            
+          <add name="deliveryFormat" value="SevenBit" />
+            The delivery format used to send emails.
+            Valid values: SevenBit, International
+            Optional (see *Note above, defaults to SevenBit).
+            
+          <add name="username" value="username" />
+            The senders username. Optional (see *Note above).
+            
+          <add name="password" value="password" />
+            The senders password. Optional (see *Note above).
+            
+          <add name="networkDomain" value="domain" />
+            The senders network domain. Optional (see *Note above).
+        </parameters>
+      </add>
+    </loggers>
+    -->
+  </logging>
 </configuration>

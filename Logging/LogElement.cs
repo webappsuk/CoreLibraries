@@ -91,7 +91,7 @@ namespace WebApplications.Utilities.Logging
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder ElementHTMLFormat = new FormatBuilder()
-            .AppendFormatLine("<tr><td>{KeyXml}</td><td>{ValueHtml}</td></tr>")
+            .AppendFormatLine(/*language=HTML*/"<tr><td>{KeyXml}</td><td>{ValueHtml}</td></tr>")
             .MakeReadOnly();
 
         /// <summary>
