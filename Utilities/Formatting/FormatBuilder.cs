@@ -3469,12 +3469,18 @@ namespace WebApplications.Utilities.Formatting
                     else if (chunk.Value == null)
                         continue;
                     else
-                    // We have a value chunk.
+                    {
+                        // We have a value chunk.
                         chunkStr = GetChunkString(
                             chunk.Value,
                             chunk.Alignment,
                             chunk.Format,
                             writer.FormatProvider);
+
+                        // If we're writing tags, need to escape open curly braces in the chunk
+                        if (writeTags)
+                            chunkStr = chunkStr.Replace("{", "{{");
+                    }
                     #endregion
 
                     if (!isLayoutRequired)

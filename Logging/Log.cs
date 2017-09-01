@@ -1805,6 +1805,17 @@ namespace WebApplications.Utilities.Logging
                 alignment: Alignment.Left,
                 format: Resources.LogFormat_XML,
                 isReadOnly: true);
+
+        /// <summary>
+        /// The HTML format.
+        /// </summary>
+        [NotNull]
+        public static readonly FormatBuilder HTMLFormat =
+            new FormatBuilder(
+                int.MaxValue,
+                alignment: Alignment.Left,
+                format: Resources.LogFormat_HTML,
+                isReadOnly: true);
         #endregion
 
         /// <summary>
@@ -1834,6 +1845,8 @@ namespace WebApplications.Utilities.Logging
                     return JSONFormat;
                 case "xml":
                     return XMLFormat;
+                case "html":
+                    return HTMLFormat;
 
                 /* 
                  * Control Tags.
