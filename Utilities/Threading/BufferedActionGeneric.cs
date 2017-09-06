@@ -1,13 +1,4 @@
-﻿
-
-
-
-
-
-
-
-
- 
+﻿ 
  
 #region © Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
 // Copyright (c) 2015, Web Applications UK Ltd
@@ -40,11 +31,11 @@ using NodaTime;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Threading
 {
-
 
     /// <summary>
     /// Buffers calls to an action.
@@ -53,18 +44,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -72,12 +68,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -85,13 +87,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1>> action,
-            long duration)
-            : base(args => action(args.Select(a => (T1)a[0])), duration)        { }
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => (T1)a[0])), duration, count)        { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
         /// <summary>
@@ -104,7 +112,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -113,18 +120,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -132,12 +144,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -145,13 +163,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -166,7 +190,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -176,18 +199,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -195,12 +223,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -208,13 +242,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -230,7 +270,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -241,18 +280,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -260,12 +304,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -273,13 +323,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -296,7 +352,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -308,18 +363,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -327,12 +387,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -340,13 +406,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -364,7 +436,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -377,18 +448,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -396,12 +472,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -409,13 +491,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -434,7 +522,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -448,18 +535,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -467,12 +559,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -480,13 +578,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -506,7 +610,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -521,18 +624,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -540,12 +648,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -553,13 +667,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -580,7 +700,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -596,18 +715,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -615,12 +739,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -628,13 +758,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -656,7 +792,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -673,18 +808,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -692,12 +832,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -705,13 +851,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -734,7 +886,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -752,18 +903,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -771,12 +927,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -784,13 +946,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -814,7 +982,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -833,18 +1000,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -852,12 +1024,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -865,13 +1043,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -896,7 +1080,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -916,18 +1099,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -935,12 +1123,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -948,13 +1142,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -980,7 +1180,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1001,18 +1200,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1020,12 +1224,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1033,13 +1243,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -1066,7 +1282,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1088,18 +1303,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1107,12 +1327,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1120,13 +1346,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -1154,7 +1386,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1177,18 +1408,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1196,12 +1432,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1209,13 +1451,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -1244,7 +1492,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1268,18 +1515,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1287,12 +1539,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1300,13 +1558,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -1336,7 +1600,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1361,18 +1624,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1380,12 +1648,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1393,13 +1667,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -1430,7 +1710,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1456,18 +1735,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1475,12 +1759,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1488,13 +1778,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -1526,7 +1822,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1553,18 +1848,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1572,12 +1872,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1585,13 +1891,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -1624,7 +1936,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1652,18 +1963,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1671,12 +1987,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1684,13 +2006,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -1724,7 +2052,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1753,18 +2080,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1772,12 +2104,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1785,13 +2123,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -1826,7 +2170,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1856,18 +2199,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1875,12 +2223,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1888,13 +2242,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -1930,7 +2290,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -1961,18 +2320,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -1980,12 +2344,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -1993,13 +2363,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -2036,7 +2412,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -2068,18 +2443,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -2087,12 +2467,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -2100,13 +2486,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -2144,7 +2536,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -2177,18 +2568,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -2196,12 +2592,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -2209,13 +2611,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -2254,7 +2662,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -2288,18 +2695,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -2307,12 +2719,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -2320,13 +2738,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -2366,7 +2790,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -2401,18 +2824,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -2420,12 +2848,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -2433,13 +2867,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -2480,7 +2920,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -2516,18 +2955,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -2535,12 +2979,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -2548,13 +2998,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -2596,7 +3052,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -2633,18 +3088,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -2652,12 +3112,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -2665,13 +3131,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -2714,7 +3186,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -2752,18 +3223,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -2771,12 +3247,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -2784,13 +3266,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29], (T31)a[30])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29], (T31)a[30])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -2834,7 +3322,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -2873,18 +3360,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -2892,12 +3384,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -2905,13 +3403,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29], (T31)a[30], (T32)a[31])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29], (T31)a[30], (T32)a[31])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -2956,7 +3460,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -2996,18 +3499,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -3015,12 +3523,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -3028,13 +3542,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29], (T31)a[30], (T32)a[31], (T33)a[32])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29], (T31)a[30], (T32)a[31], (T33)a[32])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -3080,7 +3600,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -3121,18 +3640,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -3140,12 +3664,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -3153,13 +3683,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29], (T31)a[30], (T32)a[31], (T33)a[32], (T34)a[33])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29], (T31)a[30], (T32)a[31], (T33)a[32], (T34)a[33])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -3206,7 +3742,6 @@ namespace WebApplications.Utilities.Threading
         }
     }
 
-
     /// <summary>
     /// Buffers calls to an action.
     /// </summary>
@@ -3248,18 +3783,23 @@ namespace WebApplications.Utilities.Threading
     [PublicAPI]
     public class BufferedAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35> : BufferedAction
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BufferedAction" /> class.
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>> action,
-            Duration duration)
-            : this(action, (long) duration.TotalMilliseconds())
+            Duration duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds(), count)
         { }
 
         /// <summary>
@@ -3267,12 +3807,18 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>> action,
-            TimeSpan duration)
-            : this(action, (long) duration.TotalMilliseconds)
+            TimeSpan duration,
+            int count = 0)
+            : this(action, (long) duration.TotalMilliseconds, count)
         { }
 
         /// <summary>
@@ -3280,13 +3826,19 @@ namespace WebApplications.Utilities.Threading
         /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="duration"/> is less than or equal to zero.</exception>
+        /// <param name="count">The number of executions to buffer, or less than or equal to zero to buffer only by time.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <para><paramref name="duration"/> is less than or equal to zero.</para>
+        /// <para>-or-</para>
+        /// <para><paramref name="duration"/> is equal to <see cref="Timeout.Infinite"/> and <paramref name="count"/> is less than or equal to zero.</para>
+        /// </exception>
         // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         public BufferedAction(
             [NotNull] Action<IEnumerable<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35>> action,
-            long duration)
-            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29], (T31)a[30], (T32)a[31], (T33)a[32], (T34)a[33], (T35)a[34])).AsTupleEnumerable()), duration)
+            long duration,
+            int count = 0)
+            : base(args => action(args.Select(a => ExtendedTuple.Create((T1)a[0], (T2)a[1], (T3)a[2], (T4)a[3], (T5)a[4], (T6)a[5], (T7)a[6], (T8)a[7], (T9)a[8], (T10)a[9], (T11)a[10], (T12)a[11], (T13)a[12], (T14)a[13], (T15)a[14], (T16)a[15], (T17)a[16], (T18)a[17], (T19)a[18], (T20)a[19], (T21)a[20], (T22)a[21], (T23)a[22], (T24)a[23], (T25)a[24], (T26)a[25], (T27)a[26], (T28)a[27], (T29)a[28], (T30)a[29], (T31)a[30], (T32)a[31], (T33)a[32], (T34)a[33], (T35)a[34])).AsTupleEnumerable()), duration, count)
         { }
         // ReSharper restore PossibleNullReferenceException, AssignNullToNotNullAttribute, EventExceptionNotDocumented
         
@@ -3333,6 +3885,5 @@ namespace WebApplications.Utilities.Threading
             Run(new object[] { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16, arg17, arg18, arg19, arg20, arg21, arg22, arg23, arg24, arg25, arg26, arg27, arg28, arg29, arg30, arg31, arg32, arg33, arg34, arg35 });
         }
     }
-
 }
  

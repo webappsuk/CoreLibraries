@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using NodaTime;
 using WebApplications.Utilities.Annotations;
 
 namespace WebApplications.Utilities.Globalization
@@ -50,7 +51,7 @@ namespace WebApplications.Utilities.Globalization
             /// Initializes a new instance of the <see cref="EmptyCultureInfoProvider"/> class.
             /// </summary>
             /// <param name="published">The published.</param>
-            public EmptyCultureInfoProvider(DateTime published)
+            public EmptyCultureInfoProvider(Instant published)
             {
                 Published = published;
             }
@@ -58,7 +59,7 @@ namespace WebApplications.Utilities.Globalization
             /// <summary>
             /// The date this provider was published.
             /// </summary>
-            public DateTime Published { get; }
+            public Instant Published { get; }
 
             /// <summary>
             /// The cultures in the provider.
@@ -171,7 +172,7 @@ namespace WebApplications.Utilities.Globalization
         [NotNull]
         public static ICultureInfoProvider Current
         {
-            get { return _current; }
+            get => _current;
             set
             {
                 if (value == null) throw new ArgumentNullException(nameof(value));
@@ -184,7 +185,7 @@ namespace WebApplications.Utilities.Globalization
         /// </summary>
         static CultureInfoProvider()
         {
-            Empty = new EmptyCultureInfoProvider(DateTime.MinValue);
+            Empty = new EmptyCultureInfoProvider(Instant.MinValue);
 
             // Create BCL provider
             // Note we must update the DateTime whenever we build against a new framework.
@@ -221,14 +222,13 @@ namespace WebApplications.Utilities.Globalization
         /// <param name="published">The published date time.</param>
         /// <param name="cultures">The cultures.</param>
         public CultureInfoProvider(
-            DateTime published,
+            Instant published,
             [ItemNotNull] [NotNull] IEnumerable<ExtendedCultureInfo> cultures)
         {
-            if (cultures == null) throw new ArgumentNullException(nameof(cultures));
-
             Published = published;
             // ReSharper disable PossibleNullReferenceException, AssignNullToNotNullAttribute
-            _cultureInfos = cultures.Distinct().ToDictionary(c => c.Name, StringComparer.InvariantCultureIgnoreCase);
+            _cultureInfos = cultures?.Distinct().ToDictionary(c => c.Name, StringComparer.InvariantCultureIgnoreCase) ??
+                            throw new ArgumentNullException(nameof(cultures));
             _cultureInfosByLCID = _cultureInfos.Values
                 .Where(c => c.LCID != 4096) // Filter out custom cultures
                 .GroupBy(c => c.LCID)
@@ -287,7 +287,7 @@ namespace WebApplications.Utilities.Globalization
         /// <summary>
         /// The date this provider was published.
         /// </summary>
-        public DateTime Published { get; }
+        public Instant Published { get; }
 
         /// <summary>
         /// The cultures in the provider.

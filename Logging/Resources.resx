@@ -391,6 +391,11 @@
     <value>&lt;Log&gt;
 {!layout:f4}{message:{xml}}{level:{xml}}{time:{xml}}{guid:{xml}}{thread:{xml}}{threadid:{xml}}{exception:{xml}}{innerexception:{xml}}{sproc:{xml}}{context:{xml}}{stack:{xml}}{!layout}&lt;/Log&gt;</value>
   </data>
+  <data name="LogFormat_HTML" xml:space="preserve">
+    <value>&lt;table&gt;
+&lt;tr&gt;&lt;td class="{level:{ValueXml}}"&gt;{level:{ValueHtml}}&lt;/td&gt;&lt;td&gt;{message:{ValueHtml}}&lt;/td&gt;&lt;/tr&gt;
+{!layout:f4}{time:{html}}{guid:{html}}{thread:{html}}{threadid:{html}}{exception:{html}}{innerexception:{html}}{sproc:{html}}{context:{html}}{stack:{html}}{!layout}&lt;/table&gt;</value>
+  </data>
   <data name="ConsoleLogger_NotConsole" xml:space="preserve">
     <value>Application must be running in the console to use the ConsoleLogger.</value>
   </data>
@@ -411,5 +416,14 @@
   <data name="LogFormat_JSON" xml:space="preserve">
     <value>{!layout:f4}{level:{jsonFirst}}{message:{json}}{time:{json}}{guid:{json}}{thread:{json}}{threadid:{json}}{exception:{json}}{innerexception:{json}}{sproc:{json}}{context:,
 {json}}{stack:{json}}{!layout}</value>
+  </data>
+  <data name="EmailLogger_ToAddressMissing" xml:space="preserve">
+    <value>At least one to/CC/BCC address must be given.</value>
+  </data>
+  <data name="EmailLogger_InvalidBufferCount" xml:space="preserve">
+    <value>The bufferCount must be greater than zero when an infinite bufferDuration is used.</value>
+  </data>
+  <data name="EmailLogger_SendLogs_Error" xml:space="preserve">
+    <value>An error occurred when sending a log email.</value>
   </data>
 </root>

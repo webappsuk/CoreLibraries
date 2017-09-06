@@ -27,6 +27,7 @@
 
 using NodaTime;
 using System.ComponentModel;
+using System.Net.Mail;
 using System.Xml.Linq;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Converters;
@@ -58,6 +59,8 @@ namespace WebApplications.Utilities
             TypeDescriptor.AddAttributes(typeof(CalendarSystem), new TypeConverterAttribute(typeof(CalendarSystemConverter)));
             TypeDescriptor.AddAttributes(typeof(DateTimeZone), new TypeConverterAttribute(typeof(DateTimeZoneConverter)));
             TypeDescriptor.AddAttributes(typeof(XNamespace), new TypeConverterAttribute(typeof(XNamespaceConverter)));
+            TypeDescriptor.AddAttributes(typeof(MailAddress), new TypeConverterAttribute(typeof(MailAddressConverter)));
+            TypeDescriptor.AddAttributes(typeof(MailAddressCollection), new TypeConverterAttribute(typeof(MailAddressCollectionConverter)));
         }
     }
 }

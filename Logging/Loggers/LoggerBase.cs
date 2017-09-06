@@ -40,33 +40,26 @@ namespace WebApplications.Utilities.Logging.Loggers
     /// </summary>
     public abstract class LoggerBase : ILogger
     {
-        private readonly bool _allowMultiple;
-
-        [NotNull]
-        private readonly string _name;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LoggerBase" /> class.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="allowMultiple">if set to <see langword="true" /> the logger supports multiple instances.</param>
         /// <param name="validLevels">The valid levels.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> is <see langword="null"/></exception>
         protected LoggerBase(
             [NotNull] string name,
             bool allowMultiple = true,
             LoggingLevels validLevels = LoggingLevels.All)
         {
-            if (name == null) throw new ArgumentNullException("name");
-
-            _name = name;
-            _allowMultiple = allowMultiple;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            AllowMultiple = allowMultiple;
             ValidLevels = validLevels;
         }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        /// <exception cref="System.NotImplementedException"></exception>
         public virtual void Dispose()
         {
         }
@@ -75,10 +68,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// A <see cref="bool" /> value indicating whether the logger supports multiple instances.
         /// </summary>
         /// <value>Returns <see langword="true" /> if the logger supports multiple instances; otherwise returns <see langword="false" />.</value>
-        public bool AllowMultiple
-        {
-            get { return _allowMultiple; }
-        }
+        public bool AllowMultiple { get; }
 
         /// <summary>
         /// The valid <see cref="LoggingLevels">log levels</see> for this log level.
@@ -90,10 +80,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets the logger name.
         /// </summary>
         /// <value>The logger name.</value>
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Adds the specified logs to storage in batches.
@@ -107,10 +94,7 @@ namespace WebApplications.Utilities.Logging.Loggers
         /// Gets all logs (if available).
         /// </summary>
         /// <value>The query.</value>
-        public virtual IQueryable<Log> All
-        {
-            get { return null; }
-        }
+        public virtual IQueryable<Log> All => null;
 
         /// <summary>
         /// Force a flush of this logger.

@@ -382,6 +382,13 @@ namespace WebApplications.Utilities.Formatting
                         switch (c)
                         {
                             case FormatBuilder.OpenChar:
+                                if (i >= value.Length || value[i] == FormatBuilder.OpenChar)
+                                {
+                                    builder.Append(FormatBuilder.OpenChar);
+                                    i++;
+                                    break;
+                                }
+
                                 // We have a nested format!
                                 Debug.Assert(tag != null);
                                 FormatChunk newChunk = new FormatChunk(
@@ -418,6 +425,13 @@ namespace WebApplications.Utilities.Formatting
                         switch (c)
                         {
                             case FormatBuilder.OpenChar:
+                                if (i >= value.Length || value[i] == FormatBuilder.OpenChar)
+                                {
+                                    builder.Append(FormatBuilder.OpenChar);
+                                    i++;
+                                    break;
+                                }
+
                                 state = ParserState.Tag;
                                 // We've got a value
                                 if (builder.Length > 0)

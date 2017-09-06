@@ -1978,60 +1978,6 @@ namespace WebApplications.Utilities
             return val;
         }
 
-        /// <summary>
-        /// Attempts to parse the given <paramref name="text"/> according to the rules of the <paramref name="pattern"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of the value to parse.</typeparam>
-        /// <param name="pattern">The pattern to attempt parse with.</param>
-        /// <param name="text">The text to parse.</param>
-        /// <param name="value">The parsed value if successful, otherwise <see langword="default{T}"/>.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"><paramref name="pattern"/> was <see langword="null"/>.</exception>
-        public static bool TryParse<T>([NotNull] this IPattern<T> pattern, string text, out T value)
-        {
-            if (pattern == null) throw new ArgumentNullException(nameof(pattern));
-
-            ParseResult<T> result = pattern.Parse(text);
-            Debug.Assert(result != null);
-            if (result.Success)
-            {
-                value = result.Value;
-                return true;
-            }
-            value = default(T);
-            return false;
-        }
-
-        /// <summary>
-        /// Attempts to parse the given <paramref name="text"/> according to the rules of any of the <paramref name="patterns"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of the value to parse.</typeparam>
-        /// <param name="patterns">The pattern to attempt to parse with.</param>
-        /// <param name="text">The text to parse.</param>
-        /// <param name="value">The parsed value if successful, otherwise <see langword="default{T}"/>.</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"><paramref name="patterns"/> or one of its elements was <see langword="null"/>.</exception>
-        public static bool TryParseAny<T>([NotNull] this IEnumerable<IPattern<T>> patterns, string text, out T value)
-        {
-            if (patterns == null) throw new ArgumentNullException(nameof(patterns));
-
-            foreach (IPattern<T> pattern in patterns)
-            {
-                if (pattern == null) throw new ArgumentNullException(nameof(pattern));
-
-                ParseResult<T> result = pattern.Parse(text);
-                Debug.Assert(result != null);
-                if (result.Success)
-                {
-                    value = result.Value;
-                    return true;
-                }
-            }
-
-            value = default(T);
-            return false;
-        }
-
         #region StdDev
         /// <summary>
         /// Calculate the standard deviation of an average
@@ -2804,7 +2750,7 @@ namespace WebApplications.Utilities
         }
         #endregion
 
-        #region HasAtLeast/HasExact
+        #region HasAtLeast/HasExact/HasSingle
         /// <summary>
         /// Determines whether a sequence contains at least <paramref name="count" /> elements.
         /// </summary>
@@ -2933,6 +2879,72 @@ namespace WebApplications.Utilities
                         return false;
                 }
             return count == 0;
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains exactly one element, and returns the <paramref name="element"/> as an output parameter.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}" />.</param>
+        /// <param name="element">The single element.</param>
+        /// <returns>
+        ///   <see langword="true" /> if the sequence has exactly one item, otherwise <see langword="false" />.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">source</exception>
+        [Pure]
+        public static bool HasSingle<TSource>([NotNull] [InstantHandle] this IEnumerable<TSource> source, out TSource element)
+        {
+            if (source == null) throw new ArgumentNullException("source");
+
+            if (source is TSource[] array)
+            {
+                if (array.Length == 1)
+                {
+                    element = array[0];
+                    return true;
+                }
+                element = default(TSource);
+                return false;
+            }
+
+            using (IEnumerator<TSource> enumerator = source.GetEnumerator())
+            {
+                if (enumerator.MoveNext())
+                {
+                    element = enumerator.Current;
+                    return !enumerator.MoveNext();
+                }
+                element = default(TSource);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains exactly one element that satisfies a condition, 
+        /// and returns the <paramref name="element"/> as an output parameter.
+        /// </summary>
+        /// <typeparam name="TSource">The type of the source.</typeparam>
+        /// <param name="source">The source <see cref="IEnumerable{T}" />.</param>
+        /// <param name="predicate">The predicate.</param>
+        /// <param name="element">The single element.</param>
+        /// <returns><see langword="true"/> if the sequence has exactly one item that match the <paramref name="predicate"/>, otherwise <see langword="false"/>.</returns>
+        public static bool HasSingle<TSource>(
+            [NotNull] [InstantHandle] this IEnumerable<TSource> source,
+            [NotNull] [InstantHandle] Func<TSource, bool> predicate,
+            out TSource element)
+        {
+            if (source == null) throw new ArgumentNullException("source");
+
+            using (IEnumerator<TSource> enumerator = source.Where(predicate).GetEnumerator())
+            {
+                if (enumerator.MoveNext())
+                {
+                    element = enumerator.Current;
+                    return !enumerator.MoveNext();
+                }
+                element = default(TSource);
+                return false;
+            }
         }
         #endregion
 

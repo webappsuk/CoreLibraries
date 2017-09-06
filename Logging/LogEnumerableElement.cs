@@ -39,7 +39,7 @@ namespace WebApplications.Utilities.Logging
     public sealed partial class Log
     {
         /// <summary>
-        /// The default format
+        /// The verbose element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder EnumerableElementVerboseFormat = new FormatBuilder()
@@ -51,7 +51,7 @@ namespace WebApplications.Utilities.Logging
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The single line element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder EnumerableElementNoLineFormat = new FormatBuilder()
@@ -62,7 +62,7 @@ namespace WebApplications.Utilities.Logging
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The XML element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder EnumerableElementXMLFormat = new FormatBuilder()
@@ -74,13 +74,26 @@ namespace WebApplications.Utilities.Logging
             .MakeReadOnly();
 
         /// <summary>
-        /// The default format
+        /// The JSON element format
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder EnumerableElementJSONFormat = new FormatBuilder()
             .Append(',')
             .AppendLine()
             .AppendFormat("\"{Key}\"={Value:{<items>:\"{<item>}\"}{<join>:, }}")
+            .MakeReadOnly();
+
+        /// <summary>
+        /// The HTML element format
+        /// </summary>
+        [NotNull]
+        public static readonly FormatBuilder EnumerableElementHTMLFormat = new FormatBuilder()
+            .AppendFormatLine(
+/* language=HTML */ @"
+<tr>
+    <td>{KeyXml}</td>
+    <td><ul>{valuehtml:{<items>:<li>{<item>}</li>}{<join>:\r\n}}</ul></td>
+</tr>")
             .MakeReadOnly();
 
         private class LogEnumerableElement : ResolvableWriteable
@@ -129,6 +142,8 @@ namespace WebApplications.Utilities.Logging
                         return EnumerableElementXMLFormat;
                     case "json":
                         return EnumerableElementJSONFormat;
+                    case "html":
+                        return EnumerableElementHTMLFormat;
                     case "noline":
                         return EnumerableElementNoLineFormat;
                     case "key":
@@ -155,7 +170,9 @@ namespace WebApplications.Utilities.Logging
                     case "value":
                         return Values;
                     case "valuexml":
-                        return Values.Select(v => v != null ? v.XmlEscape() : null);
+                        return Values.Select(v => v?.XmlEscape());
+                    case "valuehtml":
+                        return Values.Select(v => v != null ? _newLineRegex.Replace(v.XmlEscape(), m => "<br/>" + m.Value) : null);
                     default:
                         return Resolution.Unknown;
                 }

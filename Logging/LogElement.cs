@@ -29,6 +29,7 @@ using System;
 using System.Drawing;
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using WebApplications.Utilities.Annotations;
 using WebApplications.Utilities.Formatting;
 
@@ -85,6 +86,20 @@ namespace WebApplications.Utilities.Logging
             .AppendFormat("\"{Key}\"={ValueJSON}")
             .MakeReadOnly();
 
+        /// <summary>
+        /// The HTML element format
+        /// </summary>
+        [NotNull]
+        public static readonly FormatBuilder ElementHTMLFormat = new FormatBuilder()
+            .AppendFormatLine(/*language=HTML*/"<tr><td>{KeyXml}</td><td>{ValueHtml}</td></tr>")
+            .MakeReadOnly();
+
+        /// <summary>
+        /// Regex for line break characters.
+        /// </summary>
+        [NotNull]
+        private static readonly Regex _newLineRegex = new Regex(@"\r\n|\r|\n", RegexOptions.Compiled);
+
         private class LogElement : ResolvableWriteable
         {
             /// <summary>
@@ -131,6 +146,8 @@ namespace WebApplications.Utilities.Logging
                         return ElementJSONFormat;
                     case "jsonfirst":
                         return ElementJSONFirstFormat;
+                    case "html":
+                        return ElementHTMLFormat;
                     case "noline":
                         return ElementNoLineFormat;
                     case "key":
@@ -158,6 +175,8 @@ namespace WebApplications.Utilities.Logging
                         return Value;
                     case "valuexml":
                         return Value == null ? Resolution.Null : Value.XmlEscape();
+                    case "valuehtml":
+                        return Value == null ? Resolution.Null : _newLineRegex.Replace(Value.XmlEscape(), m => "<br/>" + m.Value);
                     case "valuejson":
                         return Value == null ? "null" : Value.ToString().ToJSON();
                     default:

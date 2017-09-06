@@ -90,6 +90,92 @@
           
         </parameters>
       </add>
+
+
+      The email logger sends logs to one or more email addresses - in this example we only log Critical levels and 
+      the logger is disabled:
+      
+      *Note: SMTP settings will default to the values in the <system.net>/<mailSettings>/<smtp> section if present.
+        See https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/network/smtp-element-network-settings for more details)
+        
+      <add name="Email Logger" type="WebApplications.Utilities.Logging.Loggers.EmailLogger, WebApplications.Utilities.Logging" validLevels="AtLeastCritical" enabled="false">
+        <parameters>
+          <add name="fromAddress" value="from.address@mail.com" />
+            Specifies the email address to send the email from.
+            The value can also be in the form "Display Name <email@address.com>".
+            Optional (see *Note above).
+            
+          <add name="senderAddress" value="sender.address@mail.com" />
+            Specifies the email address of the sender of the email. If specified, the email will appear as
+            "From: sender.address@mail.com on behalf of from.address@mail.com", or similar depending on the email client.
+            
+          <add name="toAddresses" value="to1@mail.com,to2@mail.com" />
+            Comma separated list of email addresses that the log emails will be sent to.
+            
+          <add name="ccAddresses" value="cc1@mail.com,cc2@mail.com" />
+            Comma separated list of email addresses that the log emails will be CC'd to.
+            
+          <add name="bccAddresses" value="bcc1@mail.com,bcc2@mail.com" />
+            Comma separated list of email addresses that the log emails will be BCC'd to.
+            
+            Note: At least one of toAddresses, ccAddresses or bccAddresses must be specified.
+                    
+          <add name="subject" value="{Application:{value}}: {Level:{value}} - {Message:{value}}{More: (+{count} more)}" />
+            The format string to use for the email subject. Any format string accepted by Log.ToString() is acceptable (the most severe
+            log that occurred will be used. The tag {more:{count}} can also be used to get the number of extra logs in the email, if more than one.
+            Optional (defaults to the above value).
+          
+          <add name="bodyHtml" value="{Logs:{<items>:{<item>:{html}}}{<join>:\r\n<hr/>\r\n}}" />
+            The format string to use for the HTML body of the email. The {Logs:...} tag can be used to get the list of tags,
+            inside of which any format string accepted by Log.ToString() is acceptable.
+            The value given above, for example, will emit the logs as HTML tables with <hr> tags between each one. 
+            Optional (defaults to the above value, with styling added).
+            
+          <add name="bodyPlainText" value="{Logs:{<items>:{<item>:{verbose}}}{<join>:\r\n}}" />
+            The format string to use for the plain text body of the email. The {Logs:...} tag can be used to get the list of tags,
+            inside of which any format string accepted by Log.ToString() is acceptable. 
+            Optional (if omitted, no plain text version of the email will be sent).
+            
+          <add name="bufferCount" value="10" />
+            Specifies how many logs to send in a single email. The logger will wait for this many logs (or for the bufferDuration) to be added before sending
+            the email. Optional (defaults to 10).
+            
+          <add name="bufferDuration" value="00:00:01" />
+            Specifies how long to wait before sending logs. The logger will wait for this amount of time (or for bufferCount of logs to be added) before sending
+            the email. Optional (defaults to 1 second).
+            
+          <add name="host" value="smtp.mail.com" />
+            The name or IP address of the host to use for SMTP. Optional (see *Note above).
+          
+          <add name="port" value="587" />
+            The port to use on the SMTP host. Optional (see *Note above, defaults to 25).
+            
+          <add name="timeout" value="00:00:30" />
+            The SMTP timeout duration. Optional (defaults to 100 seconds).
+            
+          <add name="ssl" value="true" />
+            Indicates if SSL should be used for sending the email. Optional (see *Note above, defaults to false).
+            
+          <add name="deliveryMethod" value="Network" />
+            Specifies how outgoing emails will be handled.
+            Valid values: Network, SpecifiedPickupDirectory, PickupDirectoryFromIis
+            Optional (see *Note above, defaults to Network).
+            
+          <add name="deliveryFormat" value="SevenBit" />
+            The delivery format used to send emails.
+            Valid values: SevenBit, International
+            Optional (see *Note above, defaults to SevenBit).
+            
+          <add name="username" value="username" />
+            The senders username. Optional (see *Note above).
+            
+          <add name="password" value="password" />
+            The senders password. Optional (see *Note above).
+            
+          <add name="networkDomain" value="domain" />
+            The senders network domain. Optional (see *Note above).
+        </parameters>
+      </add>
     </loggers>
     -->
   </logging>
