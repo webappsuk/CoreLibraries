@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ConfigurationElement
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.13.2.0">
+    <meta name="generator" content="docfx 2.14.1.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -207,7 +207,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
               </span>
               <a id="WebApplications_Utilities_Configuration_ConfigurationElement_Children_" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.Children*"></a>
               <h4 id="WebApplications_Utilities_Configuration_ConfigurationElement_Children" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.Children">Children</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets the children.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -224,18 +225,36 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
                 <tbody>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh881542(v=vs.110).aspx">IReadOnlyCollection</a>&lt;<a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html">IConfigurationElement</a>&gt;</td>
-                    <td></td>
+                    <td><p>The descendants.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_Children">IConfigurationElement.Children</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+                    <td><p>The current section <a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_IsDisposed">IsDisposed</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
               <span class="small pull-right mobile-hide">
                 <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationElement - Common.cs/#L144">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Configuration_ConfigurationElement_ConfigurationElementName_" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.ConfigurationElementName*"></a>
               <h4 id="WebApplications_Utilities_Configuration_ConfigurationElement_ConfigurationElementName" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.ConfigurationElementName">ConfigurationElementName</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets the name of the current configuration element.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -252,7 +271,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
                 <tbody>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td></td>
+                    <td><p>The name of the element.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
@@ -263,7 +283,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
               </span>
               <a id="WebApplications_Utilities_Configuration_ConfigurationElement_ElementDictionary_" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.ElementDictionary*"></a>
               <h4 id="WebApplications_Utilities_Configuration_ConfigurationElement_ElementDictionary" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.ElementDictionary">ElementDictionary</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets the unknown elements as a dictionary, accessible by the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xname(v=vs.110).aspx">XName</a>.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -280,18 +301,36 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
                 <tbody>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh136548(v=vs.110).aspx">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xname(v=vs.110).aspx">XName</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xelement(v=vs.110).aspx">XElement</a>&gt;</td>
-                    <td></td>
+                    <td><p>The elements.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_ElementDictionary">IConfigurationElement.ElementDictionary</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+                    <td><p>The current section <a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_IsDisposed">IsDisposed</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
               <span class="small pull-right mobile-hide">
                 <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationElement - Common.cs/#L440">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Configuration_ConfigurationElement_ElementNames_" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.ElementNames*"></a>
               <h4 id="WebApplications_Utilities_Configuration_ConfigurationElement_ElementNames" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.ElementNames">ElementNames</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets the unknown element names.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -308,18 +347,36 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
                 <tbody>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh881542(v=vs.110).aspx">IReadOnlyCollection</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xname(v=vs.110).aspx">XName</a>&gt;</td>
-                    <td></td>
+                    <td><p>The element names.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_ElementNames">IConfigurationElement.ElementNames</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+                    <td><p>The current section <a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_IsDisposed">IsDisposed</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
               <span class="small pull-right mobile-hide">
                 <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationElement - Common.cs/#L450">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Configuration_ConfigurationElement_Elements_" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.Elements*"></a>
               <h4 id="WebApplications_Utilities_Configuration_ConfigurationElement_Elements" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.Elements">Elements</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets the unknown elements.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -336,12 +393,29 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
                 <tbody>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/hh881542(v=vs.110).aspx">IReadOnlyCollection</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.xml.linq.xelement(v=vs.110).aspx">XElement</a>&gt;</td>
-                    <td></td>
+                    <td><p>The elements.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_Elements">IConfigurationElement.Elements</a></div>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+                    <td><p>The current section <a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html#WebApplications_Utilities_Configuration_IConfigurationElement_IsDisposed">IsDisposed</a>.</p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
               <span class="small pull-right mobile-hide">
                 <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Configuration/ConfigurationElement - Common.cs/#L478">View Source</a>
               </span>
@@ -373,7 +447,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
               </span>
               <a id="WebApplications_Utilities_Configuration_ConfigurationElement_FullPath_" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.FullPath*"></a>
               <h4 id="WebApplications_Utilities_Configuration_ConfigurationElement_FullPath" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.FullPath">FullPath</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets the full path to the current element.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -390,7 +465,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
                 <tbody>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td></td>
+                    <td><p>The full path of the element.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
@@ -401,7 +477,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
               </span>
               <a id="WebApplications_Utilities_Configuration_ConfigurationElement_IsDisposed_" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.IsDisposed*"></a>
               <h4 id="WebApplications_Utilities_Configuration_ConfigurationElement_IsDisposed" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.IsDisposed">IsDisposed</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets a value indicating whether this instance is disposed.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -418,7 +495,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
                 <tbody>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td></td>
+                    <td><p><span class="xref">true</span> if this instance is disposed; otherwise, <span class="xref">false</span>.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
@@ -459,7 +537,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
               </span>
               <a id="WebApplications_Utilities_Configuration_ConfigurationElement_Parent_" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.Parent*"></a>
               <h4 id="WebApplications_Utilities_Configuration_ConfigurationElement_Parent" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.Parent">Parent</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets or sets the parent.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -476,7 +555,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
                 <tbody>
                   <tr>
                     <td><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html">IConfigurationElement</a></td>
-                    <td></td>
+                    <td><p>The parent.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
@@ -545,7 +625,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
               </span>
               <a id="WebApplications_Utilities_Configuration_ConfigurationElement_Section_" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.Section*"></a>
               <h4 id="WebApplications_Utilities_Configuration_ConfigurationElement_Section" data-uid="WebApplications.Utilities.Configuration.ConfigurationElement.Section">Section</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets the current section.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -562,7 +643,8 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
                 <tbody>
                   <tr>
                     <td><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationSection.html">IConfigurationSection</a></td>
-                    <td></td>
+                    <td><p>The section.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
@@ -1207,9 +1289,6 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
               <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms224427(v=vs.110).aspx">ConfigurationElement.Unmerge(ConfigurationElement, ConfigurationElement, ConfigurationSaveMode)</a></div>
               <h3 id="extensionmethods">Extension Methods</h3>
               <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
                   <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
               </div>
               <div>
@@ -1226,6 +1305,9 @@ public abstract class ConfigurationElement : ConfigurationElement, IInternalConf
               </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
               </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.ConfigurationExtensions.html#WebApplications_Utilities_ConfigurationExtensions_GetFullPath_WebApplications_Utilities_Configuration_IConfigurationElement_System_String_">ConfigurationExtensions.GetFullPath(IConfigurationElement, String)</a>

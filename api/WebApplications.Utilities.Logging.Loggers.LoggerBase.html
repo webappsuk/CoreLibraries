@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class LoggerBase
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.13.2.0">
+    <meta name="generator" content="docfx 2.14.1.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -87,6 +87,7 @@
                 <h5>Inheritance</h5>
                   <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
                   <div class="level1"><span class="xref">LoggerBase</span></div>
+                  <div class="level2"><a class="xref" href="WebApplications.Utilities.Logging.Loggers.EmailLogger.html">EmailLogger</a></div>
                   <div class="level2"><a class="xref" href="WebApplications.Utilities.Logging.Loggers.EventLogger.html">EventLogger</a></div>
                   <div class="level2"><a class="xref" href="WebApplications.Utilities.Logging.Loggers.FileLogger.html">FileLogger</a></div>
                   <div class="level2"><a class="xref" href="WebApplications.Utilities.Logging.Loggers.TextWriterLogger.html">TextWriterLogger</a></div>
@@ -124,7 +125,7 @@
               <h3 id="constructors">Constructors
               </h3>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L54">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L50">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Logging_Loggers_LoggerBase__ctor_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.#ctor*"></a>
               <h4 id="WebApplications_Utilities_Logging_Loggers_LoggerBase__ctor_System_String_System_Boolean_WebApplications_Utilities_Logging_LoggingLevels_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.#ctor(System.String,System.Boolean,WebApplications.Utilities.Logging.LoggingLevels)">LoggerBase(String, Boolean, LoggingLevels)</h4>
@@ -165,10 +166,26 @@
                   </tr>
                 </tbody>
               </table>
+              <h5 class="exceptions">Exceptions</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+                    <td><p><span class="paramref">name</span> is <span class="xref">null</span></p>
+</td>
+                  </tr>
+                </tbody>
+              </table>
               <h3 id="properties">Properties
               </h3>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L110">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L97">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Logging_Loggers_LoggerBase_All_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.All*"></a>
               <h4 id="WebApplications_Utilities_Logging_Loggers_LoggerBase_All" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.All">All</h4>
@@ -198,7 +215,7 @@
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="WebApplications.Utilities.Logging.Interfaces.ILogger.html#WebApplications_Utilities_Logging_Interfaces_ILogger_All">ILogger.All</a></div>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L78">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L71">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Logging_Loggers_LoggerBase_AllowMultiple_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.AllowMultiple*"></a>
               <h4 id="WebApplications_Utilities_Logging_Loggers_LoggerBase_AllowMultiple" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.AllowMultiple">AllowMultiple</h4>
@@ -228,7 +245,7 @@
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="WebApplications.Utilities.Logging.Interfaces.ILogger.html#WebApplications_Utilities_Logging_Interfaces_ILogger_AllowMultiple">ILogger.AllowMultiple</a></div>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L93">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L83">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Logging_Loggers_LoggerBase_Name_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.Name*"></a>
               <h4 id="WebApplications_Utilities_Logging_Loggers_LoggerBase_Name" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.Name">Name</h4>
@@ -258,7 +275,7 @@
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="WebApplications.Utilities.Logging.Interfaces.ILogger.html#WebApplications_Utilities_Logging_Interfaces_ILogger_Name">ILogger.Name</a></div>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L87">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L77">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Logging_Loggers_LoggerBase_ValidLevels_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.ValidLevels*"></a>
               <h4 id="WebApplications_Utilities_Logging_Loggers_LoggerBase_ValidLevels" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.ValidLevels">ValidLevels</h4>
@@ -290,7 +307,7 @@
               <h3 id="methods">Methods
               </h3>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L104">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L91">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Logging_Loggers_LoggerBase_Add_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.Add*"></a>
               <h4 id="WebApplications_Utilities_Logging_Loggers_LoggerBase_Add_System_Collections_Generic_IEnumerable_WebApplications_Utilities_Logging_Log__System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.Add(System.Collections.Generic.IEnumerable{WebApplications.Utilities.Logging.Log},System.Threading.CancellationToken)">Add(IEnumerable&lt;Log&gt;, CancellationToken)</h4>
@@ -344,7 +361,7 @@
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="WebApplications.Utilities.Logging.Interfaces.ILogger.html#WebApplications_Utilities_Logging_Interfaces_ILogger_Add_System_Collections_Generic_IEnumerable_WebApplications_Utilities_Logging_Log__System_Threading_CancellationToken_">ILogger.Add(IEnumerable&lt;Log&gt;, CancellationToken)</a></div>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L70">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L63">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Logging_Loggers_LoggerBase_Dispose_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.Dispose*"></a>
               <h4 id="WebApplications_Utilities_Logging_Loggers_LoggerBase_Dispose" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.Dispose">Dispose()</h4>
@@ -357,23 +374,8 @@
               </div>
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/es4s3w1d(v=vs.110).aspx">IDisposable.Dispose()</a></div>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.notimplementedexception(v=vs.110).aspx">NotImplementedException</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L120">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Logging/Loggers/LoggerBase.cs/#L104">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Logging_Loggers_LoggerBase_Flush_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.Flush*"></a>
               <h4 id="WebApplications_Utilities_Logging_Loggers_LoggerBase_Flush_System_Threading_CancellationToken_" data-uid="WebApplications.Utilities.Logging.Loggers.LoggerBase.Flush(System.Threading.CancellationToken)">Flush(CancellationToken)</h4>
@@ -422,9 +424,6 @@
                   <div><a class="xref" href="WebApplications.Utilities.Logging.Interfaces.ILogger.html#WebApplications_Utilities_Logging_Interfaces_ILogger_Flush_System_Threading_CancellationToken_">ILogger.Flush(CancellationToken)</a></div>
               <h3 id="extensionmethods">Extension Methods</h3>
               <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
                   <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
               </div>
               <div>
@@ -441,6 +440,9 @@
               </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
               </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>

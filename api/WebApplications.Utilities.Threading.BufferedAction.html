@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class BufferedAction
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.13.2.0">
+    <meta name="generator" content="docfx 2.14.1.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -157,16 +157,16 @@ public class BufferedAction : IDisposable</code></pre>
               <h3 id="constructors">Constructors
               </h3>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L65">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L75">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Threading_BufferedAction__ctor_" data-uid="WebApplications.Utilities.Threading.BufferedAction.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Threading_BufferedAction__ctor_System_Action_System_Object______NodaTime_Duration_" data-uid="WebApplications.Utilities.Threading.BufferedAction.#ctor(System.Action{System.Object[][]},NodaTime.Duration)">BufferedAction(Action&lt;Object[][]&gt;, Duration)</h4>
+              <h4 id="WebApplications_Utilities_Threading_BufferedAction__ctor_System_Action_System_Object______NodaTime_Duration_System_Int32_" data-uid="WebApplications.Utilities.Threading.BufferedAction.#ctor(System.Action{System.Object[][]},NodaTime.Duration,System.Int32)">BufferedAction(Action&lt;Object[][]&gt;, Duration, Int32)</h4>
               <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Threading.BufferedAction.html">BufferedAction</a> class.</p>
 </div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public BufferedAction(Action&lt;object[][]&gt; action, Duration duration)</code></pre>
+                <pre><code class="lang-csharp hljs">public BufferedAction(Action&lt;object[][]&gt; action, Duration duration, int count = 0)</code></pre>
               </div>
               <h5 class="parameters">Parameters</h5>
               <table class="table table-bordered table-striped table-condensed">
@@ -190,6 +190,12 @@ public class BufferedAction : IDisposable</code></pre>
                     <td><p>The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</p>
 </td>
                   </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">count</span></td>
+                    <td><p>The number of executions to buffer, or less than or equal to zero to buffer only by time.</p>
+</td>
+                  </tr>
                 </tbody>
               </table>
               <h5 class="exceptions">Exceptions</h5>
@@ -209,21 +215,23 @@ public class BufferedAction : IDisposable</code></pre>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
                     <td><p><span class="paramref">duration</span> is less than or equal to zero.</p>
+<p>-or-</p>
+<p><span class="paramref">duration</span> is equal to <a class="xref" href="https://msdn.microsoft.com/en-us/library/65fh19xy(v=vs.110).aspx">Infinite</a> and <span class="paramref">count</span> is less than or equal to zero.</p>
 </td>
                   </tr>
                 </tbody>
               </table>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L93">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L115">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Threading_BufferedAction__ctor_" data-uid="WebApplications.Utilities.Threading.BufferedAction.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Threading_BufferedAction__ctor_System_Action_System_Object______System_Int64_" data-uid="WebApplications.Utilities.Threading.BufferedAction.#ctor(System.Action{System.Object[][]},System.Int64)">BufferedAction(Action&lt;Object[][]&gt;, Int64)</h4>
+              <h4 id="WebApplications_Utilities_Threading_BufferedAction__ctor_System_Action_System_Object______System_Int64_System_Int32_" data-uid="WebApplications.Utilities.Threading.BufferedAction.#ctor(System.Action{System.Object[][]},System.Int64,System.Int32)">BufferedAction(Action&lt;Object[][]&gt;, Int64, Int32)</h4>
               <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Threading.BufferedAction.html">BufferedAction</a> class.</p>
 </div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public BufferedAction(Action&lt;object[][]&gt; action, long duration)</code></pre>
+                <pre><code class="lang-csharp hljs">public BufferedAction(Action&lt;object[][]&gt; action, long duration, int count = 0)</code></pre>
               </div>
               <h5 class="parameters">Parameters</h5>
               <table class="table table-bordered table-striped table-condensed">
@@ -247,6 +255,12 @@ public class BufferedAction : IDisposable</code></pre>
                     <td><p>The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</p>
 </td>
                   </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">count</span></td>
+                    <td><p>The number of executions to buffer, or less than or equal to zero to buffer only by time.</p>
+</td>
+                  </tr>
                 </tbody>
               </table>
               <h5 class="exceptions">Exceptions</h5>
@@ -266,21 +280,23 @@ public class BufferedAction : IDisposable</code></pre>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
                     <td><p><span class="paramref">duration</span> is less than or equal to zero.</p>
+<p>-or-</p>
+<p><span class="paramref">duration</span> is equal to <a class="xref" href="https://msdn.microsoft.com/en-us/library/65fh19xy(v=vs.110).aspx">Infinite</a> and <span class="paramref">count</span> is less than or equal to zero.</p>
 </td>
                   </tr>
                 </tbody>
               </table>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L79">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L95">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Threading_BufferedAction__ctor_" data-uid="WebApplications.Utilities.Threading.BufferedAction.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Threading_BufferedAction__ctor_System_Action_System_Object______System_TimeSpan_" data-uid="WebApplications.Utilities.Threading.BufferedAction.#ctor(System.Action{System.Object[][]},System.TimeSpan)">BufferedAction(Action&lt;Object[][]&gt;, TimeSpan)</h4>
+              <h4 id="WebApplications_Utilities_Threading_BufferedAction__ctor_System_Action_System_Object______System_TimeSpan_System_Int32_" data-uid="WebApplications.Utilities.Threading.BufferedAction.#ctor(System.Action{System.Object[][]},System.TimeSpan,System.Int32)">BufferedAction(Action&lt;Object[][]&gt;, TimeSpan, Int32)</h4>
               <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Threading.BufferedAction.html">BufferedAction</a> class.</p>
 </div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public BufferedAction(Action&lt;object[][]&gt; action, TimeSpan duration)</code></pre>
+                <pre><code class="lang-csharp hljs">public BufferedAction(Action&lt;object[][]&gt; action, TimeSpan duration, int count = 0)</code></pre>
               </div>
               <h5 class="parameters">Parameters</h5>
               <table class="table table-bordered table-striped table-condensed">
@@ -304,6 +320,12 @@ public class BufferedAction : IDisposable</code></pre>
                     <td><p>The duration is the amount of time the result of a successful execution is held, after the point a successful request was made.</p>
 </td>
                   </tr>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td><span class="parametername">count</span></td>
+                    <td><p>The number of executions to buffer, or less than or equal to zero to buffer only by time.</p>
+</td>
+                  </tr>
                 </tbody>
               </table>
               <h5 class="exceptions">Exceptions</h5>
@@ -323,12 +345,40 @@ public class BufferedAction : IDisposable</code></pre>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
                     <td><p><span class="paramref">duration</span> is less than or equal to zero.</p>
+<p>-or-</p>
+<p><span class="paramref">duration</span> is equal to <a class="xref" href="https://msdn.microsoft.com/en-us/library/65fh19xy(v=vs.110).aspx">Infinite</a> and <span class="paramref">count</span> is less than or equal to zero.</p>
 </td>
                   </tr>
                 </tbody>
               </table>
               <h3 id="fields">Fields
               </h3>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L56">View Source</a>
+              </span>
+              <h4 id="WebApplications_Utilities_Threading_BufferedAction_Count" data-uid="WebApplications.Utilities.Threading.BufferedAction.Count">Count</h4>
+              <div class="markdown level1 summary"><p>The number of executions to buffer.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public readonly int Count</code></pre>
+              </div>
+              <h5 class="fieldValue">Field Value</h5>
+              <table class="table table-bordered table-striped table-condensed">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
               <span class="small pull-right mobile-hide">
                 <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L51">View Source</a>
               </span>
@@ -358,7 +408,7 @@ public class BufferedAction : IDisposable</code></pre>
               <h3 id="methods">Methods
               </h3>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L124">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L157">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Threading_BufferedAction_Dispose_" data-uid="WebApplications.Utilities.Threading.BufferedAction.Dispose*"></a>
               <h4 id="WebApplications_Utilities_Threading_BufferedAction_Dispose" data-uid="WebApplications.Utilities.Threading.BufferedAction.Dispose">Dispose()</h4>
@@ -372,7 +422,7 @@ public class BufferedAction : IDisposable</code></pre>
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/es4s3w1d(v=vs.110).aspx">IDisposable.Dispose()</a></div>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L143">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L176">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Threading_BufferedAction_Dispose_" data-uid="WebApplications.Utilities.Threading.BufferedAction.Dispose*"></a>
               <h4 id="WebApplications_Utilities_Threading_BufferedAction_Dispose_System_Boolean_" data-uid="WebApplications.Utilities.Threading.BufferedAction.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -411,7 +461,19 @@ parameter is equal to <span class="xref">true</span>). If the method is invoked 
 unpredictable order and so they, or any of their dependencies, might already have been finalized.</p>
 </div>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L111">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L148">View Source</a>
+              </span>
+              <a id="WebApplications_Utilities_Threading_BufferedAction_Flush_" data-uid="WebApplications.Utilities.Threading.BufferedAction.Flush*"></a>
+              <h4 id="WebApplications_Utilities_Threading_BufferedAction_Flush" data-uid="WebApplications.Utilities.Threading.BufferedAction.Flush">Flush()</h4>
+              <div class="markdown level1 summary"><p>Flushes the buffer, calling the underlying action.</p>
+</div>
+              <div class="markdown level1 conceptual"></div>
+              <h5 class="decalaration">Declaration</h5>
+              <div class="codewrapper">
+                <pre><code class="lang-csharp hljs">public void Flush()</code></pre>
+              </div>
+              <span class="small pull-right mobile-hide">
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/BufferedAction.cs/#L135">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Threading_BufferedAction_Run_" data-uid="WebApplications.Utilities.Threading.BufferedAction.Run*"></a>
               <h4 id="WebApplications_Utilities_Threading_BufferedAction_Run_System_Object___" data-uid="WebApplications.Utilities.Threading.BufferedAction.Run(System.Object[])">Run(Object[])</h4>
@@ -442,9 +504,6 @@ unpredictable order and so they, or any of their dependencies, might already hav
               </table>
               <h3 id="extensionmethods">Extension Methods</h3>
               <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
                   <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
               </div>
               <div>
@@ -461,6 +520,9 @@ unpredictable order and so they, or any of their dependencies, might already hav
               </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
               </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class CultureInfoProvider
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.13.2.0">
+    <meta name="generator" content="docfx 2.14.1.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -123,16 +123,16 @@ public class CultureInfoProvider : ICultureInfoProvider</code></pre>
               <h3 id="constructors">Constructors
               </h3>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L223">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L224">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Globalization_CultureInfoProvider__ctor_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider__ctor_System_DateTime_System_Collections_Generic_IEnumerable_WebApplications_Utilities_Globalization_ExtendedCultureInfo__" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.#ctor(System.DateTime,System.Collections.Generic.IEnumerable{WebApplications.Utilities.Globalization.ExtendedCultureInfo})">CultureInfoProvider(DateTime, IEnumerable&lt;ExtendedCultureInfo&gt;)</h4>
+              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider__ctor_NodaTime_Instant_System_Collections_Generic_IEnumerable_WebApplications_Utilities_Globalization_ExtendedCultureInfo__" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.#ctor(NodaTime.Instant,System.Collections.Generic.IEnumerable{WebApplications.Utilities.Globalization.ExtendedCultureInfo})">CultureInfoProvider(Instant, IEnumerable&lt;ExtendedCultureInfo&gt;)</h4>
               <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Globalization.CultureInfoProvider.html">CultureInfoProvider</a> class.</p>
 </div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public CultureInfoProvider(DateTime published, IEnumerable&lt;ExtendedCultureInfo&gt; cultures)</code></pre>
+                <pre><code class="lang-csharp hljs">public CultureInfoProvider(Instant published, IEnumerable&lt;ExtendedCultureInfo&gt; cultures)</code></pre>
               </div>
               <h5 class="parameters">Parameters</h5>
               <table class="table table-bordered table-striped table-condensed">
@@ -145,7 +145,7 @@ public class CultureInfoProvider : ICultureInfoProvider</code></pre>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a></td>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
                     <td><span class="parametername">published</span></td>
                     <td><p>The published date time.</p>
 </td>
@@ -161,7 +161,7 @@ public class CultureInfoProvider : ICultureInfoProvider</code></pre>
               <h3 id="fields">Fields
               </h3>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L152">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L153">View Source</a>
               </span>
               <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Bcl" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Bcl">Bcl</h4>
               <div class="markdown level1 summary"><p>The provider that supplies the BCL <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a>.</p>
@@ -187,7 +187,7 @@ public class CultureInfoProvider : ICultureInfoProvider</code></pre>
                 </tbody>
               </table>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L146">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L147">View Source</a>
               </span>
               <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Empty" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Empty">Empty</h4>
               <div class="markdown level1 summary"><p>The empty culture info provider has no cultures.</p>
@@ -274,7 +274,7 @@ public class CultureInfoProvider : ICultureInfoProvider</code></pre>
               <h5 class="implements">Implements</h5>
                   <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Count">ICultureInfoProvider.Count</a></div>
               <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L171">View Source</a>
+                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L172">View Source</a>
               </span>
               <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Current_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Current*"></a>
               <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Current" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Current">Current</h4>
@@ -283,7 +283,7 @@ public class CultureInfoProvider : ICultureInfoProvider</code></pre>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static ICultureInfoProvider Current { get; set; }</code></pre>
+                <pre><code class="lang-csharp hljs">public static ICultureInfoProvider Current { get; }</code></pre>
               </div>
               <h5 class="propertyValue">Property Value</h5>
               <table class="table table-bordered table-striped table-condensed">
@@ -311,7 +311,7 @@ public class CultureInfoProvider : ICultureInfoProvider</code></pre>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public DateTime Published { get; }</code></pre>
+                <pre><code class="lang-csharp hljs">public Instant Published { get; }</code></pre>
               </div>
               <h5 class="propertyValue">Property Value</h5>
               <table class="table table-bordered table-striped table-condensed">
@@ -323,7 +323,7 @@ public class CultureInfoProvider : ICultureInfoProvider</code></pre>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.datetime(v=vs.110).aspx">DateTime</a></td>
+                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
                     <td></td>
                   </tr>
                 </tbody>
@@ -609,9 +609,6 @@ otherwise <span class="xref">null</span>.</p>
                   <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_GetChildren_System_Globalization_CultureInfo_">ICultureInfoProvider.GetChildren(CultureInfo)</a></div>
               <h3 id="extensionmethods">Extension Methods</h3>
               <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
                   <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
               </div>
               <div>
@@ -628,6 +625,9 @@ otherwise <span class="xref">null</span>.</p>
               </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
               </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
@@ -685,7 +685,7 @@ otherwise <span class="xref">null</span>.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L41" class="contribution-link">View Source</a>
+                    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L42" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

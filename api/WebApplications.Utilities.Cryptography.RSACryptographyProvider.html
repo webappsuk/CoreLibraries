@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class RSACryptographyProvider
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.13.2.0">
+    <meta name="generator" content="docfx 2.14.1.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -246,7 +246,8 @@ public readonly ushort OutputBlockSize</code></pre>
               </span>
               <a id="WebApplications_Utilities_Cryptography_RSACryptographyProvider_CanEncrypt_" data-uid="WebApplications.Utilities.Cryptography.RSACryptographyProvider.CanEncrypt*"></a>
               <h4 id="WebApplications_Utilities_Cryptography_RSACryptographyProvider_CanEncrypt" data-uid="WebApplications.Utilities.Cryptography.RSACryptographyProvider.CanEncrypt">CanEncrypt</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Whether the provider can decrypt.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -269,6 +270,9 @@ public readonly ushort OutputBlockSize</code></pre>
               </table>
               <h5 class="overrides">Overrides</h5>
               <div><a class="xref" href="WebApplications.Utilities.Cryptography.CryptographyProvider.html#WebApplications_Utilities_Cryptography_CryptographyProvider_CanEncrypt">CryptographyProvider.CanEncrypt</a></div>
+              <h5 id="WebApplications_Utilities_Cryptography_RSACryptographyProvider_CanEncrypt_remarks">Remarks</h5>
+              <div class="markdown level1 remarks"><p><span class="xref">false</span> when only the public key is available for an asymmetric algorithm.</p>
+</div>
               <h3 id="methods">Methods
               </h3>
               <span class="small pull-right mobile-hide">
@@ -467,7 +471,8 @@ public readonly ushort OutputBlockSize</code></pre>
               </span>
               <a id="WebApplications_Utilities_Cryptography_RSACryptographyProvider_GetDecryptor_" data-uid="WebApplications.Utilities.Cryptography.RSACryptographyProvider.GetDecryptor*"></a>
               <h4 id="WebApplications_Utilities_Cryptography_RSACryptographyProvider_GetDecryptor" data-uid="WebApplications.Utilities.Cryptography.RSACryptographyProvider.GetDecryptor">GetDecryptor()</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.icryptotransform(v=vs.110).aspx">ICryptoTransform</a> for decryption.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -484,7 +489,8 @@ public readonly ushort OutputBlockSize</code></pre>
                 <tbody>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.icryptotransform(v=vs.110).aspx">ICryptoTransform</a></td>
-                    <td></td>
+                    <td><p>An <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.icryptotransform(v=vs.110).aspx">ICryptoTransform</a>.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
@@ -495,7 +501,8 @@ public readonly ushort OutputBlockSize</code></pre>
               </span>
               <a id="WebApplications_Utilities_Cryptography_RSACryptographyProvider_GetEncryptor_" data-uid="WebApplications.Utilities.Cryptography.RSACryptographyProvider.GetEncryptor*"></a>
               <h4 id="WebApplications_Utilities_Cryptography_RSACryptographyProvider_GetEncryptor" data-uid="WebApplications.Utilities.Cryptography.RSACryptographyProvider.GetEncryptor">GetEncryptor()</h4>
-              <div class="markdown level1 summary"></div>
+              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.icryptotransform(v=vs.110).aspx">ICryptoTransform</a> for encryption.</p>
+</div>
               <div class="markdown level1 conceptual"></div>
               <h5 class="decalaration">Declaration</h5>
               <div class="codewrapper">
@@ -512,16 +519,14 @@ public readonly ushort OutputBlockSize</code></pre>
                 <tbody>
                   <tr>
                     <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.icryptotransform(v=vs.110).aspx">ICryptoTransform</a></td>
-                    <td></td>
+                    <td><p>An <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.icryptotransform(v=vs.110).aspx">ICryptoTransform</a>.</p>
+</td>
                   </tr>
                 </tbody>
               </table>
               <h5 class="overrides">Overrides</h5>
               <div><a class="xref" href="WebApplications.Utilities.Cryptography.CryptographyProvider.html#WebApplications_Utilities_Cryptography_CryptographyProvider_GetEncryptor">CryptographyProvider.GetEncryptor()</a></div>
               <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
               </div>
@@ -539,6 +544,9 @@ public readonly ushort OutputBlockSize</code></pre>
               </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+              </div>
+              <div>
+                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
               </div>
               <div>
                   <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
