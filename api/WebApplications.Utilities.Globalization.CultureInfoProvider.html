@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class CultureInfoProvider
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,609 +76,613 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Globalization_CultureInfoProvider" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider">Class CultureInfoProvider
-              </h1>
-              <div class="markdown level0 summary"><p>Provides <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a>.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider">
+  
+  
+  <h1 id="WebApplications_Utilities_Globalization_CultureInfoProvider" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider" class="text-break">Class CultureInfoProvider
+  </h1>
+  <div class="markdown level0 summary"><p>Provides <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a>.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritance">
-                <h5>Inheritance</h5>
-                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
-                  <div class="level1"><span class="xref">CultureInfoProvider</span></div>
-                  <div class="level2"><a class="xref" href="WebApplications.Utilities.Globalization.BclCultureInfoProvider.html">BclCultureInfoProvider</a></div>
-              </div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities.Globalization</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
-              <h5 id="WebApplications_Utilities_Globalization_CultureInfoProvider_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[PublicAPI]
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+    <div class="level1"><span class="xref">CultureInfoProvider</span></div>
+      <div class="level2"><a class="xref" href="WebApplications.Utilities.Globalization.BclCultureInfoProvider.html">BclCultureInfoProvider</a></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html">ICultureInfoProvider</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.Globalization.html">WebApplications.Utilities.Globalization</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.dll</h6>
+  <h5 id="WebApplications_Utilities_Globalization_CultureInfoProvider_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[PublicAPI]
 public class CultureInfoProvider : ICultureInfoProvider</code></pre>
-              </div>
-              <h3 id="constructors">Constructors
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L224">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CultureInfoProvider__ctor_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider__ctor_NodaTime_Instant_System_Collections_Generic_IEnumerable_WebApplications_Utilities_Globalization_ExtendedCultureInfo__" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.#ctor(NodaTime.Instant,System.Collections.Generic.IEnumerable{WebApplications.Utilities.Globalization.ExtendedCultureInfo})">CultureInfoProvider(Instant, IEnumerable&lt;ExtendedCultureInfo&gt;)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Globalization.CultureInfoProvider.html">CultureInfoProvider</a> class.</p>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L224">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CultureInfoProvider__ctor_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider__ctor_NodaTime_Instant_System_Collections_Generic_IEnumerable_WebApplications_Utilities_Globalization_ExtendedCultureInfo__" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.#ctor(NodaTime.Instant,System.Collections.Generic.IEnumerable{WebApplications.Utilities.Globalization.ExtendedCultureInfo})">CultureInfoProvider(Instant, IEnumerable&lt;ExtendedCultureInfo&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Globalization.CultureInfoProvider.html">CultureInfoProvider</a> class.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public CultureInfoProvider(Instant published, IEnumerable&lt;ExtendedCultureInfo&gt; cultures)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
-                    <td><span class="parametername">published</span></td>
-                    <td><p>The published date time.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CultureInfoProvider(Instant published, IEnumerable&lt;ExtendedCultureInfo&gt; cultures)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+        <td><span class="parametername">published</span></td>
+        <td><p>The published date time.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a>&gt;</td>
-                    <td><span class="parametername">cultures</span></td>
-                    <td><p>The cultures.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a>&gt;</td>
+        <td><span class="parametername">cultures</span></td>
+        <td><p>The cultures.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="fields">Fields
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L153">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Bcl" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Bcl">Bcl</h4>
-              <div class="markdown level1 summary"><p>The provider that supplies the BCL <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L153">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Bcl" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Bcl">Bcl</h4>
+  <div class="markdown level1 summary"><p>The provider that supplies the BCL <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static readonly BclCultureInfoProvider Bcl</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.BclCultureInfoProvider.html">BclCultureInfoProvider</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L147">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Empty" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Empty">Empty</h4>
-              <div class="markdown level1 summary"><p>The empty culture info provider has no cultures.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly BclCultureInfoProvider Bcl</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.BclCultureInfoProvider.html">BclCultureInfoProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L147">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Empty" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Empty">Empty</h4>
+  <div class="markdown level1 summary"><p>The empty culture info provider has no cultures.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static readonly ICultureInfoProvider Empty</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html">ICultureInfoProvider</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="properties">Properties
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L295">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_All_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.All*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_All" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.All">All</h4>
-              <div class="markdown level1 summary"><p>The cultures in the provider.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly ICultureInfoProvider Empty</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html">ICultureInfoProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L295">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_All_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.All*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_All" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.All">All</h4>
+  <div class="markdown level1 summary"><p>The cultures in the provider.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public IEnumerable&lt;ExtendedCultureInfo&gt; All { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_All">ICultureInfoProvider.All</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L310">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Count_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Count*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Count" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Count">Count</h4>
-              <div class="markdown level1 summary"><p>Gets the number of cultures specified in the provider.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;ExtendedCultureInfo&gt; All { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_All">ICultureInfoProvider.All</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L310">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Count_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Count*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Count" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Count">Count</h4>
+  <div class="markdown level1 summary"><p>Gets the number of cultures specified in the provider.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public int Count { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><p>The count.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Count { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><p>The count.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Count">ICultureInfoProvider.Count</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L172">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Current_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Current*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Current" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Current">Current</h4>
-              <div class="markdown level1 summary"><p>Gets or sets the current provider.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Count">ICultureInfoProvider.Count</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L172">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Current_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Current*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Current" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Current">Current</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the current provider.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static ICultureInfoProvider Current { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html">ICultureInfoProvider</a></td>
-                    <td><p>The current.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ICultureInfoProvider Current { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html">ICultureInfoProvider</a></td>
+        <td><p>The current.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L290">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Published_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Published*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Published" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Published">Published</h4>
-              <div class="markdown level1 summary"><p>The date this provider was published.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L290">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Published_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Published*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Published" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Published">Published</h4>
+  <div class="markdown level1 summary"><p>The date this provider was published.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public Instant Published { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Published">ICultureInfoProvider.Published</a></div>
-              <h3 id="methods">Methods
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L368">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_FindByCurrency_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.FindByCurrency*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_FindByCurrency_WebApplications_Utilities_Globalization_CurrencyInfo_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.FindByCurrency(WebApplications.Utilities.Globalization.CurrencyInfo)">FindByCurrency(CurrencyInfo)</h4>
-              <div class="markdown level1 summary"><p>Finds the cultures that use a specific currency.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Instant Published { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Published">ICultureInfoProvider.Published</a></div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L368">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_FindByCurrency_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.FindByCurrency*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_FindByCurrency_WebApplications_Utilities_Globalization_CurrencyInfo_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.FindByCurrency(WebApplications.Utilities.Globalization.CurrencyInfo)">FindByCurrency(CurrencyInfo)</h4>
+  <div class="markdown level1 summary"><p>Finds the cultures that use a specific currency.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public IEnumerable&lt;ExtendedCultureInfo&gt; FindByCurrency(CurrencyInfo currencyInfo)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a></td>
-                    <td><span class="parametername">currencyInfo</span></td>
-                    <td><p>The currency information.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;ExtendedCultureInfo&gt; FindByCurrency(CurrencyInfo currencyInfo)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a></td>
+        <td><span class="parametername">currencyInfo</span></td>
+        <td><p>The currency information.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a>&gt;</td>
-                    <td><p>The cultures that us the specified currency.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a>&gt;</td>
+        <td><p>The cultures that us the specified currency.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_FindByCurrency_WebApplications_Utilities_Globalization_CurrencyInfo_">ICultureInfoProvider.FindByCurrency(CurrencyInfo)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L353">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_System_Globalization_CultureInfo_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get(System.Globalization.CultureInfo)">Get(CultureInfo)</h4>
-              <div class="markdown level1 summary"><p>Retrieves an <a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a> equivalent to the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_FindByCurrency_WebApplications_Utilities_Globalization_CurrencyInfo_">ICultureInfoProvider.FindByCurrency(CurrencyInfo)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L353">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_System_Globalization_CultureInfo_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get(System.Globalization.CultureInfo)">Get(CultureInfo)</h4>
+  <div class="markdown level1 summary"><p>Retrieves an <a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a> equivalent to the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public ExtendedCultureInfo Get(CultureInfo cultureInfo)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a></td>
-                    <td><span class="parametername">cultureInfo</span></td>
-                    <td><p>The culture info.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ExtendedCultureInfo Get(CultureInfo cultureInfo)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a></td>
+        <td><span class="parametername">cultureInfo</span></td>
+        <td><p>The culture info.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a></td>
-                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a> that corresponds to the <span class="paramref">cultureInfo</span> specified (if any);
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a></td>
+        <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a> that corresponds to the <code data-dev-comment-type="paramref" class="paramref">cultureInfo</code> specified (if any);
 otherwise <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Get_System_Globalization_CultureInfo_">ICultureInfoProvider.Get(CultureInfo)</a></div>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
-                    <td><p><span class="paramref">cultureInfo</span> is <span class="xref">null</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Get_System_Globalization_CultureInfo_">ICultureInfoProvider.Get(CultureInfo)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">cultureInfo</code> is <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L337">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_System_Int32_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get(System.Int32)">Get(Int32)</h4>
-              <div class="markdown level1 summary"><p>Retrieves an <a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a> with the name specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/c6yf37wt(v=vs.110).aspx">LCID</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L337">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_System_Int32_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get(System.Int32)">Get(Int32)</h4>
+  <div class="markdown level1 summary"><p>Retrieves an <a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a> with the name specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/c6yf37wt(v=vs.110).aspx">LCID</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public ExtendedCultureInfo Get(int lcid)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><span class="parametername">lcid</span></td>
-                    <td><p>The lcid.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ExtendedCultureInfo Get(int lcid)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><span class="parametername">lcid</span></td>
+        <td><p>The lcid.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a></td>
-                    <td><p>The <a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a> that corresponds to the <span class="paramref">lcid</span> specified (if any);
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a></td>
+        <td><p>The <a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a> that corresponds to the <code data-dev-comment-type="paramref" class="paramref">lcid</code> specified (if any);
 otherwise <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Get_System_Int32_">ICultureInfoProvider.Get(Int32)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L321">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_System_String_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get(System.String)">Get(String)</h4>
-              <div class="markdown level1 summary"><p>Retrieves an <a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a> with the name specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/0dy7dwx3(v=vs.110).aspx">Name</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Get_System_Int32_">ICultureInfoProvider.Get(Int32)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L321">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_Get_System_String_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.Get(System.String)">Get(String)</h4>
+  <div class="markdown level1 summary"><p>Retrieves an <a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a> with the name specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/0dy7dwx3(v=vs.110).aspx">Name</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public ExtendedCultureInfo Get(string cultureName)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">cultureName</span></td>
-                    <td><p>The ISO Code.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ExtendedCultureInfo Get(string cultureName)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">cultureName</span></td>
+        <td><p>The ISO Code.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a></td>
-                    <td><p>The <a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a> that corresponds to the <span class="paramref">cultureName</span> specified (if any);
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a></td>
+        <td><p>The <a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a> that corresponds to the <code data-dev-comment-type="paramref" class="paramref">cultureName</code> specified (if any);
 otherwise <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Get_System_String_">ICultureInfoProvider.Get(String)</a></div>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
-                    <td><p><span class="paramref">cultureName</span> is <span class="xref">null</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_Get_System_String_">ICultureInfoProvider.Get(String)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">cultureName</code> is <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L383">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_GetChildren_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.GetChildren*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_GetChildren_System_Globalization_CultureInfo_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.GetChildren(System.Globalization.CultureInfo)">GetChildren(CultureInfo)</h4>
-              <div class="markdown level1 summary"><p>Gets the child cultures of the specified culture.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CultureInfoProvider.cs/#L383">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CultureInfoProvider_GetChildren_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.GetChildren*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CultureInfoProvider_GetChildren_System_Globalization_CultureInfo_" data-uid="WebApplications.Utilities.Globalization.CultureInfoProvider.GetChildren(System.Globalization.CultureInfo)">GetChildren(CultureInfo)</h4>
+  <div class="markdown level1 summary"><p>Gets the child cultures of the specified culture.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public IEnumerable&lt;ExtendedCultureInfo&gt; GetChildren(CultureInfo cultureInfo)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a></td>
-                    <td><span class="parametername">cultureInfo</span></td>
-                    <td><p>The culture to get the children of.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;ExtendedCultureInfo&gt; GetChildren(CultureInfo cultureInfo)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a></td>
+        <td><span class="parametername">cultureInfo</span></td>
+        <td><p>The culture to get the children of.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a>&gt;</td>
-                    <td><p>The child cultures of the specified culture.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a>&gt;</td>
+        <td><p>The child cultures of the specified culture.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_GetChildren_System_Globalization_CultureInfo_">ICultureInfoProvider.GetChildren(CultureInfo)</a></div>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Globalization.CultureHelper.html#WebApplications_Utilities_Globalization_CultureHelper_GetFallBack_WebApplications_Utilities_Globalization_ICultureInfoProvider_System_Globalization_CultureInfo_">CultureHelper.GetFallBack(ICultureInfoProvider, CultureInfo)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICultureInfoProvider.html#WebApplications_Utilities_Globalization_ICultureInfoProvider_GetChildren_System_Globalization_CultureInfo_">ICultureInfoProvider.GetChildren(CultureInfo)</a></div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Globalization.CultureHelper.html#WebApplications_Utilities_Globalization_CultureHelper_GetFallBack_WebApplications_Utilities_Globalization_ICultureInfoProvider_System_Globalization_CultureInfo_">CultureHelper.GetFallBack(ICultureInfoProvider, CultureInfo)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

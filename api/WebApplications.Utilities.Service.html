@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace WebApplications.Utilities.Service
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,51 +76,51 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              <h1 id="WebApplications_Utilities_Service" data-uid="WebApplications.Utilities.Service">Namespace WebApplications.Utilities.Service
-              </h1>
-              <div class="markdown level0 summary"></div>
-              <div class="markdown level0 conceptual"><p>The <a href="https://www.nuget.org/packages/WebApplications.Utilities.Service">WebApplications.Utilities.Service NuGet</a> allows for the rapid creation of Windows Services.  Deployed services support the ability to install/uninstall themselves and can communicate with <a href="../articles/service_client.html">custom clients</a> whilst running.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Service">
+  
+  <h1 id="WebApplications_Utilities_Service" data-uid="WebApplications.Utilities.Service" class="text-break">Namespace WebApplications.Utilities.Service
+  </h1>
+  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 conceptual"><p>The <a href="https://www.nuget.org/packages/WebApplications.Utilities.Service">WebApplications.Utilities.Service NuGet</a> allows for the rapid creation of Windows Services.  Deployed services support the ability to install/uninstall themselves and can communicate with <a href="../articles/service_client.html">custom clients</a> whilst running.</p>
 </div>
-              <div class="markdown level0 remarks"></div>
-                <h3 id="classes">Classes
-              </h3>
-                  <h4><a class="xref" href="WebApplications.Utilities.Service.BaseService.html">BaseService</a></h4>
-                  <section><p>Base implementation of a service, you should always extends the generic version of this class.</p>
+  <div class="markdown level0 remarks"></div>
+    <h3 id="classes">Classes
+  </h3>
+      <h4><a class="xref" href="WebApplications.Utilities.Service.BaseService.html">BaseService</a></h4>
+      <section><p>Base implementation of a service, you should always extends the generic version of this class.</p>
 </section>
-                  <h4><a class="xref" href="WebApplications.Utilities.Service.BaseService-1.html">BaseService&lt;TService&gt;</a></h4>
-                  <section><p>Base implementation of a service.</p>
+      <h4><a class="xref" href="WebApplications.Utilities.Service.BaseService-1.html">BaseService&lt;TService&gt;</a></h4>
+      <section><p>Base implementation of a service.</p>
 </section>
-                  <h4><a class="xref" href="WebApplications.Utilities.Service.ConsoleConnection.html">ConsoleConnection</a></h4>
-                  <section><p>Implements a console-based service connection, if running in a console.</p>
+      <h4><a class="xref" href="WebApplications.Utilities.Service.ConsoleConnection.html">ConsoleConnection</a></h4>
+      <section><p>Implements a console-based service connection, if running in a console.</p>
 </section>
-                  <h4><a class="xref" href="WebApplications.Utilities.Service.ServerConfig.html">ServerConfig</a></h4>
-                  <section><p>Configuration for the NamedPipeServer.</p>
+      <h4><a class="xref" href="WebApplications.Utilities.Service.ServerConfig.html">ServerConfig</a></h4>
+      <section><p>Configuration for the NamedPipeServer.</p>
 </section>
-                  <h4><a class="xref" href="WebApplications.Utilities.Service.ServiceCommand.html">ServiceCommand</a></h4>
-                  <section><p>Implements a command that can be executed by a <a class="xref" href="WebApplications.Utilities.Service.BaseService.html">BaseService</a>.</p>
+      <h4><a class="xref" href="WebApplications.Utilities.Service.ServiceCommand.html">ServiceCommand</a></h4>
+      <section><p>Implements a command that can be executed by a <a class="xref" href="WebApplications.Utilities.Service.BaseService.html">BaseService</a>.</p>
 </section>
-                  <h4><a class="xref" href="WebApplications.Utilities.Service.ServiceCommandAttribute.html">ServiceCommandAttribute</a></h4>
-                  <section><p>Add to an instance method to indicate it implements a <a class="xref" href="WebApplications.Utilities.Service.BaseService.html">BaseService</a> command.</p>
+      <h4><a class="xref" href="WebApplications.Utilities.Service.ServiceCommandAttribute.html">ServiceCommandAttribute</a></h4>
+      <section><p>Add to an instance method to indicate it implements a <a class="xref" href="WebApplications.Utilities.Service.BaseService.html">BaseService</a> command.</p>
 </section>
-                  <h4><a class="xref" href="WebApplications.Utilities.Service.ServiceCommandParameterAttribute.html">ServiceCommandParameterAttribute</a></h4>
-                  <section><p>Add to a parameter of a command indicated by a <a class="xref" href="WebApplications.Utilities.Service.ServiceCommandAttribute.html">ServiceCommandAttribute</a> to add a description for the parameter.</p>
+      <h4><a class="xref" href="WebApplications.Utilities.Service.ServiceCommandParameterAttribute.html">ServiceCommandParameterAttribute</a></h4>
+      <section><p>Add to a parameter of a command indicated by a <a class="xref" href="WebApplications.Utilities.Service.ServiceCommandAttribute.html">ServiceCommandAttribute</a> to add a description for the parameter.</p>
 </section>
-                  <h4><a class="xref" href="WebApplications.Utilities.Service.ServiceException.html">ServiceException</a></h4>
-                  <section><p>All exceptions thrown by the Service runner.</p>
+      <h4><a class="xref" href="WebApplications.Utilities.Service.ServiceException.html">ServiceException</a></h4>
+      <section><p>All exceptions thrown by the Service runner.</p>
 </section>
-                <h3 id="interfaces">Interfaces
-              </h3>
-                  <h4><a class="xref" href="WebApplications.Utilities.Service.IConnection.html">IConnection</a></h4>
-                  <section><p>An interface for a connection to a service.</p>
+    <h3 id="interfaces">Interfaces
+  </h3>
+      <h4><a class="xref" href="WebApplications.Utilities.Service.IConnection.html">IConnection</a></h4>
+      <section><p>An interface for a connection to a service.</p>
 </section>
-                <h3 id="enums">Enums
-              </h3>
-                  <h4><a class="xref" href="WebApplications.Utilities.Service.RunMode.html">RunMode</a></h4>
-                  <section><p>Enumeration of options for how the service should start when running from a command line.</p>
+    <h3 id="enums">Enums
+  </h3>
+      <h4><a class="xref" href="WebApplications.Utilities.Service.RunMode.html">RunMode</a></h4>
+      <section><p>Enumeration of options for how the service should start when running from a command line.</p>
 </section>
-                        </article>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Enum Impersonator.LogonType
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,219 +76,219 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Impersonator_LogonType" data-uid="WebApplications.Utilities.Impersonator.LogonType">Enum Impersonator.LogonType
-              </h1>
-              <div class="markdown level0 summary"><p>The types of logon operation that can be performed.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Impersonator.LogonType">
+  
+  
+  <h1 id="WebApplications_Utilities_Impersonator_LogonType" data-uid="WebApplications.Utilities.Impersonator.LogonType" class="text-break">Enum Impersonator.LogonType
+  </h1>
+  <div class="markdown level0 summary"><p>The types of logon operation that can be performed.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
-              <h5 id="WebApplications_Utilities_Impersonator_LogonType_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[PublicAPI]
+  <div class="markdown level0 conceptual"></div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.html">WebApplications.Utilities</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.dll</h6>
+  <h5 id="WebApplications_Utilities_Impersonator_LogonType_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[PublicAPI]
 public enum LogonType</code></pre>
-              </div>
-              <h3 id="fields">Fields
-              </h3>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                <thead>
-                <tbody>
-                  <tr>
-                    <td id="WebApplications_Utilities_Impersonator_LogonType_Batch">Batch</td>
-                    <td><p>This logon type is intended for batch servers, where processes may be executing on behalf of a user 
+  </div>
+  <h3 id="fields">Fields
+  </h3>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    <thead>
+    <tbody>
+      <tr>
+        <td id="WebApplications_Utilities_Impersonator_LogonType_Batch">Batch</td>
+        <td><p>This logon type is intended for batch servers, where processes may be executing on behalf of a user 
 without their direct intervention. This type is also for higher performance servers that process many 
 plaintext authentication attempts at a time, such as mail or web servers.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td id="WebApplications_Utilities_Impersonator_LogonType_Interactive">Interactive</td>
-                    <td><p>This logon type is intended for users who will be interactively using the computer, such as a user being
+      </tr>
+      <tr>
+        <td id="WebApplications_Utilities_Impersonator_LogonType_Interactive">Interactive</td>
+        <td><p>This logon type is intended for users who will be interactively using the computer, such as a user being
 logged on by a terminal server, remote shell, or similar process. This logon type has the additional 
 expense of caching logon information for disconnected operations; therefore, it is inappropriate for 
 some client/server applications, such as a mail server.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td id="WebApplications_Utilities_Impersonator_LogonType_Network">Network</td>
-                    <td><p>This logon type is intended for high performance servers to authenticate plaintext passwords. 
+      </tr>
+      <tr>
+        <td id="WebApplications_Utilities_Impersonator_LogonType_Network">Network</td>
+        <td><p>This logon type is intended for high performance servers to authenticate plaintext passwords. 
 Credentials are not cached for this logon type.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td id="WebApplications_Utilities_Impersonator_LogonType_NetworkCleartext">NetworkCleartext</td>
-                    <td><p>This logon type preserves the name and password in the authentication package, which allows the server to make 
+      </tr>
+      <tr>
+        <td id="WebApplications_Utilities_Impersonator_LogonType_NetworkCleartext">NetworkCleartext</td>
+        <td><p>This logon type preserves the name and password in the authentication package, which allows the server to make 
 connections to other network servers while impersonating the client. A server can accept plaintext credentials 
 from a client, create an <a class="xref" href="WebApplications.Utilities.Impersonator.html">Impersonator</a>, verify that the user can access the system across the network, and still 
 communicate with other servers.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td id="WebApplications_Utilities_Impersonator_LogonType_NewCredentials">NewCredentials</td>
-                    <td><p>This logon type allows the caller to clone its current token and specify new credentials for outbound connections. 
+      </tr>
+      <tr>
+        <td id="WebApplications_Utilities_Impersonator_LogonType_NewCredentials">NewCredentials</td>
+        <td><p>This logon type allows the caller to clone its current token and specify new credentials for outbound connections. 
 The new logon session has the same local identifier but uses different credentials for other network connections.
 This logon type is supported only by the <a class="xref" href="WebApplications.Utilities.Impersonator.LogonProvider.html#WebApplications_Utilities_Impersonator_LogonProvider_WinNT50">WinNT50</a> logon provider.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td id="WebApplications_Utilities_Impersonator_LogonType_Service">Service</td>
-                    <td><p>Indicates a service-type logon. The account provided must have the service privilege enabled.</p>
+      </tr>
+      <tr>
+        <td id="WebApplications_Utilities_Impersonator_LogonType_Service">Service</td>
+        <td><p>Indicates a service-type logon. The account provided must have the service privilege enabled.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td id="WebApplications_Utilities_Impersonator_LogonType_Unlock">Unlock</td>
-                    <td><p>GINAs are no longer supported.</p>
+      </tr>
+      <tr>
+        <td id="WebApplications_Utilities_Impersonator_LogonType_Unlock">Unlock</td>
+        <td><p>GINAs are no longer supported.</p>
 <p><strong>Windows Server 2003 and Windows XP:</strong> This logon type is for GINA DLLs that log on users who will be 
 interactively using the computer. This logon type can generate a unique audit record that shows when 
 the workstation was unlocked.</p>
 </td>
-                  </tr>
-                </tbody>
-              </thead></thead></table>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull()</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_IsCombinationFlag__1___0_System_Boolean_">ExtendedEnum.IsCombinationFlag&lt;Impersonator.LogonType&gt;(Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_NumberOfFlags__1___0_System_Boolean_">ExtendedEnum.NumberOfFlags&lt;Impersonator.LogonType&gt;(Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_IsAll__1___0_">ExtendedEnum.IsAll&lt;Impersonator.LogonType&gt;()</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_IsNone__1___0_">ExtendedEnum.IsNone&lt;Impersonator.LogonType&gt;()</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_GetValueDetail__1___0_System_Boolean_">ExtendedEnum.GetValueDetail&lt;Impersonator.LogonType&gt;(Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryGetValueDetail__1___0_WebApplications_Utilities_ExtendedEnum___0__ValueDetail__System_Boolean_">ExtendedEnum.TryGetValueDetail&lt;Impersonator.LogonType&gt;(ExtendedEnum.ValueDetail&lt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryGetLong__1___0_System_Int64__System_Boolean_">ExtendedEnum.TryGetLong&lt;Impersonator.LogonType&gt;(Int64, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_GetName__1___0_System_Boolean_">ExtendedEnum.GetName&lt;Impersonator.LogonType&gt;(Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryGetName__1___0_System_String__System_Boolean_">ExtendedEnum.TryGetName&lt;Impersonator.LogonType&gt;(String, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_GetDescription__1___0_">ExtendedEnum.GetDescription&lt;Impersonator.LogonType&gt;()</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryGetDescription__1___0_System_String__">ExtendedEnum.TryGetDescription&lt;Impersonator.LogonType&gt;(String)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_AreSet__1___0___0_System_Boolean_">ExtendedEnum.AreSet&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_AreClear__1___0___0_System_Boolean_">ExtendedEnum.AreClear&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_Set__1___0___0_System_Boolean_">ExtendedEnum.Set&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TrySet__1___0___0___0__System_Boolean_">ExtendedEnum.TrySet&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Impersonator.LogonType, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_Clear__1___0___0_System_Boolean_">ExtendedEnum.Clear&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryClear__1___0___0___0__System_Boolean_">ExtendedEnum.TryClear&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Impersonator.LogonType, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_Intersect__1___0___0_System_Boolean_">ExtendedEnum.Intersect&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryIntersect__1___0___0___0__System_Boolean_">ExtendedEnum.TryIntersect&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Impersonator.LogonType, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_Invert__1___0_System_Boolean_">ExtendedEnum.Invert&lt;Impersonator.LogonType&gt;(Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryInvert__1___0___0__System_Boolean_">ExtendedEnum.TryInvert&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_SplitFlags__1___0_System_Boolean_System_Boolean_">ExtendedEnum.SplitFlags&lt;Impersonator.LogonType&gt;(Boolean, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TrySplitFlags__1___0_System_Collections_Generic_IEnumerable___0___System_Boolean_System_Boolean_">ExtendedEnum.TrySplitFlags&lt;Impersonator.LogonType&gt;(IEnumerable&lt;Impersonator.LogonType&gt;, Boolean, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape()</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;Impersonator.LogonType&gt;(IEnumerable&lt;Impersonator.LogonType&gt;, IEqualityComparer&lt;Impersonator.LogonType&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;Impersonator.LogonType&gt;(IEnumerable&lt;Impersonator.LogonType&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;Impersonator.LogonType&gt;(IEnumerable&lt;Impersonator.LogonType&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;Impersonator.LogonType&gt;()</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional()</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned()</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional()</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull()</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;Impersonator.LogonType&gt;(Expression&lt;Action&lt;Impersonator.LogonType&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;Impersonator.LogonType, TResult&gt;(Expression&lt;Func&lt;Impersonator.LogonType, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;Impersonator.LogonType, TResult&gt;(Expression&lt;Func&lt;Impersonator.LogonType, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;Impersonator.LogonType, TResult&gt;(Expression&lt;Func&lt;Impersonator.LogonType, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;Impersonator.LogonType, TResult&gt;(Expression&lt;Func&lt;Impersonator.LogonType, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </thead></thead></table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull()</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_IsCombinationFlag__1___0_System_Boolean_">ExtendedEnum.IsCombinationFlag&lt;Impersonator.LogonType&gt;(Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_NumberOfFlags__1___0_System_Boolean_">ExtendedEnum.NumberOfFlags&lt;Impersonator.LogonType&gt;(Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_IsAll__1___0_">ExtendedEnum.IsAll&lt;Impersonator.LogonType&gt;()</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_IsNone__1___0_">ExtendedEnum.IsNone&lt;Impersonator.LogonType&gt;()</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_GetValueDetail__1___0_System_Boolean_">ExtendedEnum.GetValueDetail&lt;Impersonator.LogonType&gt;(Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryGetValueDetail__1___0_WebApplications_Utilities_ExtendedEnum___0__ValueDetail__System_Boolean_">ExtendedEnum.TryGetValueDetail&lt;Impersonator.LogonType&gt;(ExtendedEnum.ValueDetail&lt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryGetLong__1___0_System_Int64__System_Boolean_">ExtendedEnum.TryGetLong&lt;Impersonator.LogonType&gt;(Int64, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_GetName__1___0_System_Boolean_">ExtendedEnum.GetName&lt;Impersonator.LogonType&gt;(Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryGetName__1___0_System_String__System_Boolean_">ExtendedEnum.TryGetName&lt;Impersonator.LogonType&gt;(String, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_GetDescription__1___0_">ExtendedEnum.GetDescription&lt;Impersonator.LogonType&gt;()</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryGetDescription__1___0_System_String__">ExtendedEnum.TryGetDescription&lt;Impersonator.LogonType&gt;(String)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_AreSet__1___0___0_System_Boolean_">ExtendedEnum.AreSet&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_AreClear__1___0___0_System_Boolean_">ExtendedEnum.AreClear&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_Set__1___0___0_System_Boolean_">ExtendedEnum.Set&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TrySet__1___0___0___0__System_Boolean_">ExtendedEnum.TrySet&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Impersonator.LogonType, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_Clear__1___0___0_System_Boolean_">ExtendedEnum.Clear&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryClear__1___0___0___0__System_Boolean_">ExtendedEnum.TryClear&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Impersonator.LogonType, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_Intersect__1___0___0_System_Boolean_">ExtendedEnum.Intersect&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryIntersect__1___0___0___0__System_Boolean_">ExtendedEnum.TryIntersect&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Impersonator.LogonType, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_Invert__1___0_System_Boolean_">ExtendedEnum.Invert&lt;Impersonator.LogonType&gt;(Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TryInvert__1___0___0__System_Boolean_">ExtendedEnum.TryInvert&lt;Impersonator.LogonType&gt;(Impersonator.LogonType, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_SplitFlags__1___0_System_Boolean_System_Boolean_">ExtendedEnum.SplitFlags&lt;Impersonator.LogonType&gt;(Boolean, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.ExtendedEnum.html#WebApplications_Utilities_ExtendedEnum_TrySplitFlags__1___0_System_Collections_Generic_IEnumerable___0___System_Boolean_System_Boolean_">ExtendedEnum.TrySplitFlags&lt;Impersonator.LogonType&gt;(IEnumerable&lt;Impersonator.LogonType&gt;, Boolean, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape()</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;Impersonator.LogonType&gt;(IEnumerable&lt;Impersonator.LogonType&gt;, IEqualityComparer&lt;Impersonator.LogonType&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;Impersonator.LogonType&gt;(IEnumerable&lt;Impersonator.LogonType&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;Impersonator.LogonType&gt;(IEnumerable&lt;Impersonator.LogonType&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;Impersonator.LogonType&gt;()</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional()</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned()</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional()</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull()</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;Impersonator.LogonType&gt;(Expression&lt;Action&lt;Impersonator.LogonType&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;Impersonator.LogonType, TResult&gt;(Expression&lt;Func&lt;Impersonator.LogonType, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;Impersonator.LogonType, TResult&gt;(Expression&lt;Func&lt;Impersonator.LogonType, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;Impersonator.LogonType, TResult&gt;(Expression&lt;Func&lt;Impersonator.LogonType, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;Impersonator.LogonType, TResult&gt;(Expression&lt;Func&lt;Impersonator.LogonType, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

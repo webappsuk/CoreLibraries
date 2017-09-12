@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class CryptographyProvider.CryptoTransform&lt;T&gt;
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,450 +76,455 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1">Class CryptographyProvider.CryptoTransform&lt;T&gt;
-              </h1>
-              <div class="markdown level0 summary"><p>Class <a class="xref" href="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform-1.html">CryptographyProvider.CryptoTransform&lt;T&gt;</a> is a base implementation of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.icryptotransform(v=vs.110).aspx">ICryptoTransform</a> interface.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1">
+  
+  
+  <h1 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1" class="text-break">Class CryptographyProvider.CryptoTransform&lt;T&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Class <a class="xref" href="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform-1.html">CryptographyProvider.CryptoTransform&lt;T&gt;</a> is a base implementation of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.icryptotransform(v=vs.110).aspx">ICryptoTransform</a> interface.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritance">
-                <h5>Inheritance</h5>
-                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
-                  <div class="level1"><span class="xref">CryptographyProvider.CryptoTransform&lt;T&gt;</span></div>
-              </div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities.Cryptography</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.Cryptography.dll</h6>
-              <h5 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">protected sealed class CryptoTransform&lt;T&gt; : ICryptoTransform, IDisposable where T : class, IDisposable</code></pre>
-              </div>
-              <h5 class="typeParameters">Type Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><span class="parametername">T</span></td>
-                    <td><p>The provider.</p>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+    <div class="level1"><span class="xref">CryptographyProvider.CryptoTransform&lt;T&gt;</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.security.cryptography.icryptotransform(v=vs.110).aspx">ICryptoTransform</a></div>
+    <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.idisposable(v=vs.110).aspx">IDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.Cryptography.html">WebApplications.Utilities.Cryptography</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.Cryptography.dll</h6>
+  <h5 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected sealed class CryptoTransform&lt;T&gt; : ICryptoTransform, IDisposable where T : class, IDisposable</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The provider.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="constructors">Constructors
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L587">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1__ctor_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1__ctor__0_System_Func__0_System_Byte___System_Int32_System_Int32_System_Byte___System_Int32_System_Int32__System_Func__0_System_Byte___System_Int32_System_Int32_System_Byte____System_Int32_System_Int32_System_Boolean_System_Boolean_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.#ctor(`0,System.Func{`0,System.Byte[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Int32},System.Func{`0,System.Byte[],System.Int32,System.Int32,System.Byte[]},System.Int32,System.Int32,System.Boolean,System.Boolean)">CryptoTransform(T, Func&lt;T, Byte[], Int32, Int32, Byte[], Int32, Int32&gt;, Func&lt;T, Byte[], Int32, Int32, Byte[]&gt;, Int32, Int32, Boolean, Boolean)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform-1.html">CryptographyProvider.CryptoTransform&lt;T&gt;</a> class.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L587">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1__ctor_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1__ctor__0_System_Func__0_System_Byte___System_Int32_System_Int32_System_Byte___System_Int32_System_Int32__System_Func__0_System_Byte___System_Int32_System_Int32_System_Byte____System_Int32_System_Int32_System_Boolean_System_Boolean_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.#ctor(`0,System.Func{`0,System.Byte[],System.Int32,System.Int32,System.Byte[],System.Int32,System.Int32},System.Func{`0,System.Byte[],System.Int32,System.Int32,System.Byte[]},System.Int32,System.Int32,System.Boolean,System.Boolean)">CryptoTransform(T, Func&lt;T, Byte[], Int32, Int32, Byte[], Int32, Int32&gt;, Func&lt;T, Byte[], Int32, Int32, Byte[]&gt;, Int32, Int32, Boolean, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform-1.html">CryptographyProvider.CryptoTransform&lt;T&gt;</a> class.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public CryptoTransform(T algorithm, Func&lt;T, byte[], int, int, byte[], int, int&gt; transformBlockFunc, Func&lt;T, byte[], int, int, byte[]&gt; transformFinalBlockFunc, int inputBlockSize, int outputBlockSize, bool canTransformMultipleBlocks, bool canReuseTransform)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><span class="xref">T</span></td>
-                    <td><span class="parametername">algorithm</span></td>
-                    <td><p>The algorithm.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CryptoTransform(T algorithm, Func&lt;T, byte[], int, int, byte[], int, int&gt; transformBlockFunc, Func&lt;T, byte[], int, int, byte[]&gt; transformFinalBlockFunc, int inputBlockSize, int outputBlockSize, bool canTransformMultipleBlocks, bool canReuseTransform)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">algorithm</span></td>
+        <td><p>The algorithm.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd269654(v=vs.110).aspx">Func</a>&lt;T, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[], <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[], <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td><span class="parametername">transformBlockFunc</span></td>
-                    <td><p>The transform block function.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/dd269654(v=vs.110).aspx">Func</a>&lt;T, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[], <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[], <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td><span class="parametername">transformBlockFunc</span></td>
+        <td><p>The transform block function.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534303(v=vs.110).aspx">Func</a>&lt;T, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[], <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]&gt;</td>
-                    <td><span class="parametername">transformFinalBlockFunc</span></td>
-                    <td><p>The transform final block function.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534303(v=vs.110).aspx">Func</a>&lt;T, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[], <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>, <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]&gt;</td>
+        <td><span class="parametername">transformFinalBlockFunc</span></td>
+        <td><p>The transform final block function.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><span class="parametername">inputBlockSize</span></td>
-                    <td><p>Size of the input block.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><span class="parametername">inputBlockSize</span></td>
+        <td><p>Size of the input block.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><span class="parametername">outputBlockSize</span></td>
-                    <td><p>Size of the output block.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><span class="parametername">outputBlockSize</span></td>
+        <td><p>Size of the output block.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">canTransformMultipleBlocks</span></td>
-                    <td><p>The can transform multiple blocks.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">canTransformMultipleBlocks</span></td>
+        <td><p>The can transform multiple blocks.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">canReuseTransform</span></td>
-                    <td><p>The can reuse transform.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">canReuseTransform</span></td>
+        <td><p>The can reuse transform.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="properties">Properties
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L644">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_CanReuseTransform_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.CanReuseTransform*"></a>
-              <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_CanReuseTransform" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.CanReuseTransform">CanReuseTransform</h4>
-              <div class="markdown level1 summary"></div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool CanReuseTransform { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/zt3k1sa8(v=vs.110).aspx">ICryptoTransform.CanReuseTransform</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L641">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_CanTransformMultipleBlocks_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.CanTransformMultipleBlocks*"></a>
-              <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_CanTransformMultipleBlocks" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.CanTransformMultipleBlocks">CanTransformMultipleBlocks</h4>
-              <div class="markdown level1 summary"></div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool CanTransformMultipleBlocks { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ba6k2wfs(v=vs.110).aspx">ICryptoTransform.CanTransformMultipleBlocks</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L635">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_InputBlockSize_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.InputBlockSize*"></a>
-              <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_InputBlockSize" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.InputBlockSize">InputBlockSize</h4>
-              <div class="markdown level1 summary"></div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public int InputBlockSize { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/f1ws0s1w(v=vs.110).aspx">ICryptoTransform.InputBlockSize</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L638">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_OutputBlockSize_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.OutputBlockSize*"></a>
-              <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_OutputBlockSize" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.OutputBlockSize">OutputBlockSize</h4>
-              <div class="markdown level1 summary"></div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public int OutputBlockSize { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/khs3th9h(v=vs.110).aspx">ICryptoTransform.OutputBlockSize</a></div>
-              <h3 id="methods">Methods
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L606">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_Dispose_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.Dispose*"></a>
-              <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_Dispose" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.Dispose">Dispose()</h4>
-              <div class="markdown level1 summary"></div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
-              </div>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/es4s3w1d(v=vs.110).aspx">IDisposable.Dispose()</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L613">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_TransformBlock_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.TransformBlock*"></a>
-              <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_TransformBlock_System_Byte___System_Int32_System_Int32_System_Byte___System_Int32_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.TransformBlock(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Int32)">TransformBlock(Byte[], Int32, Int32, Byte[], Int32)</h4>
-              <div class="markdown level1 summary"></div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
-                    <td><span class="parametername">inputBuffer</span></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><span class="parametername">inputOffset</span></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><span class="parametername">inputCount</span></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
-                    <td><span class="parametername">outputBuffer</span></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><span class="parametername">outputOffset</span></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/84hs9x3c(v=vs.110).aspx">ICryptoTransform.TransformBlock(Byte[], Int32, Int32, Byte[], Int32)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L627">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_TransformFinalBlock_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.TransformFinalBlock*"></a>
-              <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_TransformFinalBlock_System_Byte___System_Int32_System_Int32_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.TransformFinalBlock(System.Byte[],System.Int32,System.Int32)">TransformFinalBlock(Byte[], Int32, Int32)</h4>
-              <div class="markdown level1 summary"></div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
-                    <td><span class="parametername">inputBuffer</span></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><span class="parametername">inputOffset</span></td>
-                    <td></td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><span class="parametername">inputCount</span></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ddhede2z(v=vs.110).aspx">ICryptoTransform.TransformFinalBlock(Byte[], Int32, Int32)</a></div>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L644">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_CanReuseTransform_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.CanReuseTransform*"></a>
+  <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_CanReuseTransform" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.CanReuseTransform">CanReuseTransform</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool CanReuseTransform { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/zt3k1sa8(v=vs.110).aspx">ICryptoTransform.CanReuseTransform</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L641">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_CanTransformMultipleBlocks_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.CanTransformMultipleBlocks*"></a>
+  <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_CanTransformMultipleBlocks" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.CanTransformMultipleBlocks">CanTransformMultipleBlocks</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool CanTransformMultipleBlocks { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ba6k2wfs(v=vs.110).aspx">ICryptoTransform.CanTransformMultipleBlocks</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L635">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_InputBlockSize_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.InputBlockSize*"></a>
+  <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_InputBlockSize" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.InputBlockSize">InputBlockSize</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int InputBlockSize { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/f1ws0s1w(v=vs.110).aspx">ICryptoTransform.InputBlockSize</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L638">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_OutputBlockSize_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.OutputBlockSize*"></a>
+  <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_OutputBlockSize" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.OutputBlockSize">OutputBlockSize</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int OutputBlockSize { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/khs3th9h(v=vs.110).aspx">ICryptoTransform.OutputBlockSize</a></div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L606">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_Dispose_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.Dispose*"></a>
+  <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_Dispose" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/es4s3w1d(v=vs.110).aspx">IDisposable.Dispose()</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L613">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_TransformBlock_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.TransformBlock*"></a>
+  <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_TransformBlock_System_Byte___System_Int32_System_Int32_System_Byte___System_Int32_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.TransformBlock(System.Byte[],System.Int32,System.Int32,System.Byte[],System.Int32)">TransformBlock(Byte[], Int32, Int32, Byte[], Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[] outputBuffer, int outputOffset)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+        <td><span class="parametername">inputBuffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><span class="parametername">inputOffset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><span class="parametername">inputCount</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+        <td><span class="parametername">outputBuffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><span class="parametername">outputOffset</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/84hs9x3c(v=vs.110).aspx">ICryptoTransform.TransformBlock(Byte[], Int32, Int32, Byte[], Int32)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Cryptography/CryptographyProvider.cs/#L627">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_TransformFinalBlock_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.TransformFinalBlock*"></a>
+  <h4 id="WebApplications_Utilities_Cryptography_CryptographyProvider_CryptoTransform_1_TransformFinalBlock_System_Byte___System_Int32_System_Int32_" data-uid="WebApplications.Utilities.Cryptography.CryptographyProvider.CryptoTransform`1.TransformFinalBlock(System.Byte[],System.Int32,System.Int32)">TransformFinalBlock(Byte[], Int32, Int32)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public byte[] TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+        <td><span class="parametername">inputBuffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><span class="parametername">inputOffset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><span class="parametername">inputCount</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>[]</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ddhede2z(v=vs.110).aspx">ICryptoTransform.TransformFinalBlock(Byte[], Int32, Int32)</a></div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

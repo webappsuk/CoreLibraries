@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class CurrencyInfoProvider
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,931 +76,935 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider">Class CurrencyInfoProvider
-              </h1>
-              <div class="markdown level0 summary"><p>Provides methods for reading and writing currency information to/from binary and XML files.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider">
+  
+  
+  <h1 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider" class="text-break">Class CurrencyInfoProvider
+  </h1>
+  <div class="markdown level0 summary"><p>Provides methods for reading and writing currency information to/from binary and XML files.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritance">
-                <h5>Inheritance</h5>
-                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
-                  <div class="level1"><span class="xref">CurrencyInfoProvider</span></div>
-              </div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities.Globalization</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
-              <h5 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[PublicAPI]
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+    <div class="level1"><span class="xref">CurrencyInfoProvider</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html">ICurrencyInfoProvider</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.Globalization.html">WebApplications.Utilities.Globalization</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.dll</h6>
+  <h5 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[PublicAPI]
 public class CurrencyInfoProvider : ICurrencyInfoProvider</code></pre>
-              </div>
-              <h3 id="constructors">Constructors
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L343">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider__ctor_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider__ctor_NodaTime_Instant_System_Collections_Generic_IEnumerable_WebApplications_Utilities_Globalization_CurrencyInfo__" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.#ctor(NodaTime.Instant,System.Collections.Generic.IEnumerable{WebApplications.Utilities.Globalization.CurrencyInfo})">CurrencyInfoProvider(Instant, IEnumerable&lt;CurrencyInfo&gt;)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a> class.</p>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L343">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider__ctor_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider__ctor_NodaTime_Instant_System_Collections_Generic_IEnumerable_WebApplications_Utilities_Globalization_CurrencyInfo__" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.#ctor(NodaTime.Instant,System.Collections.Generic.IEnumerable{WebApplications.Utilities.Globalization.CurrencyInfo})">CurrencyInfoProvider(Instant, IEnumerable&lt;CurrencyInfo&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a> class.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public CurrencyInfoProvider(Instant published, IEnumerable&lt;CurrencyInfo&gt; currencies)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
-                    <td><span class="parametername">published</span></td>
-                    <td><p>The date this file was published.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CurrencyInfoProvider(Instant published, IEnumerable&lt;CurrencyInfo&gt; currencies)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+        <td><span class="parametername">published</span></td>
+        <td><p>The date this file was published.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a>&gt;</td>
-                    <td><span class="parametername">currencies</span></td>
-                    <td><p>The currencies in the file.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a>&gt;</td>
+        <td><span class="parametername">currencies</span></td>
+        <td><p>The currencies in the file.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="fields">Fields
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L310">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_BinaryHeader" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.BinaryHeader">BinaryHeader</h4>
-              <div class="markdown level1 summary"><p>The first four bytes expected in binary currency info files.
-Equivalent to the string &#39;$CCY&#39;.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L310">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_BinaryHeader" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.BinaryHeader">BinaryHeader</h4>
+  <div class="markdown level1 summary"><p>The first four bytes expected in binary currency info files.
+Equivalent to the string &apos;$CCY&apos;.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public const int BinaryHeader = 1497580324</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L163">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_BuiltIn" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.BuiltIn">BuiltIn</h4>
-              <div class="markdown level1 summary"><p>The built-in currency provider.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public const int BinaryHeader = 1497580324</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L163">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_BuiltIn" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.BuiltIn">BuiltIn</h4>
+  <div class="markdown level1 summary"><p>The built-in currency provider.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static readonly ICurrencyInfoProvider BuiltIn</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html">ICurrencyInfoProvider</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L157">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Empty" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Empty">Empty</h4>
-              <div class="markdown level1 summary"><p>The empty currency provider has no currencies.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly ICurrencyInfoProvider BuiltIn</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html">ICurrencyInfoProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L157">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Empty" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Empty">Empty</h4>
+  <div class="markdown level1 summary"><p>The empty currency provider has no currencies.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static readonly ICurrencyInfoProvider Empty</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html">ICurrencyInfoProvider</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="properties">Properties
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L327">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_All_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.All*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_All" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.All">All</h4>
-              <div class="markdown level1 summary"><p>The currencies in the file.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly ICurrencyInfoProvider Empty</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html">ICurrencyInfoProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L327">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_All_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.All*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_All" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.All">All</h4>
+  <div class="markdown level1 summary"><p>The currencies in the file.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public IEnumerable&lt;CurrencyInfo&gt; All { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_All">ICurrencyInfoProvider.All</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L336">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Count_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Count*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Count" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Count">Count</h4>
-              <div class="markdown level1 summary"><p>Gets the number of currencies specified in the provider.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;CurrencyInfo&gt; All { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_All">ICurrencyInfoProvider.All</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L336">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Count_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Count*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Count" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Count">Count</h4>
+  <div class="markdown level1 summary"><p>Gets the number of currencies specified in the provider.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public int Count { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><p>The count.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Count { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><p>The count.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Count">ICurrencyInfoProvider.Count</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L182">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Current_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Current*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Current" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Current">Current</h4>
-              <div class="markdown level1 summary"><p>Gets or sets the current global <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Count">ICurrencyInfoProvider.Count</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L182">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Current_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Current*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Current" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Current">Current</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the current global <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static ICurrencyInfoProvider Current { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html">ICurrencyInfoProvider</a></td>
-                    <td><p>The provider.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ICurrencyInfoProvider Current { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html">ICurrencyInfoProvider</a></td>
+        <td><p>The provider.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L322">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Published_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Published*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Published" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Published">Published</h4>
-              <div class="markdown level1 summary"><p>The date this file was published.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L322">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Published_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Published*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Published" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Published">Published</h4>
+  <div class="markdown level1 summary"><p>The date this file was published.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public Instant Published { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Published">ICurrencyInfoProvider.Published</a></div>
-              <h3 id="methods">Methods
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L582">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_System_Globalization_CultureInfo_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get(System.Globalization.CultureInfo)">Get(CultureInfo)</h4>
-              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> from the specified culture information.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Instant Published { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Instant.html">Instant</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Published">ICurrencyInfoProvider.Published</a></div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L582">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_System_Globalization_CultureInfo_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get(System.Globalization.CultureInfo)">Get(CultureInfo)</h4>
+  <div class="markdown level1 summary"><p>Gets the <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> from the specified culture information.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public CurrencyInfo Get(CultureInfo cultureInfo)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a></td>
-                    <td><span class="parametername">cultureInfo</span></td>
-                    <td><p>The culture information.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CurrencyInfo Get(CultureInfo cultureInfo)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.cultureinfo(v=vs.110).aspx">CultureInfo</a></td>
+        <td><span class="parametername">cultureInfo</span></td>
+        <td><p>The culture information.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a></td>
-                    <td><p>The associated <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> if found; otherwise <span class="xref">null</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a></td>
+        <td><p>The associated <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> if found; otherwise <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Get_System_Globalization_CultureInfo_">ICurrencyInfoProvider.Get(CultureInfo)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L567">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_System_Globalization_RegionInfo_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get(System.Globalization.RegionInfo)">Get(RegionInfo)</h4>
-              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> from the specified region information.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Get_System_Globalization_CultureInfo_">ICurrencyInfoProvider.Get(CultureInfo)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L567">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_System_Globalization_RegionInfo_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get(System.Globalization.RegionInfo)">Get(RegionInfo)</h4>
+  <div class="markdown level1 summary"><p>Gets the <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> from the specified region information.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public CurrencyInfo Get(RegionInfo regionInfo)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.regioninfo(v=vs.110).aspx">RegionInfo</a></td>
-                    <td><span class="parametername">regionInfo</span></td>
-                    <td><p>The region information.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CurrencyInfo Get(RegionInfo regionInfo)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.globalization.regioninfo(v=vs.110).aspx">RegionInfo</a></td>
+        <td><span class="parametername">regionInfo</span></td>
+        <td><p>The region information.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a></td>
-                    <td><p>The associated <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> if found; otherwise <span class="xref">null</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a></td>
+        <td><p>The associated <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> if found; otherwise <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Get_System_Globalization_RegionInfo_">ICurrencyInfoProvider.Get(RegionInfo)</a></div>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
-                    <td><p><span class="paramref">regionInfo</span> is <span class="xref">null</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Get_System_Globalization_RegionInfo_">ICurrencyInfoProvider.Get(RegionInfo)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">regionInfo</code> is <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L549">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_System_String_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get(System.String)">Get(String)</h4>
-              <div class="markdown level1 summary"><p>Retrieves a <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> with the ISO Code specified.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L549">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_System_String_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get(System.String)">Get(String)</h4>
+  <div class="markdown level1 summary"><p>Retrieves a <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> with the ISO Code specified.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public CurrencyInfo Get(string currencyCode)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">currencyCode</span></td>
-                    <td><p>The ISO Code.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CurrencyInfo Get(string currencyCode)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">currencyCode</span></td>
+        <td><p>The ISO Code.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a></td>
-                    <td><p>The <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> that corresponds to the <span class="paramref">currencyCode</span> specified (if any);
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a></td>
+        <td><p>The <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a> that corresponds to the <code data-dev-comment-type="paramref" class="paramref">currencyCode</code> specified (if any);
 otherwise the default value for the type is returned.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Get_System_String_">ICurrencyInfoProvider.Get(String)</a></div>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
-                    <td><p><span class="paramref">currencyCode</span> is <span class="xref">null</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Get_System_String_">ICurrencyInfoProvider.Get(String)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">currencyCode</code> is <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L606">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_WebApplications_Utilities_Globalization_ExtendedCultureInfo_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get(WebApplications.Utilities.Globalization.ExtendedCultureInfo)">Get(ExtendedCultureInfo)</h4>
-              <div class="markdown level1 summary"><p>Gets the specified culture information.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L606">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Get_WebApplications_Utilities_Globalization_ExtendedCultureInfo_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Get(WebApplications.Utilities.Globalization.ExtendedCultureInfo)">Get(ExtendedCultureInfo)</h4>
+  <div class="markdown level1 summary"><p>Gets the specified culture information.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public CurrencyInfo Get(ExtendedCultureInfo cultureInfo)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a></td>
-                    <td><span class="parametername">cultureInfo</span></td>
-                    <td><p>The culture information.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CurrencyInfo Get(ExtendedCultureInfo cultureInfo)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.ExtendedCultureInfo.html">ExtendedCultureInfo</a></td>
+        <td><span class="parametername">cultureInfo</span></td>
+        <td><p>The culture information.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Get_WebApplications_Utilities_Globalization_ExtendedCultureInfo_">ICurrencyInfoProvider.Get(ExtendedCultureInfo)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L374">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Load_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Load*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Load_System_IO_Stream_System_Boolean_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Load(System.IO.Stream,System.Boolean)">Load(Stream, Boolean)</h4>
-              <div class="markdown level1 summary"><p>Loads the currencies from the given stream, determining the format of the data based on the contents of the stream.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfo.html">CurrencyInfo</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html#WebApplications_Utilities_Globalization_ICurrencyInfoProvider_Get_WebApplications_Utilities_Globalization_ExtendedCultureInfo_">ICurrencyInfoProvider.Get(ExtendedCultureInfo)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L374">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Load_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Load*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_Load_System_IO_Stream_System_Boolean_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.Load(System.IO.Stream,System.Boolean)">Load(Stream, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Loads the currencies from the given stream, determining the format of the data based on the contents of the stream.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static CurrencyInfoProvider Load(Stream stream, bool leaveOpen = false)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.stream(v=vs.110).aspx">Stream</a></td>
-                    <td><span class="parametername">stream</span></td>
-                    <td><p>The stream.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static CurrencyInfoProvider Load(Stream stream, bool leaveOpen = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.stream(v=vs.110).aspx">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The stream.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">leaveOpen</span></td>
-                    <td><p>if set to <span class="xref">true</span> the <span class="paramref">stream</span> will be left open.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">leaveOpen</span></td>
+        <td><p>if set to <span class="xref">true</span> the <code data-dev-comment-type="paramref" class="paramref">stream</code> will be left open.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L242">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadCurrencies_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadCurrencies*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadCurrencies_System_String_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadCurrencies(System.String)">LoadCurrencies(String)</h4>
-              <div class="markdown level1 summary"><p>Loads the currency info provider from the path given, or defaults to the <span class="xref">UtilityConfiguration.Active.ISO4217</span> configured provider path,
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L242">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadCurrencies_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadCurrencies*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadCurrencies_System_String_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadCurrencies(System.String)">LoadCurrencies(String)</h4>
+  <div class="markdown level1 summary"><p>Loads the currency info provider from the path given, or defaults to the <span class="xref">UtilityConfiguration.Active.ISO4217</span> configured provider path,
 or falls back to the <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html#WebApplications_Utilities_Globalization_CurrencyInfoProvider_BuiltIn">BuiltIn</a> provider.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static ICurrencyInfoProvider LoadCurrencies(string path = null)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">path</span></td>
-                    <td><p>The path.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ICurrencyInfoProvider LoadCurrencies(string path = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">path</span></td>
+        <td><p>The path.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html">ICurrencyInfoProvider</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.filenotfoundexception(v=vs.110).aspx">FileNotFoundException</a></td>
-                    <td><p>The ISO 4217 file specified was not found.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.ICurrencyInfoProvider.html">ICurrencyInfoProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.filenotfoundexception(v=vs.110).aspx">FileNotFoundException</a></td>
+        <td><p>The ISO 4217 file specified was not found.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.fileloadexception(v=vs.110).aspx">FileLoadException</a></td>
-                    <td><p>An exception was thrown while loading the currency information from the ISO 4217 file.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.fileloadexception(v=vs.110).aspx">FileLoadException</a></td>
+        <td><p>An exception was thrown while loading the currency information from the ISO 4217 file.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.invaliddataexception(v=vs.110).aspx">InvalidDataException</a></td>
-                    <td><p>The data in the ISO 4217 file was invalid.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.invaliddataexception(v=vs.110).aspx">InvalidDataException</a></td>
+        <td><p>The data in the ISO 4217 file was invalid.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L495">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromBinary_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromBinary*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromBinary_System_IO_Stream_System_Boolean_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromBinary(System.IO.Stream,System.Boolean)">LoadFromBinary(Stream, Boolean)</h4>
-              <div class="markdown level1 summary"><p>Loads the currencies from binary.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L495">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromBinary_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromBinary*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromBinary_System_IO_Stream_System_Boolean_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromBinary(System.IO.Stream,System.Boolean)">LoadFromBinary(Stream, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Loads the currencies from binary.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static CurrencyInfoProvider LoadFromBinary(Stream stream, bool leaveOpen = false)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.stream(v=vs.110).aspx">Stream</a></td>
-                    <td><span class="parametername">stream</span></td>
-                    <td><p>The binary stream to load from.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static CurrencyInfoProvider LoadFromBinary(Stream stream, bool leaveOpen = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.stream(v=vs.110).aspx">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The binary stream to load from.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">leaveOpen</span></td>
-                    <td><p>if set to <span class="xref">true</span> the <span class="paramref">stream</span> will be left open.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">leaveOpen</span></td>
+        <td><p>if set to <span class="xref">true</span> the <code data-dev-comment-type="paramref" class="paramref">stream</code> will be left open.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L358">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromFile_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromFile*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromFile_System_String_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromFile(System.String)">LoadFromFile(String)</h4>
-              <div class="markdown level1 summary"><p>Loads the provider from a file. If the path ends in the extension .xml the provider will be loaded from XML; 
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L358">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromFile_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromFile*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromFile_System_String_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromFile(System.String)">LoadFromFile(String)</h4>
+  <div class="markdown level1 summary"><p>Loads the provider from a file. If the path ends in the extension .xml the provider will be loaded from XML; 
 otherwise the contents of the file will be used to determine the format.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static CurrencyInfoProvider LoadFromFile(string path)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">path</span></td>
-                    <td><p>The path to the file.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static CurrencyInfoProvider LoadFromFile(string path)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">path</span></td>
+        <td><p>The path to the file.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L405">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromXml_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromXml*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromXml_System_IO_TextReader_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromXml(System.IO.TextReader)">LoadFromXml(TextReader)</h4>
-              <div class="markdown level1 summary"><p>Loads the currencies from XML.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L405">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromXml_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromXml*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromXml_System_IO_TextReader_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromXml(System.IO.TextReader)">LoadFromXml(TextReader)</h4>
+  <div class="markdown level1 summary"><p>Loads the currencies from XML.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static CurrencyInfoProvider LoadFromXml(TextReader reader)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textreader(v=vs.110).aspx">TextReader</a></td>
-                    <td><span class="parametername">reader</span></td>
-                    <td><p>The reader.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static CurrencyInfoProvider LoadFromXml(TextReader reader)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textreader(v=vs.110).aspx">TextReader</a></td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The reader.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L391">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromXml_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromXml*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromXml_System_String_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromXml(System.String)">LoadFromXml(String)</h4>
-              <div class="markdown level1 summary"><p>Loads the currencies from XML.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L391">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromXml_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromXml*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_LoadFromXml_System_String_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.LoadFromXml(System.String)">LoadFromXml(String)</h4>
+  <div class="markdown level1 summary"><p>Loads the currencies from XML.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static CurrencyInfoProvider LoadFromXml(string xml)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">xml</span></td>
-                    <td><p>The XML.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static CurrencyInfoProvider LoadFromXml(string xml)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">xml</span></td>
+        <td><p>The XML.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L227">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_SetCurrentProvider_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.SetCurrentProvider*"></a>
-              <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_SetCurrentProvider_System_String_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.SetCurrentProvider(System.String)">SetCurrentProvider(String)</h4>
-              <div class="markdown level1 summary"><p>Sets the current provider to the currencies specified in the path, or defaults to the <span class="xref">UtilityConfiguration.Active.ISO4217</span> configured provider path,
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html">CurrencyInfoProvider</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Globalization/CurrencyInfoProvider.cs/#L227">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_SetCurrentProvider_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.SetCurrentProvider*"></a>
+  <h4 id="WebApplications_Utilities_Globalization_CurrencyInfoProvider_SetCurrentProvider_System_String_" data-uid="WebApplications.Utilities.Globalization.CurrencyInfoProvider.SetCurrentProvider(System.String)">SetCurrentProvider(String)</h4>
+  <div class="markdown level1 summary"><p>Sets the current provider to the currencies specified in the path, or defaults to the <span class="xref">UtilityConfiguration.Active.ISO4217</span> configured provider path,
 or falls back to the <a class="xref" href="WebApplications.Utilities.Globalization.CurrencyInfoProvider.html#WebApplications_Utilities_Globalization_CurrencyInfoProvider_BuiltIn">BuiltIn</a> provider.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static void SetCurrentProvider(string path = null)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">path</span></td>
-                    <td><p>The path.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void SetCurrentProvider(string path = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">path</span></td>
+        <td><p>The path.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Globalization.GlobalizationExtensions.html#WebApplications_Utilities_Globalization_GlobalizationExtensions_ToBinary_WebApplications_Utilities_Globalization_ICurrencyInfoProvider_System_IO_Stream_System_Boolean_">GlobalizationExtensions.ToBinary(ICurrencyInfoProvider, Stream, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Globalization.GlobalizationExtensions.html#WebApplications_Utilities_Globalization_GlobalizationExtensions_ToXml_WebApplications_Utilities_Globalization_ICurrencyInfoProvider_">GlobalizationExtensions.ToXml(ICurrencyInfoProvider)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Globalization.GlobalizationExtensions.html#WebApplications_Utilities_Globalization_GlobalizationExtensions_Merge_WebApplications_Utilities_Globalization_ICurrencyInfoProvider_WebApplications_Utilities_Globalization_ICurrencyInfoProvider_">GlobalizationExtensions.Merge(ICurrencyInfoProvider, ICurrencyInfoProvider)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Globalization.GlobalizationExtensions.html#WebApplications_Utilities_Globalization_GlobalizationExtensions_ToBinary_WebApplications_Utilities_Globalization_ICurrencyInfoProvider_System_IO_Stream_System_Boolean_">GlobalizationExtensions.ToBinary(ICurrencyInfoProvider, Stream, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Globalization.GlobalizationExtensions.html#WebApplications_Utilities_Globalization_GlobalizationExtensions_ToXml_WebApplications_Utilities_Globalization_ICurrencyInfoProvider_">GlobalizationExtensions.ToXml(ICurrencyInfoProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Globalization.GlobalizationExtensions.html#WebApplications_Utilities_Globalization_GlobalizationExtensions_Merge_WebApplications_Utilities_Globalization_ICurrencyInfoProvider_WebApplications_Utilities_Globalization_ICurrencyInfoProvider_">GlobalizationExtensions.Merge(ICurrencyInfoProvider, ICurrencyInfoProvider)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ResettableLazy&lt;T&gt;
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,566 +76,566 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_ResettableLazy_1" data-uid="WebApplications.Utilities.ResettableLazy`1">Class ResettableLazy&lt;T&gt;
-              </h1>
-              <div class="markdown level0 summary"><p>Provides support for lazy initialization.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.ResettableLazy`1">
+  
+  
+  <h1 id="WebApplications_Utilities_ResettableLazy_1" data-uid="WebApplications.Utilities.ResettableLazy`1" class="text-break">Class ResettableLazy&lt;T&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Provides support for lazy initialization.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritance">
-                <h5>Inheritance</h5>
-                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
-                  <div class="level1"><span class="xref">ResettableLazy&lt;T&gt;</span></div>
-              </div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
-              <h5 id="WebApplications_Utilities_ResettableLazy_1_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[Serializable]
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+    <div class="level1"><span class="xref">ResettableLazy&lt;T&gt;</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.html">WebApplications.Utilities</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.dll</h6>
+  <h5 id="WebApplications_Utilities_ResettableLazy_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[Serializable]
 [PublicAPI]
 [ComVisible(false)]
 public class ResettableLazy&lt;T&gt;</code></pre>
-              </div>
-              <h5 class="typeParameters">Type Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><span class="parametername">T</span></td>
-                    <td><p>Specifies the type of element being lazily initialized.</p>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Specifies the type of element being lazily initialized.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 id="WebApplications_Utilities_ResettableLazy_1_remarks"><strong>Remarks</strong></h5>
-              <div class="markdown level0 remarks"><p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="WebApplications_Utilities_ResettableLazy_1_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>
 By default, all public and protected members of <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> are thread-safe and may be used
 concurrently from multiple threads.  These thread-safety guarantees may be removed optionally and per instance
-using parameters to the type&#39;s constructors.
+using parameters to the type&apos;s constructors.
 </p>
 <p>This code is based off the source code for the <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd642331(v=vs.110).aspx">Lazy&lt;T&gt;</a> class.</p>
 </div>
-              <h3 id="constructors">Constructors
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L159">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor">ResettableLazy()</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class that 
-uses <span class="typeparamref">T</span>&#39;s default constructor for lazy initialization.</p>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L159">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor">ResettableLazy()</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class that 
+uses <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>&apos;s default constructor for lazy initialization.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public ResettableLazy()</code></pre>
-              </div>
-              <h5 id="WebApplications_Utilities_ResettableLazy_1__ctor_remarks">Remarks</h5>
-              <div class="markdown level1 remarks"><p>An instance created with this constructor may be used concurrently from multiple threads.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ResettableLazy()</code></pre>
+  </div>
+  <h5 id="WebApplications_Utilities_ResettableLazy_1__ctor_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>An instance created with this constructor may be used concurrently from multiple threads.</p>
 </div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L172">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Boolean_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor(System.Boolean)">ResettableLazy(Boolean)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the  <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class that uses 
-<span class="typeparamref">T</span>&#39;s default constructor for lazy initialization.</p>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L172">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Boolean_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor(System.Boolean)">ResettableLazy(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the  <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class that uses 
+<code data-dev-comment-type="typeparamref" class="typeparamref">T</code>&apos;s default constructor for lazy initialization.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public ResettableLazy(bool createOnToString)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">createOnToString</span></td>
-                    <td><p>if set to <span class="xref">true</span> the value will be created when <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_ToString">ToString()</a> is called.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ResettableLazy(bool createOnToString)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">createOnToString</span></td>
+        <td><p>if set to <span class="xref">true</span> the value will be created when <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_ToString">ToString()</a> is called.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Boolean__remarks">Remarks</h5>
-              <div class="markdown level1 remarks"><p>An instance created with this constructor may be used concurrently from multiple threads.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>An instance created with this constructor may be used concurrently from multiple threads.</p>
 </div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L183">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Boolean_System_Boolean_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor(System.Boolean,System.Boolean)">ResettableLazy(Boolean, Boolean)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class that uses 
-<span class="typeparamref">T</span>&#39;s default constructor and a specified thread-safety mode.</p>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L183">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Boolean_System_Boolean_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor(System.Boolean,System.Boolean)">ResettableLazy(Boolean, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class that uses 
+<code data-dev-comment-type="typeparamref" class="typeparamref">T</code>&apos;s default constructor and a specified thread-safety mode.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public ResettableLazy(bool isThreadSafe, bool createOnToString = false)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">isThreadSafe</span></td>
-                    <td><p>true if this instance should be usable by multiple threads concurrently; false if the instance will only be used by one thread at a time.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ResettableLazy(bool isThreadSafe, bool createOnToString = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">isThreadSafe</span></td>
+        <td><p>true if this instance should be usable by multiple threads concurrently; false if the instance will only be used by one thread at a time.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">createOnToString</span></td>
-                    <td><p>if set to <span class="xref">true</span> the value will be created when <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_ToString">ToString()</a> is called.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">createOnToString</span></td>
+        <td><p>if set to <span class="xref">true</span> the value will be created when <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_ToString">ToString()</a> is called.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L212">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Func__0__System_Boolean_System_Boolean_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor(System.Func{`0},System.Boolean,System.Boolean)">ResettableLazy(Func&lt;T&gt;, Boolean, Boolean)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L212">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Func__0__System_Boolean_System_Boolean_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor(System.Func{`0},System.Boolean,System.Boolean)">ResettableLazy(Func&lt;T&gt;, Boolean, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class
 that uses a specified initialization function and a specified thread-safety mode.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public ResettableLazy(Func&lt;T&gt; valueFactory, bool isThreadSafe, bool createOnToString = false)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534960(v=vs.110).aspx">Func</a>&lt;T&gt;</td>
-                    <td><span class="parametername">valueFactory</span></td>
-                    <td><p>The <span class="xref">System.Func{T}</span> invoked to produce the lazily-initialized value when it is needed.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ResettableLazy(Func&lt;T&gt; valueFactory, bool isThreadSafe, bool createOnToString = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534960(v=vs.110).aspx">Func</a>&lt;T&gt;</td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The <span class="xref">System.Func{T}</span> invoked to produce the lazily-initialized value when it is needed.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">isThreadSafe</span></td>
-                    <td><p>true if this instance should be usable by multiple threads concurrently; false if the instance will only be used by one thread at a time.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">isThreadSafe</span></td>
+        <td><p>true if this instance should be usable by multiple threads concurrently; false if the instance will only be used by one thread at a time.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">createOnToString</span></td>
-                    <td><p>if set to <span class="xref">true</span> the value will be created when <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_ToString">ToString()</a> is called.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">createOnToString</span></td>
+        <td><p>if set to <span class="xref">true</span> the value will be created when <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_ToString">ToString()</a> is called.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
-                    <td><p><span class="paramref">valueFactory</span> is a null reference (Nothing in Visual Basic).</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">valueFactory</code> is a null reference (Nothing in Visual Basic).</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L230">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Func__0__System_Threading_LazyThreadSafetyMode_System_Boolean_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor(System.Func{`0},System.Threading.LazyThreadSafetyMode,System.Boolean)">ResettableLazy(Func&lt;T&gt;, LazyThreadSafetyMode, Boolean)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L230">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Func__0__System_Threading_LazyThreadSafetyMode_System_Boolean_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor(System.Func{`0},System.Threading.LazyThreadSafetyMode,System.Boolean)">ResettableLazy(Func&lt;T&gt;, LazyThreadSafetyMode, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class
 that uses a specified initialization function and a specified thread-safety mode.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public ResettableLazy(Func&lt;T&gt; valueFactory, LazyThreadSafetyMode mode = LazyThreadSafetyMode.ExecutionAndPublication, bool createOnToString = false)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534960(v=vs.110).aspx">Func</a>&lt;T&gt;</td>
-                    <td><span class="parametername">valueFactory</span></td>
-                    <td><p>The <span class="xref">System.Func{T}</span> invoked to produce the lazily-initialized value when it is needed.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ResettableLazy(Func&lt;T&gt; valueFactory, LazyThreadSafetyMode mode = LazyThreadSafetyMode.ExecutionAndPublication, bool createOnToString = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/bb534960(v=vs.110).aspx">Func</a>&lt;T&gt;</td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The <span class="xref">System.Func{T}</span> invoked to produce the lazily-initialized value when it is needed.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.lazythreadsafetymode(v=vs.110).aspx">LazyThreadSafetyMode</a></td>
-                    <td><span class="parametername">mode</span></td>
-                    <td><p>The lazy thread-safety mode.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.lazythreadsafetymode(v=vs.110).aspx">LazyThreadSafetyMode</a></td>
+        <td><span class="parametername">mode</span></td>
+        <td><p>The lazy thread-safety mode.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">createOnToString</span></td>
-                    <td><p>if set to <span class="xref">true</span> the value will be created when <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_ToString">ToString()</a> is called.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">createOnToString</span></td>
+        <td><p>if set to <span class="xref">true</span> the value will be created when <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_ToString">ToString()</a> is called.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
-                    <td><p><span class="paramref">valueFactory</span> is
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentnullexception(v=vs.110).aspx">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">valueFactory</code> is
     a null reference (Nothing in Visual Basic).</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
-                    <td><p><span class="paramref">mode</span> mode contains an invalid value.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">mode</code> mode contains an invalid value.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L198">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Threading_LazyThreadSafetyMode_System_Boolean_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor(System.Threading.LazyThreadSafetyMode,System.Boolean)">ResettableLazy(LazyThreadSafetyMode, Boolean)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class that uses 
-<span class="typeparamref">T</span>&#39;s default constructor and a specified thread-safety mode.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L198">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_ResettableLazy_1__ctor_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_ResettableLazy_1__ctor_System_Threading_LazyThreadSafetyMode_System_Boolean_" data-uid="WebApplications.Utilities.ResettableLazy`1.#ctor(System.Threading.LazyThreadSafetyMode,System.Boolean)">ResettableLazy(LazyThreadSafetyMode, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> class that uses 
+<code data-dev-comment-type="typeparamref" class="typeparamref">T</code>&apos;s default constructor and a specified thread-safety mode.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public ResettableLazy(LazyThreadSafetyMode mode, bool createOnToString = false)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.lazythreadsafetymode(v=vs.110).aspx">LazyThreadSafetyMode</a></td>
-                    <td><span class="parametername">mode</span></td>
-                    <td><p>The lazy thread-safety mode mode</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ResettableLazy(LazyThreadSafetyMode mode, bool createOnToString = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.lazythreadsafetymode(v=vs.110).aspx">LazyThreadSafetyMode</a></td>
+        <td><span class="parametername">mode</span></td>
+        <td><p>The lazy thread-safety mode mode</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">createOnToString</span></td>
-                    <td><p>if set to <span class="xref">true</span> the value will be created when <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_ToString">ToString()</a> is called.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">createOnToString</span></td>
+        <td><p>if set to <span class="xref">true</span> the value will be created when <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_ToString">ToString()</a> is called.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
-                    <td><p><span class="paramref">mode</span> mode contains an invalid valuee</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">mode</code> mode contains an invalid valuee</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="properties">Properties
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L358">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_ResettableLazy_1_IsValueCreated_" data-uid="WebApplications.Utilities.ResettableLazy`1.IsValueCreated*"></a>
-              <h4 id="WebApplications_Utilities_ResettableLazy_1_IsValueCreated" data-uid="WebApplications.Utilities.ResettableLazy`1.IsValueCreated">IsValueCreated</h4>
-              <div class="markdown level1 summary"><p>Gets a value indicating whether the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> has been initialized.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L358">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_ResettableLazy_1_IsValueCreated_" data-uid="WebApplications.Utilities.ResettableLazy`1.IsValueCreated*"></a>
+  <h4 id="WebApplications_Utilities_ResettableLazy_1_IsValueCreated" data-uid="WebApplications.Utilities.ResettableLazy`1.IsValueCreated">IsValueCreated</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> has been initialized.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool IsValueCreated { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p><span class="xref">true</span> if the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> instance has been initialized;
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsValueCreated { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> instance has been initialized;
 otherwise, <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 id="WebApplications_Utilities_ResettableLazy_1_IsValueCreated_remarks">Remarks</h5>
-              <div class="markdown level1 remarks"><p>The initialization of a 
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="WebApplications_Utilities_ResettableLazy_1_IsValueCreated_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The initialization of a 
 <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> instance may result in either
 a value being produced or an exception being thrown.  If an exception goes unhandled during initialization,
 <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_IsValueCreated">IsValueCreated</a> will return <span class="xref">false</span>.</p>
 </div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L382">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_ResettableLazy_1_Value_" data-uid="WebApplications.Utilities.ResettableLazy`1.Value*"></a>
-              <h4 id="WebApplications_Utilities_ResettableLazy_1_Value" data-uid="WebApplications.Utilities.ResettableLazy`1.Value">Value</h4>
-              <div class="markdown level1 summary"><p>Gets the lazily initialized value of the current <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a>.</p>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L382">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_ResettableLazy_1_Value_" data-uid="WebApplications.Utilities.ResettableLazy`1.Value*"></a>
+  <h4 id="WebApplications_Utilities_ResettableLazy_1_Value" data-uid="WebApplications.Utilities.ResettableLazy`1.Value">Value</h4>
+  <div class="markdown level1 summary"><p>Gets the lazily initialized value of the current <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public T Value { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><span class="xref">T</span></td>
-                    <td><p>The lazily initialized value of the current <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T Value { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The lazily initialized value of the current <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 id="WebApplications_Utilities_ResettableLazy_1_Value_remarks">Remarks</h5>
-              <div class="markdown level1 remarks"><p>If <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_IsValueCreated">IsValueCreated</a> is false, accessing <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_Value">Value</a> will force initialization.
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="WebApplications_Utilities_ResettableLazy_1_Value_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_IsValueCreated">IsValueCreated</a> is false, accessing <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_Value">Value</a> will force initialization.
 Please <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.lazythreadsafetymode(v=vs.110).aspx">LazyThreadSafetyMode</a> for more information on how <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> will behave if an exception is thrown
 from initialization delegate.</p>
 </div>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.missingmemberexception(v=vs.110).aspx">MissingMemberException</a></td>
-                    <td><p>The <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> was initialized to use the default constructor 
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.missingmemberexception(v=vs.110).aspx">MissingMemberException</a></td>
+        <td><p>The <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> was initialized to use the default constructor 
 of the type being lazily initialized, and that type does not have a public, parameterless constructor.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.memberaccessexception(v=vs.110).aspx">MemberAccessException</a></td>
-                    <td><p>The <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> was initialized to use the default constructor 
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.memberaccessexception(v=vs.110).aspx">MemberAccessException</a></td>
+        <td><p>The <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> was initialized to use the default constructor 
 of the type being lazily initialized, and permissions to access the constructor were missing.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.invalidoperationexception(v=vs.110).aspx">InvalidOperationException</a></td>
-                    <td><p>The <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> was constructed with the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.lazythreadsafetymode(v=vs.110).aspx">ExecutionAndPublication</a> or
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.invalidoperationexception(v=vs.110).aspx">InvalidOperationException</a></td>
+        <td><p>The <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> was constructed with the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.lazythreadsafetymode(v=vs.110).aspx">ExecutionAndPublication</a> or
 <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.lazythreadsafetymode(v=vs.110).aspx">None</a>  and the initialization function attempted to access <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_Value">Value</a> on this instance.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="methods">Methods
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L499">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_ResettableLazy_1_Reset_" data-uid="WebApplications.Utilities.ResettableLazy`1.Reset*"></a>
-              <h4 id="WebApplications_Utilities_ResettableLazy_1_Reset" data-uid="WebApplications.Utilities.ResettableLazy`1.Reset">Reset()</h4>
-              <div class="markdown level1 summary"><p>Resets the value of this <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> to not created.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L499">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_ResettableLazy_1_Reset_" data-uid="WebApplications.Utilities.ResettableLazy`1.Reset*"></a>
+  <h4 id="WebApplications_Utilities_ResettableLazy_1_Reset" data-uid="WebApplications.Utilities.ResettableLazy`1.Reset">Reset()</h4>
+  <div class="markdown level1 summary"><p>Resets the value of this <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html">ResettableLazy&lt;T&gt;</a> to not created.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
-              </div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L277">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_ResettableLazy_1_ToString_" data-uid="WebApplications.Utilities.ResettableLazy`1.ToString*"></a>
-              <h4 id="WebApplications_Utilities_ResettableLazy_1_ToString" data-uid="WebApplications.Utilities.ResettableLazy`1.ToString">ToString()</h4>
-              <div class="markdown level1 summary"><p>Creates and returns a string representation of this instance.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/ResettableLazy.cs/#L277">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_ResettableLazy_1_ToString_" data-uid="WebApplications.Utilities.ResettableLazy`1.ToString*"></a>
+  <h4 id="WebApplications_Utilities_ResettableLazy_1_ToString" data-uid="WebApplications.Utilities.ResettableLazy`1.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Creates and returns a string representation of this instance.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
-              </div>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><p>The result of calling <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">ToString()</a> on the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_Value">Value</a>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><p>The result of calling <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">ToString()</a> on the <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_Value">Value</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="overrides">Overrides</h5>
-              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a></div>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.nullreferenceexception(v=vs.110).aspx">NullReferenceException</a></td>
-                    <td><p>The <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_Value">Value</a> is null.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.nullreferenceexception(v=vs.110).aspx">NullReferenceException</a></td>
+        <td><p>The <a class="xref" href="WebApplications.Utilities.ResettableLazy-1.html#WebApplications_Utilities_ResettableLazy_1_Value">Value</a> is null.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

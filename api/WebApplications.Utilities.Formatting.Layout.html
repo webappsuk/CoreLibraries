@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Layout
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,1292 +76,1297 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Formatting_Layout" data-uid="WebApplications.Utilities.Formatting.Layout">Class Layout
-              </h1>
-              <div class="markdown level0 summary"><p>Defines a layout for use with a <a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a>.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Formatting.Layout">
+  
+  
+  <h1 id="WebApplications_Utilities_Formatting_Layout" data-uid="WebApplications.Utilities.Formatting.Layout" class="text-break">Class Layout
+  </h1>
+  <div class="markdown level0 summary"><p>Defines a layout for use with a <a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a>.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritance">
-                <h5>Inheritance</h5>
-                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
-                  <div class="level1"><span class="xref">Layout</span></div>
-              </div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities.Formatting</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
-              <h5 id="WebApplications_Utilities_Formatting_Layout_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[PublicAPI]
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+    <div class="level1"><span class="xref">Layout</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformattable(v=vs.110).aspx">IFormattable</a></div>
+    <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131187(v=vs.110).aspx">IEquatable</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a>&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.Formatting.html">WebApplications.Utilities.Formatting</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.dll</h6>
+  <h5 id="WebApplications_Utilities_Formatting_Layout_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[PublicAPI]
 public class Layout : IFormattable, IEquatable&lt;Layout&gt;</code></pre>
-              </div>
-              <h3 id="constructors">Constructors
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L186">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout__ctor_" data-uid="WebApplications.Utilities.Formatting.Layout.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout__ctor_WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Collections_Generic_IEnumerable_System_Int32___WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_Alignment__WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Boolean__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_LayoutWrapMode__" data-uid="WebApplications.Utilities.Formatting.Layout.#ctor(WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Collections.Generic.IEnumerable{System.Int32}},WebApplications.Utilities.Optional{System.Byte},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{WebApplications.Utilities.Formatting.Alignment},WebApplications.Utilities.Optional{System.Byte},WebApplications.Utilities.Optional{System.Boolean},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{WebApplications.Utilities.Formatting.LayoutWrapMode})">Layout(Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Char&gt;, Optional&lt;Int32&gt;, Optional&lt;IEnumerable&lt;Int32&gt;&gt;, Optional&lt;Byte&gt;, Optional&lt;Char&gt;, Optional&lt;Alignment&gt;, Optional&lt;Byte&gt;, Optional&lt;Boolean&gt;, Optional&lt;Char&gt;, Optional&lt;LayoutWrapMode&gt;)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a> class.</p>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L186">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout__ctor_" data-uid="WebApplications.Utilities.Formatting.Layout.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout__ctor_WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Collections_Generic_IEnumerable_System_Int32___WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_Alignment__WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Boolean__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_LayoutWrapMode__" data-uid="WebApplications.Utilities.Formatting.Layout.#ctor(WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Collections.Generic.IEnumerable{System.Int32}},WebApplications.Utilities.Optional{System.Byte},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{WebApplications.Utilities.Formatting.Alignment},WebApplications.Utilities.Optional{System.Byte},WebApplications.Utilities.Optional{System.Boolean},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{WebApplications.Utilities.Formatting.LayoutWrapMode})">Layout(Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Char&gt;, Optional&lt;Int32&gt;, Optional&lt;IEnumerable&lt;Int32&gt;&gt;, Optional&lt;Byte&gt;, Optional&lt;Char&gt;, Optional&lt;Alignment&gt;, Optional&lt;Byte&gt;, Optional&lt;Boolean&gt;, Optional&lt;Char&gt;, Optional&lt;LayoutWrapMode&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a> class.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public Layout(Optional&lt;int&gt; width = null, Optional&lt;int&gt; indentSize = null, Optional&lt;int&gt; rightMarginSize = null, Optional&lt;char&gt; indentChar = null, Optional&lt;int&gt; firstLineIndentSize = null, Optional&lt;IEnumerable&lt;int&gt;&gt; tabStops = null, Optional&lt;byte&gt; tabSize = null, Optional&lt;char&gt; tabChar = null, Optional&lt;Alignment&gt; alignment = null, Optional&lt;byte&gt; splitLength = null, Optional&lt;bool&gt; hyphenate = null, Optional&lt;char&gt; hyphenChar = null, Optional&lt;LayoutWrapMode&gt; wrapMode = null)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td><span class="parametername">width</span></td>
-                    <td><p>The width.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Layout(Optional&lt;int&gt; width = default (Optional&lt;int&gt;), Optional&lt;int&gt; indentSize = default (Optional&lt;int&gt;), Optional&lt;int&gt; rightMarginSize = default (Optional&lt;int&gt;), Optional&lt;char&gt; indentChar = default (Optional&lt;char&gt;), Optional&lt;int&gt; firstLineIndentSize = default (Optional&lt;int&gt;), Optional&lt;IEnumerable&lt;int&gt;&gt; tabStops = default (Optional&lt;IEnumerable&lt;int&gt;&gt;), Optional&lt;byte&gt; tabSize = default (Optional&lt;byte&gt;), Optional&lt;char&gt; tabChar = default (Optional&lt;char&gt;), Optional&lt;Alignment&gt; alignment = default (Optional&lt;Alignment&gt;), Optional&lt;byte&gt; splitLength = default (Optional&lt;byte&gt;), Optional&lt;bool&gt; hyphenate = default (Optional&lt;bool&gt;), Optional&lt;char&gt; hyphenChar = default (Optional&lt;char&gt;), Optional&lt;LayoutWrapMode&gt; wrapMode = default (Optional&lt;LayoutWrapMode&gt;))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td><span class="parametername">width</span></td>
+        <td><p>The width.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td><span class="parametername">indentSize</span></td>
-                    <td><p>Size of the indent.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td><span class="parametername">indentSize</span></td>
+        <td><p>Size of the indent.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td><span class="parametername">rightMarginSize</span></td>
-                    <td><p>Size of the right margin.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td><span class="parametername">rightMarginSize</span></td>
+        <td><p>Size of the right margin.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
-                    <td><span class="parametername">indentChar</span></td>
-                    <td><p>The indent character.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+        <td><span class="parametername">indentChar</span></td>
+        <td><p>The indent character.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td><span class="parametername">firstLineIndentSize</span></td>
-                    <td><p>First size of the line indent.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td><span class="parametername">firstLineIndentSize</span></td>
+        <td><p>First size of the line indent.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;&gt;</td>
-                    <td><span class="parametername">tabStops</span></td>
-                    <td><p>The tab stops.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;&gt;</td>
+        <td><span class="parametername">tabStops</span></td>
+        <td><p>The tab stops.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
-                    <td><span class="parametername">tabSize</span></td>
-                    <td><p>Size of the tab.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
+        <td><span class="parametername">tabSize</span></td>
+        <td><p>Size of the tab.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
-                    <td><span class="parametername">tabChar</span></td>
-                    <td><p>The tab character.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+        <td><span class="parametername">tabChar</span></td>
+        <td><p>The tab character.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.Alignment.html">Alignment</a>&gt;</td>
-                    <td><span class="parametername">alignment</span></td>
-                    <td><p>The alignment.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.Alignment.html">Alignment</a>&gt;</td>
+        <td><span class="parametername">alignment</span></td>
+        <td><p>The alignment.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
-                    <td><span class="parametername">splitLength</span></td>
-                    <td><p>if set to <span class="xref">true</span> then words will split across lines.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
+        <td><span class="parametername">splitLength</span></td>
+        <td><p>if set to <span class="xref">true</span> then words will split across lines.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
-                    <td><span class="parametername">hyphenate</span></td>
-                    <td><p>if set to <span class="xref">true</span> [hyphenate].</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
+        <td><span class="parametername">hyphenate</span></td>
+        <td><p>if set to <span class="xref">true</span> [hyphenate].</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
-                    <td><span class="parametername">hyphenChar</span></td>
-                    <td><p>The hyphenation character.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+        <td><span class="parametername">hyphenChar</span></td>
+        <td><p>The hyphenation character.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.LayoutWrapMode.html">LayoutWrapMode</a>&gt;</td>
-                    <td><span class="parametername">wrapMode</span></td>
-                    <td><p>The line wrap mode.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.LayoutWrapMode.html">LayoutWrapMode</a>&gt;</td>
+        <td><span class="parametername">wrapMode</span></td>
+        <td><p>The line wrap mode.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="fields">Fields
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L110">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_Alignment" data-uid="WebApplications.Utilities.Formatting.Layout.Alignment">Alignment</h4>
-              <div class="markdown level1 summary"><p>The alignment.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L110">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_Alignment" data-uid="WebApplications.Utilities.Formatting.Layout.Alignment">Alignment</h4>
+  <div class="markdown level1 summary"><p>The alignment.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;Alignment&gt; Alignment</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.Alignment.html">Alignment</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L46">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_Default" data-uid="WebApplications.Utilities.Formatting.Layout.Default">Default</h4>
-              <div class="markdown level1 summary"><p>The default layout (as specified by the current layout writer).</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;Alignment&gt; Alignment</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.Alignment.html">Alignment</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L46">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_Default" data-uid="WebApplications.Utilities.Formatting.Layout.Default">Default</h4>
+  <div class="markdown level1 summary"><p>The default layout (as specified by the current layout writer).</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static readonly Layout Default</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L65">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_Empty" data-uid="WebApplications.Utilities.Formatting.Layout.Empty">Empty</h4>
-              <div class="markdown level1 summary"><p>The empty layout makes no changes.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly Layout Default</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L65">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_Empty" data-uid="WebApplications.Utilities.Formatting.Layout.Empty">Empty</h4>
+  <div class="markdown level1 summary"><p>The empty layout makes no changes.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static readonly Layout Empty</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L90">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_FirstLineIndentSize" data-uid="WebApplications.Utilities.Formatting.Layout.FirstLineIndentSize">FirstLineIndentSize</h4>
-              <div class="markdown level1 summary"><p>The first line indent size.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly Layout Empty</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L90">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_FirstLineIndentSize" data-uid="WebApplications.Utilities.Formatting.Layout.FirstLineIndentSize">FirstLineIndentSize</h4>
+  <div class="markdown level1 summary"><p>The first line indent size.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;int&gt; FirstLineIndentSize</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L122">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_Hyphenate" data-uid="WebApplications.Utilities.Formatting.Layout.Hyphenate">Hyphenate</h4>
-              <div class="markdown level1 summary"><p>Whether to add a hyphen when splitting words.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;int&gt; FirstLineIndentSize</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L122">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_Hyphenate" data-uid="WebApplications.Utilities.Formatting.Layout.Hyphenate">Hyphenate</h4>
+  <div class="markdown level1 summary"><p>Whether to add a hyphen when splitting words.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;bool&gt; Hyphenate</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L127">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_HyphenChar" data-uid="WebApplications.Utilities.Formatting.Layout.HyphenChar">HyphenChar</h4>
-              <div class="markdown level1 summary"><p>The hyphenation character is used to split words.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;bool&gt; Hyphenate</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L127">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_HyphenChar" data-uid="WebApplications.Utilities.Formatting.Layout.HyphenChar">HyphenChar</h4>
+  <div class="markdown level1 summary"><p>The hyphenation character is used to split words.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;char&gt; HyphenChar</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L85">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_IndentChar" data-uid="WebApplications.Utilities.Formatting.Layout.IndentChar">IndentChar</h4>
-              <div class="markdown level1 summary"><p>The indent character (is repeated <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html#WebApplications_Utilities_Formatting_Layout_IndentSize">IndentSize</a> times).</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;char&gt; HyphenChar</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L85">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_IndentChar" data-uid="WebApplications.Utilities.Formatting.Layout.IndentChar">IndentChar</h4>
+  <div class="markdown level1 summary"><p>The indent character (is repeated <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html#WebApplications_Utilities_Formatting_Layout_IndentSize">IndentSize</a> times).</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;char&gt; IndentChar</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L75">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_IndentSize" data-uid="WebApplications.Utilities.Formatting.Layout.IndentSize">IndentSize</h4>
-              <div class="markdown level1 summary"><p>The indent size.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;char&gt; IndentChar</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L75">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_IndentSize" data-uid="WebApplications.Utilities.Formatting.Layout.IndentSize">IndentSize</h4>
+  <div class="markdown level1 summary"><p>The indent size.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;int&gt; IndentSize</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L80">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_RightMarginSize" data-uid="WebApplications.Utilities.Formatting.Layout.RightMarginSize">RightMarginSize</h4>
-              <div class="markdown level1 summary"><p>The size of any right margin.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;int&gt; IndentSize</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L80">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_RightMarginSize" data-uid="WebApplications.Utilities.Formatting.Layout.RightMarginSize">RightMarginSize</h4>
+  <div class="markdown level1 summary"><p>The size of any right margin.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;int&gt; RightMarginSize</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L117">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_SplitLength" data-uid="WebApplications.Utilities.Formatting.Layout.SplitLength">SplitLength</h4>
-              <div class="markdown level1 summary"><p>If this value is zero then words will only be split if they are longer than an entire line; otherwise the word will 
-only be split at a point that has at least this number of character&#39;s on either side of the split (recommended value is 3,
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;int&gt; RightMarginSize</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L117">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_SplitLength" data-uid="WebApplications.Utilities.Formatting.Layout.SplitLength">SplitLength</h4>
+  <div class="markdown level1 summary"><p>If this value is zero then words will only be split if they are longer than an entire line; otherwise the word will 
+only be split at a point that has at least this number of character&apos;s on either side of the split (recommended value is 3,
 to handle splitting of words with apostrophes).</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;byte&gt; SplitLength</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L105">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_TabChar" data-uid="WebApplications.Utilities.Formatting.Layout.TabChar">TabChar</h4>
-              <div class="markdown level1 summary"><p>The tab character is used to fill to next tab stop.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;byte&gt; SplitLength</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L105">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_TabChar" data-uid="WebApplications.Utilities.Formatting.Layout.TabChar">TabChar</h4>
+  <div class="markdown level1 summary"><p>The tab character is used to fill to next tab stop.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;char&gt; TabChar</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L100">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_TabSize" data-uid="WebApplications.Utilities.Formatting.Layout.TabSize">TabSize</h4>
-              <div class="markdown level1 summary"><p>The tab size, used to produce tabs when the layout doesn&#39;t support tab stops.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;char&gt; TabChar</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L100">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_TabSize" data-uid="WebApplications.Utilities.Formatting.Layout.TabSize">TabSize</h4>
+  <div class="markdown level1 summary"><p>The tab size, used to produce tabs when the layout doesn&apos;t support tab stops.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;byte&gt; TabSize</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L95">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_TabStops" data-uid="WebApplications.Utilities.Formatting.Layout.TabStops">TabStops</h4>
-              <div class="markdown level1 summary"><p>The tab stops, only valid for <span class="xref">AlignmentChar.Left</span> and <span class="xref">AlignmentChar.None</span>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;byte&gt; TabSize</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L95">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_TabStops" data-uid="WebApplications.Utilities.Formatting.Layout.TabStops">TabStops</h4>
+  <div class="markdown level1 summary"><p>The tab stops, only valid for <span class="xref">AlignmentChar.Left</span> and <span class="xref">AlignmentChar.None</span>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;IEnumerable&lt;int&gt;&gt; TabStops</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L70">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_Width" data-uid="WebApplications.Utilities.Formatting.Layout.Width">Width</h4>
-              <div class="markdown level1 summary"><p>The layout width.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;IEnumerable&lt;int&gt;&gt; TabStops</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L70">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_Width" data-uid="WebApplications.Utilities.Formatting.Layout.Width">Width</h4>
+  <div class="markdown level1 summary"><p>The layout width.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;int&gt; Width</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L132">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_WrapMode" data-uid="WebApplications.Utilities.Formatting.Layout.WrapMode">WrapMode</h4>
-              <div class="markdown level1 summary"><p>The line wrap mode</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;int&gt; Width</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L132">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_WrapMode" data-uid="WebApplications.Utilities.Formatting.Layout.WrapMode">WrapMode</h4>
+  <div class="markdown level1 summary"><p>The line wrap mode</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Optional&lt;LayoutWrapMode&gt; WrapMode</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.LayoutWrapMode.html">LayoutWrapMode</a>&gt;</td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="properties">Properties
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L156">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_IsEmpty_" data-uid="WebApplications.Utilities.Formatting.Layout.IsEmpty*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_IsEmpty" data-uid="WebApplications.Utilities.Formatting.Layout.IsEmpty">IsEmpty</h4>
-              <div class="markdown level1 summary"><p>Gets a value indicating whether this <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a> is totally incomplete.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Optional&lt;LayoutWrapMode&gt; WrapMode</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.LayoutWrapMode.html">LayoutWrapMode</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L156">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_IsEmpty_" data-uid="WebApplications.Utilities.Formatting.Layout.IsEmpty*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_IsEmpty" data-uid="WebApplications.Utilities.Formatting.Layout.IsEmpty">IsEmpty</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether this <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a> is totally incomplete.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool IsEmpty { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p><span class="xref">true</span> if empty; otherwise, <span class="xref">false</span>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsEmpty { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p><span class="xref">true</span> if empty; otherwise, <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L138">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_IsFull_" data-uid="WebApplications.Utilities.Formatting.Layout.IsFull*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_IsFull" data-uid="WebApplications.Utilities.Formatting.Layout.IsFull">IsFull</h4>
-              <div class="markdown level1 summary"><p>Gets a value indicating whether this <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a> is complete.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L138">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_IsFull_" data-uid="WebApplications.Utilities.Formatting.Layout.IsFull*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_IsFull" data-uid="WebApplications.Utilities.Formatting.Layout.IsFull">IsFull</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether this <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a> is complete.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool IsFull { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p><span class="xref">true</span> if full; otherwise, <span class="xref">false</span>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsFull { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p><span class="xref">true</span> if full; otherwise, <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="methods">Methods
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L394">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_Apply_" data-uid="WebApplications.Utilities.Formatting.Layout.Apply*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_Apply_WebApplications_Utilities_Formatting_Layout_" data-uid="WebApplications.Utilities.Formatting.Layout.Apply(WebApplications.Utilities.Formatting.Layout)">Apply(Layout)</h4>
-              <div class="markdown level1 summary"><p>Applies the specified layout to this layout returning a new, combined layout.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L394">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_Apply_" data-uid="WebApplications.Utilities.Formatting.Layout.Apply*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_Apply_WebApplications_Utilities_Formatting_Layout_" data-uid="WebApplications.Utilities.Formatting.Layout.Apply(WebApplications.Utilities.Formatting.Layout)">Apply(Layout)</h4>
+  <div class="markdown level1 summary"><p>Applies the specified layout to this layout returning a new, combined layout.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public Layout Apply(Layout layout)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td><span class="parametername">layout</span></td>
-                    <td><p>The layout.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Layout Apply(Layout layout)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td><span class="parametername">layout</span></td>
+        <td><p>The layout.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td><p>Layout.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td><p>Layout.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L289">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_Apply_" data-uid="WebApplications.Utilities.Formatting.Layout.Apply*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_Apply_WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Collections_Generic_IEnumerable_System_Int32___WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_Alignment__WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Boolean__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_LayoutWrapMode__" data-uid="WebApplications.Utilities.Formatting.Layout.Apply(WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Collections.Generic.IEnumerable{System.Int32}},WebApplications.Utilities.Optional{System.Byte},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{WebApplications.Utilities.Formatting.Alignment},WebApplications.Utilities.Optional{System.Byte},WebApplications.Utilities.Optional{System.Boolean},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{WebApplications.Utilities.Formatting.LayoutWrapMode})">Apply(Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Char&gt;, Optional&lt;Int32&gt;, Optional&lt;IEnumerable&lt;Int32&gt;&gt;, Optional&lt;Byte&gt;, Optional&lt;Char&gt;, Optional&lt;Alignment&gt;, Optional&lt;Byte&gt;, Optional&lt;Boolean&gt;, Optional&lt;Char&gt;, Optional&lt;LayoutWrapMode&gt;)</h4>
-              <div class="markdown level1 summary"><p>Applies the specified layout to this layout returning a new, combined layout.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L289">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_Apply_" data-uid="WebApplications.Utilities.Formatting.Layout.Apply*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_Apply_WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Collections_Generic_IEnumerable_System_Int32___WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_Alignment__WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Boolean__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_LayoutWrapMode__" data-uid="WebApplications.Utilities.Formatting.Layout.Apply(WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{System.Int32},WebApplications.Utilities.Optional{System.Collections.Generic.IEnumerable{System.Int32}},WebApplications.Utilities.Optional{System.Byte},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{WebApplications.Utilities.Formatting.Alignment},WebApplications.Utilities.Optional{System.Byte},WebApplications.Utilities.Optional{System.Boolean},WebApplications.Utilities.Optional{System.Char},WebApplications.Utilities.Optional{WebApplications.Utilities.Formatting.LayoutWrapMode})">Apply(Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Char&gt;, Optional&lt;Int32&gt;, Optional&lt;IEnumerable&lt;Int32&gt;&gt;, Optional&lt;Byte&gt;, Optional&lt;Char&gt;, Optional&lt;Alignment&gt;, Optional&lt;Byte&gt;, Optional&lt;Boolean&gt;, Optional&lt;Char&gt;, Optional&lt;LayoutWrapMode&gt;)</h4>
+  <div class="markdown level1 summary"><p>Applies the specified layout to this layout returning a new, combined layout.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public Layout Apply(Optional&lt;int&gt; width = null, Optional&lt;int&gt; indentSize = null, Optional&lt;int&gt; rightMarginSize = null, Optional&lt;char&gt; indentChar = null, Optional&lt;int&gt; firstLineIndentSize = null, Optional&lt;IEnumerable&lt;int&gt;&gt; tabStops = null, Optional&lt;byte&gt; tabSize = null, Optional&lt;char&gt; tabChar = null, Optional&lt;Alignment&gt; alignment = null, Optional&lt;byte&gt; splitLength = null, Optional&lt;bool&gt; hyphenate = null, Optional&lt;char&gt; hyphenChar = null, Optional&lt;LayoutWrapMode&gt; wrapMode = null)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td><span class="parametername">width</span></td>
-                    <td><p>The width.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Layout Apply(Optional&lt;int&gt; width = default (Optional&lt;int&gt;), Optional&lt;int&gt; indentSize = default (Optional&lt;int&gt;), Optional&lt;int&gt; rightMarginSize = default (Optional&lt;int&gt;), Optional&lt;char&gt; indentChar = default (Optional&lt;char&gt;), Optional&lt;int&gt; firstLineIndentSize = default (Optional&lt;int&gt;), Optional&lt;IEnumerable&lt;int&gt;&gt; tabStops = default (Optional&lt;IEnumerable&lt;int&gt;&gt;), Optional&lt;byte&gt; tabSize = default (Optional&lt;byte&gt;), Optional&lt;char&gt; tabChar = default (Optional&lt;char&gt;), Optional&lt;Alignment&gt; alignment = default (Optional&lt;Alignment&gt;), Optional&lt;byte&gt; splitLength = default (Optional&lt;byte&gt;), Optional&lt;bool&gt; hyphenate = default (Optional&lt;bool&gt;), Optional&lt;char&gt; hyphenChar = default (Optional&lt;char&gt;), Optional&lt;LayoutWrapMode&gt; wrapMode = default (Optional&lt;LayoutWrapMode&gt;))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td><span class="parametername">width</span></td>
+        <td><p>The width.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td><span class="parametername">indentSize</span></td>
-                    <td><p>Size of the indent.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td><span class="parametername">indentSize</span></td>
+        <td><p>Size of the indent.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td><span class="parametername">rightMarginSize</span></td>
-                    <td><p>Size of the right margin.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td><span class="parametername">rightMarginSize</span></td>
+        <td><p>Size of the right margin.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
-                    <td><span class="parametername">indentChar</span></td>
-                    <td><p>The indent character.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+        <td><span class="parametername">indentChar</span></td>
+        <td><p>The indent character.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
-                    <td><span class="parametername">firstLineIndentSize</span></td>
-                    <td><p>First size of the line indent.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;</td>
+        <td><span class="parametername">firstLineIndentSize</span></td>
+        <td><p>First size of the line indent.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;&gt;</td>
-                    <td><span class="parametername">tabStops</span></td>
-                    <td><p>The tab stops.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a>&gt;&gt;</td>
+        <td><span class="parametername">tabStops</span></td>
+        <td><p>The tab stops.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
-                    <td><span class="parametername">tabSize</span></td>
-                    <td><p>Size of the tab.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
+        <td><span class="parametername">tabSize</span></td>
+        <td><p>Size of the tab.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
-                    <td><span class="parametername">tabChar</span></td>
-                    <td><p>The tab character.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+        <td><span class="parametername">tabChar</span></td>
+        <td><p>The tab character.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.Alignment.html">Alignment</a>&gt;</td>
-                    <td><span class="parametername">alignment</span></td>
-                    <td><p>The alignment.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.Alignment.html">Alignment</a>&gt;</td>
+        <td><span class="parametername">alignment</span></td>
+        <td><p>The alignment.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
-                    <td><span class="parametername">splitLength</span></td>
-                    <td><p>The split length.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.byte(v=vs.110).aspx">Byte</a>&gt;</td>
+        <td><span class="parametername">splitLength</span></td>
+        <td><p>The split length.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
-                    <td><span class="parametername">hyphenate</span></td>
-                    <td><p>The hyphenate.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a>&gt;</td>
+        <td><span class="parametername">hyphenate</span></td>
+        <td><p>The hyphenate.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
-                    <td><span class="parametername">hyphenChar</span></td>
-                    <td><p>The hyphen character.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.char(v=vs.110).aspx">Char</a>&gt;</td>
+        <td><span class="parametername">hyphenChar</span></td>
+        <td><p>The hyphen character.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.LayoutWrapMode.html">LayoutWrapMode</a>&gt;</td>
-                    <td><span class="parametername">wrapMode</span></td>
-                    <td><p>The line wrap mode.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.LayoutWrapMode.html">LayoutWrapMode</a>&gt;</td>
+        <td><span class="parametername">wrapMode</span></td>
+        <td><p>The line wrap mode.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td><p>Layout.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td><p>Layout.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L584">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_Equals_" data-uid="WebApplications.Utilities.Formatting.Layout.Equals*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_Equals_System_Object_" data-uid="WebApplications.Utilities.Formatting.Layout.Equals(System.Object)">Equals(Object)</h4>
-              <div class="markdown level1 summary"><p>Determines whether the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> is equal to this instance.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L584">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_Equals_" data-uid="WebApplications.Utilities.Formatting.Layout.Equals*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_Equals_System_Object_" data-uid="WebApplications.Utilities.Formatting.Layout.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> is equal to this instance.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public override bool Equals(object obj)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
-                    <td><span class="parametername">obj</span></td>
-                    <td><p>The object to compare with the current object.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object to compare with the current object.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p><span class="xref">true</span> if the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> is equal to this instance; otherwise, <span class="xref">false</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> is equal to this instance; otherwise, <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="overrides">Overrides</h5>
-              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L752">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_Equals_" data-uid="WebApplications.Utilities.Formatting.Layout.Equals*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_Equals_WebApplications_Utilities_Formatting_Layout_" data-uid="WebApplications.Utilities.Formatting.Layout.Equals(WebApplications.Utilities.Formatting.Layout)">Equals(Layout)</h4>
-              <div class="markdown level1 summary"><p>Indicates whether the current object is equal to another object of the same type.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L752">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_Equals_" data-uid="WebApplications.Utilities.Formatting.Layout.Equals*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_Equals_WebApplications_Utilities_Formatting_Layout_" data-uid="WebApplications.Utilities.Formatting.Layout.Equals(WebApplications.Utilities.Formatting.Layout)">Equals(Layout)</h4>
+  <div class="markdown level1 summary"><p>Indicates whether the current object is equal to another object of the same type.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool Equals(Layout other)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td><span class="parametername">other</span></td>
-                    <td><p>An object to compare with this object.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(Layout other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>An object to compare with this object.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p>true if the current object is equal to the <span class="paramref">other</span> parameter; otherwise, false.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p>true if the current object is equal to the <code data-dev-comment-type="paramref" class="paramref">other</code> parameter; otherwise, false.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131190(v=vs.110).aspx">IEquatable&lt;T&gt;.Equals(T)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L768">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_GetHashCode_" data-uid="WebApplications.Utilities.Formatting.Layout.GetHashCode*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_GetHashCode" data-uid="WebApplications.Utilities.Formatting.Layout.GetHashCode">GetHashCode()</h4>
-              <div class="markdown level1 summary"><p>Returns a hash code for this instance.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131190(v=vs.110).aspx">IEquatable&lt;T&gt;.Equals(T)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L768">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_GetHashCode_" data-uid="WebApplications.Utilities.Formatting.Layout.GetHashCode*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_GetHashCode" data-uid="WebApplications.Utilities.Formatting.Layout.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"><p>Returns a hash code for this instance.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
-              </div>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><p>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><p>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="overrides">Overrides</h5>
-              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L420">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_Parse_" data-uid="WebApplications.Utilities.Formatting.Layout.Parse*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_Parse_System_String_" data-uid="WebApplications.Utilities.Formatting.Layout.Parse(System.String)">Parse(String)</h4>
-              <div class="markdown level1 summary"><p>Parses the specified input.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L420">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_Parse_" data-uid="WebApplications.Utilities.Formatting.Layout.Parse*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_Parse_System_String_" data-uid="WebApplications.Utilities.Formatting.Layout.Parse(System.String)">Parse(String)</h4>
+  <div class="markdown level1 summary"><p>Parses the specified input.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static Layout Parse(string input)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">input</span></td>
-                    <td><p>The input.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Layout Parse(string input)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">input</span></td>
+        <td><p>The input.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td><p>A <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a> if valid; otherwise <span class="xref">null</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td><p>A <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a> if valid; otherwise <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L596">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_ToString_" data-uid="WebApplications.Utilities.Formatting.Layout.ToString*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_ToString" data-uid="WebApplications.Utilities.Formatting.Layout.ToString">ToString()</h4>
-              <div class="markdown level1 summary"><p>To the string.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L596">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_ToString_" data-uid="WebApplications.Utilities.Formatting.Layout.ToString*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_ToString" data-uid="WebApplications.Utilities.Formatting.Layout.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>To the string.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
-              </div>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><p>System.String.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><p>System.String.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="overrides">Overrides</h5>
-              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L606">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_ToString_" data-uid="WebApplications.Utilities.Formatting.Layout.ToString*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_ToString_System_String_" data-uid="WebApplications.Utilities.Formatting.Layout.ToString(System.String)">ToString(String)</h4>
-              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L606">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_ToString_" data-uid="WebApplications.Utilities.Formatting.Layout.ToString*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_ToString_System_String_" data-uid="WebApplications.Utilities.Formatting.Layout.ToString(System.String)">ToString(String)</h4>
+  <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[StringFormatMethod(&quot;format&quot;)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[StringFormatMethod(&quot;format&quot;)]
 public string ToString(string format)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">format</span></td>
-                    <td><p>The format.</p>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">format</span></td>
+        <td><p>The format.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L619">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_ToString_" data-uid="WebApplications.Utilities.Formatting.Layout.ToString*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_ToString_System_String_System_IFormatProvider_" data-uid="WebApplications.Utilities.Formatting.Layout.ToString(System.String,System.IFormatProvider)">ToString(String, IFormatProvider)</h4>
-              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L619">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_ToString_" data-uid="WebApplications.Utilities.Formatting.Layout.ToString*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_ToString_System_String_System_IFormatProvider_" data-uid="WebApplications.Utilities.Formatting.Layout.ToString(System.String,System.IFormatProvider)">ToString(String, IFormatProvider)</h4>
+  <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public string ToString(string format, IFormatProvider formatProvider)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">format</span></td>
-                    <td><p>The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformattable(v=vs.110).aspx">IFormattable</a> implementation.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public string ToString(string format, IFormatProvider formatProvider)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">format</span></td>
+        <td><p>The format to use.-or- A null reference (Nothing in Visual Basic) to use the default format defined for the type of the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformattable(v=vs.110).aspx">IFormattable</a> implementation.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformatprovider(v=vs.110).aspx">IFormatProvider</a></td>
-                    <td><span class="parametername">formatProvider</span></td>
-                    <td><p>The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformatprovider(v=vs.110).aspx">IFormatProvider</a></td>
+        <td><span class="parametername">formatProvider</span></td>
+        <td><p>The provider to use to format the value.-or- A null reference (Nothing in Visual Basic) to obtain the numeric format information from the current locale setting of the operating system.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/bhf180ey(v=vs.110).aspx">IFormattable.ToString(String, IFormatProvider)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L433">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_TryParse_" data-uid="WebApplications.Utilities.Formatting.Layout.TryParse*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_TryParse_System_String_WebApplications_Utilities_Formatting_Layout__" data-uid="WebApplications.Utilities.Formatting.Layout.TryParse(System.String,WebApplications.Utilities.Formatting.Layout@)">TryParse(String, out Layout)</h4>
-              <div class="markdown level1 summary"><p>Tries to parse the string into a valid <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/bhf180ey(v=vs.110).aspx">IFormattable.ToString(String, IFormatProvider)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L433">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_TryParse_" data-uid="WebApplications.Utilities.Formatting.Layout.TryParse*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_TryParse_System_String_WebApplications_Utilities_Formatting_Layout__" data-uid="WebApplications.Utilities.Formatting.Layout.TryParse(System.String,WebApplications.Utilities.Formatting.Layout@)">TryParse(String, out Layout)</h4>
+  <div class="markdown level1 summary"><p>Tries to parse the string into a valid <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static bool TryParse(string input, out Layout layout)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">input</span></td>
-                    <td><p>The input.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool TryParse(string input, out Layout layout)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">input</span></td>
+        <td><p>The input.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td><span class="parametername">layout</span></td>
-                    <td><p>A <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a> if valid; otherwise <span class="xref">null</span>.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td><span class="parametername">layout</span></td>
+        <td><p>A <a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a> if valid; otherwise <span class="xref">null</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p><span class="xref">true</span> if parse succeeded, <span class="xref">false</span> otherwise.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p><span class="xref">true</span> if parse succeeded, <span class="xref">false</span> otherwise.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="operators">Operators
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L795">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_op_Equality_" data-uid="WebApplications.Utilities.Formatting.Layout.op_Equality*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_op_Equality_WebApplications_Utilities_Formatting_Layout_WebApplications_Utilities_Formatting_Layout_" data-uid="WebApplications.Utilities.Formatting.Layout.op_Equality(WebApplications.Utilities.Formatting.Layout,WebApplications.Utilities.Formatting.Layout)">Equality(Layout, Layout)</h4>
-              <div class="markdown level1 summary"><p>Implements the ==.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L795">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_op_Equality_" data-uid="WebApplications.Utilities.Formatting.Layout.op_Equality*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_op_Equality_WebApplications_Utilities_Formatting_Layout_WebApplications_Utilities_Formatting_Layout_" data-uid="WebApplications.Utilities.Formatting.Layout.op_Equality(WebApplications.Utilities.Formatting.Layout,WebApplications.Utilities.Formatting.Layout)">Equality(Layout, Layout)</h4>
+  <div class="markdown level1 summary"><p>Implements the ==.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static bool operator ==(Layout left, Layout right)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td><span class="parametername">left</span></td>
-                    <td><p>The left.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator ==(Layout left, Layout right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td><span class="parametername">left</span></td>
+        <td><p>The left.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td><span class="parametername">right</span></td>
-                    <td><p>The right.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td><span class="parametername">right</span></td>
+        <td><p>The right.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p>The result of the operator.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p>The result of the operator.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L806">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_Layout_op_Inequality_" data-uid="WebApplications.Utilities.Formatting.Layout.op_Inequality*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_Layout_op_Inequality_WebApplications_Utilities_Formatting_Layout_WebApplications_Utilities_Formatting_Layout_" data-uid="WebApplications.Utilities.Formatting.Layout.op_Inequality(WebApplications.Utilities.Formatting.Layout,WebApplications.Utilities.Formatting.Layout)">Inequality(Layout, Layout)</h4>
-              <div class="markdown level1 summary"><p>Implements the !=.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/Layout.cs/#L806">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_Layout_op_Inequality_" data-uid="WebApplications.Utilities.Formatting.Layout.op_Inequality*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_Layout_op_Inequality_WebApplications_Utilities_Formatting_Layout_WebApplications_Utilities_Formatting_Layout_" data-uid="WebApplications.Utilities.Formatting.Layout.op_Inequality(WebApplications.Utilities.Formatting.Layout,WebApplications.Utilities.Formatting.Layout)">Inequality(Layout, Layout)</h4>
+  <div class="markdown level1 summary"><p>Implements the !=.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static bool operator !=(Layout left, Layout right)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td><span class="parametername">left</span></td>
-                    <td><p>The left.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !=(Layout left, Layout right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td><span class="parametername">left</span></td>
+        <td><p>The left.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
-                    <td><span class="parametername">right</span></td>
-                    <td><p>The right.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.Layout.html">Layout</a></td>
+        <td><span class="parametername">right</span></td>
+        <td><p>The right.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p>The result of the operator.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p>The result of the operator.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

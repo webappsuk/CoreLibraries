@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface ICancelableTokenSource
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,346 +76,346 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Threading_ICancelableTokenSource" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource">Interface ICancelableTokenSource
-              </h1>
-              <div class="markdown level0 summary"><p>Interface for a token source.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource">
+  
+  
+  <h1 id="WebApplications_Utilities_Threading_ICancelableTokenSource" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource" class="text-break">Interface ICancelableTokenSource
+  </h1>
+  <div class="markdown level0 summary"><p>Interface for a token source.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Threading.ITokenSource.html#WebApplications_Utilities_Threading_ITokenSource_Token">ITokenSource.Token</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Threading.ITokenSource.html#WebApplications_Utilities_Threading_ITokenSource_IsCancellationRequested">ITokenSource.IsCancellationRequested</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/es4s3w1d(v=vs.110).aspx">IDisposable.Dispose()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities.Threading</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
-              <h5 id="WebApplications_Utilities_Threading_ICancelableTokenSource_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[PublicAPI]
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Threading.ITokenSource.html#WebApplications_Utilities_Threading_ITokenSource_Token">ITokenSource.Token</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Threading.ITokenSource.html#WebApplications_Utilities_Threading_ITokenSource_IsCancellationRequested">ITokenSource.IsCancellationRequested</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/es4s3w1d(v=vs.110).aspx">IDisposable.Dispose()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.Threading.html">WebApplications.Utilities.Threading</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.dll</h6>
+  <h5 id="WebApplications_Utilities_Threading_ICancelableTokenSource_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[PublicAPI]
 public interface ICancelableTokenSource : ITokenSource, IDisposable</code></pre>
-              </div>
-              <h3 id="methods">Methods
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ICancelableTokenSource.cs/#L45">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_ICancelableTokenSource_Cancel_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.Cancel*"></a>
-              <h4 id="WebApplications_Utilities_Threading_ICancelableTokenSource_Cancel" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.Cancel">Cancel()</h4>
-              <div class="markdown level1 summary"><p>Communicates a request for cancellation.</p>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ICancelableTokenSource.cs/#L45">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_ICancelableTokenSource_Cancel_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.Cancel*"></a>
+  <h4 id="WebApplications_Utilities_Threading_ICancelableTokenSource_Cancel" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.Cancel">Cancel()</h4>
+  <div class="markdown level1 summary"><p>Communicates a request for cancellation.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">void Cancel()</code></pre>
-              </div>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
-                    <td><p>This <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> has been disposed.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void Cancel()</code></pre>
+  </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+        <td><p>This <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> has been disposed.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.aggregateexception(v=vs.110).aspx">AggregateException</a></td>
-                    <td><p>An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a>.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.aggregateexception(v=vs.110).aspx">AggregateException</a></td>
+        <td><p>An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ICancelableTokenSource.cs/#L53">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_ICancelableTokenSource_Cancel_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.Cancel*"></a>
-              <h4 id="WebApplications_Utilities_Threading_ICancelableTokenSource_Cancel_System_Boolean_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.Cancel(System.Boolean)">Cancel(Boolean)</h4>
-              <div class="markdown level1 summary"><p>Communicates a request for cancellation, and specifies whether remaining callbacks and cancelable operations should be processed.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ICancelableTokenSource.cs/#L53">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_ICancelableTokenSource_Cancel_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.Cancel*"></a>
+  <h4 id="WebApplications_Utilities_Threading_ICancelableTokenSource_Cancel_System_Boolean_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.Cancel(System.Boolean)">Cancel(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Communicates a request for cancellation, and specifies whether remaining callbacks and cancelable operations should be processed.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">void Cancel(bool throwOnFirstException)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">throwOnFirstException</span></td>
-                    <td><p>true if exceptions should immediately propagate; otherwise, false.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void Cancel(bool throwOnFirstException)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">throwOnFirstException</span></td>
+        <td><p>true if exceptions should immediately propagate; otherwise, false.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
-                    <td><p>This <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> has been disposed.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+        <td><p>This <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> has been disposed.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.aggregateexception(v=vs.110).aspx">AggregateException</a></td>
-                    <td><p>An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a>.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.aggregateexception(v=vs.110).aspx">AggregateException</a></td>
+        <td><p>An aggregate exception containing all the exceptions thrown by the registered callbacks on the associated <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.cancellationtoken(v=vs.110).aspx">CancellationToken</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ICancelableTokenSource.cs/#L69">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter*"></a>
-              <h4 id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_NodaTime_Duration_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter(NodaTime.Duration)">CancelAfter(Duration)</h4>
-              <div class="markdown level1 summary"><p>Schedules a cancel operation on this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> after the specified duration.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ICancelableTokenSource.cs/#L69">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter*"></a>
+  <h4 id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_NodaTime_Duration_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter(NodaTime.Duration)">CancelAfter(Duration)</h4>
+  <div class="markdown level1 summary"><p>Schedules a cancel operation on this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> after the specified duration.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">void CancelAfter(Duration delay)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
-                    <td><span class="parametername">delay</span></td>
-                    <td><p>The duration to wait before canceling this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void CancelAfter(Duration delay)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+        <td><span class="parametername">delay</span></td>
+        <td><p>The duration to wait before canceling this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
-                    <td><p>The exception thrown when this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> has been disposed.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+        <td><p>The exception thrown when this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> has been disposed.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
-                    <td><p>The exception that is thrown when <span class="paramref">delay</span> is less than -1 or greater than Int32.MaxValue.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
+        <td><p>The exception that is thrown when <code data-dev-comment-type="paramref" class="paramref">delay</code> is less than -1 or greater than Int32.MaxValue.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ICancelableTokenSource.cs/#L77">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter*"></a>
-              <h4 id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_System_Int32_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter(System.Int32)">CancelAfter(Int32)</h4>
-              <div class="markdown level1 summary"><p>Schedules a cancel operation on this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> after the specified number of milliseconds.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ICancelableTokenSource.cs/#L77">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter*"></a>
+  <h4 id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_System_Int32_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter(System.Int32)">CancelAfter(Int32)</h4>
+  <div class="markdown level1 summary"><p>Schedules a cancel operation on this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> after the specified number of milliseconds.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">void CancelAfter(int millisecondsDelay)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><span class="parametername">millisecondsDelay</span></td>
-                    <td><p>The time span to wait before canceling this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void CancelAfter(int millisecondsDelay)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><span class="parametername">millisecondsDelay</span></td>
+        <td><p>The time span to wait before canceling this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
-                    <td><p>The exception thrown when this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> has been disposed.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+        <td><p>The exception thrown when this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> has been disposed.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
-                    <td><p>The exception thrown when <span class="paramref">millisecondsDelay</span> is less than -1.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
+        <td><p>The exception thrown when <code data-dev-comment-type="paramref" class="paramref">millisecondsDelay</code> is less than -1.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ICancelableTokenSource.cs/#L61">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter*"></a>
-              <h4 id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_System_TimeSpan_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter(System.TimeSpan)">CancelAfter(TimeSpan)</h4>
-              <div class="markdown level1 summary"><p>Schedules a cancel operation on this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> after the specified time span.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/ICancelableTokenSource.cs/#L61">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter*"></a>
+  <h4 id="WebApplications_Utilities_Threading_ICancelableTokenSource_CancelAfter_System_TimeSpan_" data-uid="WebApplications.Utilities.Threading.ICancelableTokenSource.CancelAfter(System.TimeSpan)">CancelAfter(TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Schedules a cancel operation on this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> after the specified time span.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">void CancelAfter(TimeSpan delay)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
-                    <td><span class="parametername">delay</span></td>
-                    <td><p>The time span to wait before canceling this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void CancelAfter(TimeSpan delay)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+        <td><span class="parametername">delay</span></td>
+        <td><p>The time span to wait before canceling this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
-                    <td><p>The exception thrown when this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> has been disposed.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.objectdisposedexception(v=vs.110).aspx">ObjectDisposedException</a></td>
+        <td><p>The exception thrown when this <a class="xref" href="WebApplications.Utilities.Threading.ICancelableTokenSource.html">ICancelableTokenSource</a> has been disposed.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
-                    <td><p>The exception that is thrown when <span class="paramref">delay</span> is less than -1 or greater than Int32.MaxValue.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.argumentoutofrangeexception(v=vs.110).aspx">ArgumentOutOfRangeException</a></td>
+        <td><p>The exception that is thrown when <code data-dev-comment-type="paramref" class="paramref">delay</code> is less than -1 or greater than Int32.MaxValue.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.TaskExtensions.html#WebApplications_Utilities_TaskExtensions_ConfigureAwait_WebApplications_Utilities_Threading_ITokenSource_System_Boolean_">TaskExtensions.ConfigureAwait(ITokenSource, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.TaskExtensions.html#WebApplications_Utilities_TaskExtensions_GetAwaiter_WebApplications_Utilities_Threading_ITokenSource_">TaskExtensions.GetAwaiter(ITokenSource)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.TaskExtensions.html#WebApplications_Utilities_TaskExtensions_ConfigureAwait_WebApplications_Utilities_Threading_ITokenSource_System_Boolean_">TaskExtensions.ConfigureAwait(ITokenSource, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.TaskExtensions.html#WebApplications_Utilities_TaskExtensions_GetAwaiter_WebApplications_Utilities_Threading_ITokenSource_">TaskExtensions.GetAwaiter(ITokenSource)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

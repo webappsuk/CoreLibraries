@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AsyncResult
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,561 +76,565 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Threading_AsyncResult" data-uid="WebApplications.Utilities.Threading.AsyncResult">Class AsyncResult
-              </h1>
-              <div class="markdown level0 summary"><p>Represents the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a> of an asynchronous operation that has no return type.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Threading.AsyncResult">
+  
+  
+  <h1 id="WebApplications_Utilities_Threading_AsyncResult" data-uid="WebApplications.Utilities.Threading.AsyncResult" class="text-break">Class AsyncResult
+  </h1>
+  <div class="markdown level0 summary"><p>Represents the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a> of an asynchronous operation that has no return type.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritance">
-                <h5>Inheritance</h5>
-                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
-                  <div class="level1"><span class="xref">AsyncResult</span></div>
-                  <div class="level2"><a class="xref" href="WebApplications.Utilities.Threading.AsyncResult-1.html">AsyncResult&lt;TResult&gt;</a></div>
-              </div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities.Threading</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
-              <h5 id="WebApplications_Utilities_Threading_AsyncResult_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[PublicAPI]
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+    <div class="level1"><span class="xref">AsyncResult</span></div>
+      <div class="level2"><a class="xref" href="WebApplications.Utilities.Threading.AsyncResult-1.html">AsyncResult&lt;TResult&gt;</a></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.Threading.html">WebApplications.Utilities.Threading</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.dll</h6>
+  <h5 id="WebApplications_Utilities_Threading_AsyncResult_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[PublicAPI]
 [Obsolete(&quot;Consider using TPL or Async.&quot;)]
 public class AsyncResult : IAsyncResult</code></pre>
-              </div>
-              <h5 id="WebApplications_Utilities_Threading_AsyncResult_remarks"><strong>Remarks</strong></h5>
-              <div class="markdown level0 remarks"><p>Based on Jeff Ritcher&#39;s wintellect threading libraries.</p>
+  </div>
+  <h5 id="WebApplications_Utilities_Threading_AsyncResult_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Based on Jeff Ritcher&apos;s wintellect threading libraries.</p>
 </div>
-              <h3 id="constructors">Constructors
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L75">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult__ctor_" data-uid="WebApplications.Utilities.Threading.AsyncResult.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult__ctor_System_AsyncCallback_System_Object_" data-uid="WebApplications.Utilities.Threading.AsyncResult.#ctor(System.AsyncCallback,System.Object)">AsyncResult(AsyncCallback, Object)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Threading.AsyncResult.html">AsyncResult</a> class.</p>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L75">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult__ctor_" data-uid="WebApplications.Utilities.Threading.AsyncResult.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult__ctor_System_AsyncCallback_System_Object_" data-uid="WebApplications.Utilities.Threading.AsyncResult.#ctor(System.AsyncCallback,System.Object)">AsyncResult(AsyncCallback, Object)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Threading.AsyncResult.html">AsyncResult</a> class.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public AsyncResult(AsyncCallback asyncCallback, object state)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></td>
-                    <td><span class="parametername">asyncCallback</span></td>
-                    <td><p>The method to execute once the operation completes.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AsyncResult(AsyncCallback asyncCallback, object state)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></td>
+        <td><span class="parametername">asyncCallback</span></td>
+        <td><p>The method to execute once the operation completes.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
-                    <td><span class="parametername">state</span></td>
-                    <td><p>The object that can be obtained via the <a class="xref" href="WebApplications.Utilities.Threading.AsyncResult.html#WebApplications_Utilities_Threading_AsyncResult_AsyncState">AsyncState</a> property.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+        <td><span class="parametername">state</span></td>
+        <td><p>The object that can be obtained via the <a class="xref" href="WebApplications.Utilities.Threading.AsyncResult.html#WebApplications_Utilities_Threading_AsyncResult_AsyncState">AsyncState</a> property.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L90">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult__ctor_" data-uid="WebApplications.Utilities.Threading.AsyncResult.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult__ctor_System_AsyncCallback_System_Object_System_Object_" data-uid="WebApplications.Utilities.Threading.AsyncResult.#ctor(System.AsyncCallback,System.Object,System.Object)">AsyncResult(AsyncCallback, Object, Object)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Threading.AsyncResult.html">AsyncResult</a> class.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L90">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult__ctor_" data-uid="WebApplications.Utilities.Threading.AsyncResult.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult__ctor_System_AsyncCallback_System_Object_System_Object_" data-uid="WebApplications.Utilities.Threading.AsyncResult.#ctor(System.AsyncCallback,System.Object,System.Object)">AsyncResult(AsyncCallback, Object, Object)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Threading.AsyncResult.html">AsyncResult</a> class.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public AsyncResult(AsyncCallback asyncCallback, object state, object initiatingObject)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></td>
-                    <td><span class="parametername">asyncCallback</span></td>
-                    <td><p>The method that should be executed when the operation completes.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AsyncResult(AsyncCallback asyncCallback, object state, object initiatingObject)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></td>
+        <td><span class="parametername">asyncCallback</span></td>
+        <td><p>The method that should be executed when the operation completes.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
-                    <td><span class="parametername">state</span></td>
-                    <td><p>The object that can be obtained via the AsyncState property.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+        <td><span class="parametername">state</span></td>
+        <td><p>The object that can be obtained via the AsyncState property.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
-                    <td><span class="parametername">initiatingObject</span></td>
-                    <td><p>The object that is initiating the asynchronous operation.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+        <td><span class="parametername">initiatingObject</span></td>
+        <td><p>The object that is initiating the asynchronous operation.</p>
 <p>This is stored in the <a class="xref" href="WebApplications.Utilities.Threading.AsyncResult.html#WebApplications_Utilities_Threading_AsyncResult_InitiatingObject">InitiatingObject</a> property.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="properties">Properties
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L119">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_AsyncState_" data-uid="WebApplications.Utilities.Threading.AsyncResult.AsyncState*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_AsyncState" data-uid="WebApplications.Utilities.Threading.AsyncResult.AsyncState">AsyncState</h4>
-              <div class="markdown level1 summary"><p>Gets a user-defined object that qualifies or contains information about an asynchronous operation.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L119">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_AsyncState_" data-uid="WebApplications.Utilities.Threading.AsyncResult.AsyncState*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_AsyncState" data-uid="WebApplications.Utilities.Threading.AsyncResult.AsyncState">AsyncState</h4>
+  <div class="markdown level1 summary"><p>Gets a user-defined object that qualifies or contains information about an asynchronous operation.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public object AsyncState { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/a6zaz1xf(v=vs.110).aspx">IAsyncResult.AsyncState</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L128">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_AsyncWaitHandle_" data-uid="WebApplications.Utilities.Threading.AsyncResult.AsyncWaitHandle*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_AsyncWaitHandle" data-uid="WebApplications.Utilities.Threading.AsyncResult.AsyncWaitHandle">AsyncWaitHandle</h4>
-              <div class="markdown level1 summary"><p>Gets a WaitHandle that is used to wait for an asynchronous operation to complete.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public object AsyncState { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/a6zaz1xf(v=vs.110).aspx">IAsyncResult.AsyncState</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L128">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_AsyncWaitHandle_" data-uid="WebApplications.Utilities.Threading.AsyncResult.AsyncWaitHandle*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_AsyncWaitHandle" data-uid="WebApplications.Utilities.Threading.AsyncResult.AsyncWaitHandle">AsyncWaitHandle</h4>
+  <div class="markdown level1 summary"><p>Gets a WaitHandle that is used to wait for an asynchronous operation to complete.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public WaitHandle AsyncWaitHandle { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.waithandle(v=vs.110).aspx">WaitHandle</a></td>
-                    <td><p>A wait handle that is used to wait for an asynchronous operation to complete.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public WaitHandle AsyncWaitHandle { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.threading.waithandle(v=vs.110).aspx">WaitHandle</a></td>
+        <td><p>A wait handle that is used to wait for an asynchronous operation to complete.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/tbbhxekx(v=vs.110).aspx">IAsyncResult.AsyncWaitHandle</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L157">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_CompletedSynchronously_" data-uid="WebApplications.Utilities.Threading.AsyncResult.CompletedSynchronously*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_CompletedSynchronously" data-uid="WebApplications.Utilities.Threading.AsyncResult.CompletedSynchronously">CompletedSynchronously</h4>
-              <div class="markdown level1 summary"><p>Gets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value that indicates whether the asynchronous operation completed synchronously.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/tbbhxekx(v=vs.110).aspx">IAsyncResult.AsyncWaitHandle</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L157">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_CompletedSynchronously_" data-uid="WebApplications.Utilities.Threading.AsyncResult.CompletedSynchronously*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_CompletedSynchronously" data-uid="WebApplications.Utilities.Threading.AsyncResult.CompletedSynchronously">CompletedSynchronously</h4>
+  <div class="markdown level1 summary"><p>Gets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value that indicates whether the asynchronous operation completed synchronously.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool CompletedSynchronously { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p>Returns <span class="xref">true</span> if the asynchronous operation completed synchronously; otherwise returns <span class="xref">false</span>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool CompletedSynchronously { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p>Returns <span class="xref">true</span> if the asynchronous operation completed synchronously; otherwise returns <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/eyx2c824(v=vs.110).aspx">IAsyncResult.CompletedSynchronously</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L99">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_InitiatingObject_" data-uid="WebApplications.Utilities.Threading.AsyncResult.InitiatingObject*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_InitiatingObject" data-uid="WebApplications.Utilities.Threading.AsyncResult.InitiatingObject">InitiatingObject</h4>
-              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> that was used to initiate the asynchronous operation.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/eyx2c824(v=vs.110).aspx">IAsyncResult.CompletedSynchronously</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L99">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_InitiatingObject_" data-uid="WebApplications.Utilities.Threading.AsyncResult.InitiatingObject*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_InitiatingObject" data-uid="WebApplications.Utilities.Threading.AsyncResult.InitiatingObject">InitiatingObject</h4>
+  <div class="markdown level1 summary"><p>Gets the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> that was used to initiate the asynchronous operation.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public object InitiatingObject { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L110">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_IsCancelled_" data-uid="WebApplications.Utilities.Threading.AsyncResult.IsCancelled*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_IsCancelled" data-uid="WebApplications.Utilities.Threading.AsyncResult.IsCancelled">IsCancelled</h4>
-              <div class="markdown level1 summary"><p>Gets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value that indicates whether the asynchronous operation has cancelled.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public object InitiatingObject { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L110">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_IsCancelled_" data-uid="WebApplications.Utilities.Threading.AsyncResult.IsCancelled*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_IsCancelled" data-uid="WebApplications.Utilities.Threading.AsyncResult.IsCancelled">IsCancelled</h4>
+  <div class="markdown level1 summary"><p>Gets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value that indicates whether the asynchronous operation has cancelled.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool IsCancelled { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p>Returns <span class="xref">true</span> if the operation is cancelled; otherwise returns <span class="xref">false</span>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsCancelled { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p>Returns <span class="xref">true</span> if the operation is cancelled; otherwise returns <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L169">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_IsCompleted_" data-uid="WebApplications.Utilities.Threading.AsyncResult.IsCompleted*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_IsCompleted" data-uid="WebApplications.Utilities.Threading.AsyncResult.IsCompleted">IsCompleted</h4>
-              <div class="markdown level1 summary"><p>Gets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value that indicates whether the asynchronous operation has completed.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L169">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_IsCompleted_" data-uid="WebApplications.Utilities.Threading.AsyncResult.IsCompleted*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_IsCompleted" data-uid="WebApplications.Utilities.Threading.AsyncResult.IsCompleted">IsCompleted</h4>
+  <div class="markdown level1 summary"><p>Gets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value that indicates whether the asynchronous operation has completed.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool IsCompleted { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p>Returns <span class="xref">true</span> if the operation is complete; otherwise returns <span class="xref">false</span>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsCompleted { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p>Returns <span class="xref">true</span> if the operation is complete; otherwise returns <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7fz31972(v=vs.110).aspx">IAsyncResult.IsCompleted</a></div>
-              <h5 id="WebApplications_Utilities_Threading_AsyncResult_IsCompleted_remarks">Remarks</h5>
-              <div class="markdown level1 remarks"><p>This includes the cancelled state which will return <span class="xref">true</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7fz31972(v=vs.110).aspx">IAsyncResult.IsCompleted</a></div>
+  <h5 id="WebApplications_Utilities_Threading_AsyncResult_IsCompleted_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This includes the cancelled state which will return <span class="xref">true</span>.</p>
 </div>
-              <h3 id="methods">Methods
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L185">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_BeginInvokeOnWorkerThread_" data-uid="WebApplications.Utilities.Threading.AsyncResult.BeginInvokeOnWorkerThread*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_BeginInvokeOnWorkerThread" data-uid="WebApplications.Utilities.Threading.AsyncResult.BeginInvokeOnWorkerThread">BeginInvokeOnWorkerThread()</h4>
-              <div class="markdown level1 summary"><p>Returns the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a> of an operation that was queued to the thread pool.</p>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L185">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_BeginInvokeOnWorkerThread_" data-uid="WebApplications.Utilities.Threading.AsyncResult.BeginInvokeOnWorkerThread*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_BeginInvokeOnWorkerThread" data-uid="WebApplications.Utilities.Threading.AsyncResult.BeginInvokeOnWorkerThread">BeginInvokeOnWorkerThread()</h4>
+  <div class="markdown level1 summary"><p>Returns the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a> of an operation that was queued to the thread pool.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">protected IAsyncResult BeginInvokeOnWorkerThread()</code></pre>
-              </div>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a></td>
-                    <td><p>The IAsyncResult.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected IAsyncResult BeginInvokeOnWorkerThread()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a></td>
+        <td><p>The IAsyncResult.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L228">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_EndInvoke_" data-uid="WebApplications.Utilities.Threading.AsyncResult.EndInvoke*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_EndInvoke" data-uid="WebApplications.Utilities.Threading.AsyncResult.EndInvoke">EndInvoke()</h4>
-              <div class="markdown level1 summary"><p>Frees up the resources used by the asynchronous operation.
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L228">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_EndInvoke_" data-uid="WebApplications.Utilities.Threading.AsyncResult.EndInvoke*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_EndInvoke" data-uid="WebApplications.Utilities.Threading.AsyncResult.EndInvoke">EndInvoke()</h4>
+  <div class="markdown level1 summary"><p>Frees up the resources used by the asynchronous operation.
 If the asynchronous operation failed then this method throws the exception.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void EndInvoke()</code></pre>
-              </div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L247">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_GetAsyncCallbackHelper_" data-uid="WebApplications.Utilities.Threading.AsyncResult.GetAsyncCallbackHelper*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_GetAsyncCallbackHelper" data-uid="WebApplications.Utilities.Threading.AsyncResult.GetAsyncCallbackHelper">GetAsyncCallbackHelper()</h4>
-              <div class="markdown level1 summary"><p>Returns a single <span class="xref">static</span> delegate to a <span class="xref">static</span> method that will invoke
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void EndInvoke()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L247">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_GetAsyncCallbackHelper_" data-uid="WebApplications.Utilities.Threading.AsyncResult.GetAsyncCallbackHelper*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_GetAsyncCallbackHelper" data-uid="WebApplications.Utilities.Threading.AsyncResult.GetAsyncCallbackHelper">GetAsyncCallbackHelper()</h4>
+  <div class="markdown level1 summary"><p>Returns a single <span class="xref">static</span> delegate to a <span class="xref">static</span> method that will invoke
 the desired <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">protected static AsyncCallback GetAsyncCallbackHelper()</code></pre>
-              </div>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></td>
-                    <td><p>The <span class="xref">static</span> delegate.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected static AsyncCallback GetAsyncCallbackHelper()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.asynccallback(v=vs.110).aspx">AsyncCallback</a></td>
+        <td><p>The <span class="xref">static</span> delegate.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L260">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_OnCompleteOperation_" data-uid="WebApplications.Utilities.Threading.AsyncResult.OnCompleteOperation*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_OnCompleteOperation_System_IAsyncResult_" data-uid="WebApplications.Utilities.Threading.AsyncResult.OnCompleteOperation(System.IAsyncResult)">OnCompleteOperation(IAsyncResult)</h4>
-              <div class="markdown level1 summary"><p>Invokes the callback method when the asynchronous operations completes.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L260">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_OnCompleteOperation_" data-uid="WebApplications.Utilities.Threading.AsyncResult.OnCompleteOperation*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_OnCompleteOperation_System_IAsyncResult_" data-uid="WebApplications.Utilities.Threading.AsyncResult.OnCompleteOperation(System.IAsyncResult)">OnCompleteOperation(IAsyncResult)</h4>
+  <div class="markdown level1 summary"><p>Invokes the callback method when the asynchronous operations completes.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">protected virtual void OnCompleteOperation(IAsyncResult result)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a></td>
-                    <td><span class="parametername">result</span></td>
-                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a> object identifying that the asynchronous operation that has completed.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void OnCompleteOperation(IAsyncResult result)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a></td>
+        <td><span class="parametername">result</span></td>
+        <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iasyncresult(v=vs.110).aspx">IAsyncResult</a> object identifying that the asynchronous operation that has completed.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L298">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_SetAsCancelled_" data-uid="WebApplications.Utilities.Threading.AsyncResult.SetAsCancelled*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_SetAsCancelled" data-uid="WebApplications.Utilities.Threading.AsyncResult.SetAsCancelled">SetAsCancelled()</h4>
-              <div class="markdown level1 summary"><p>Set the status of the asynchronous operation to cancelled.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L298">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_SetAsCancelled_" data-uid="WebApplications.Utilities.Threading.AsyncResult.SetAsCancelled*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_SetAsCancelled" data-uid="WebApplications.Utilities.Threading.AsyncResult.SetAsCancelled">SetAsCancelled()</h4>
+  <div class="markdown level1 summary"><p>Set the status of the asynchronous operation to cancelled.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void SetAsCancelled()</code></pre>
-              </div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L272">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Threading_AsyncResult_SetAsCompleted_" data-uid="WebApplications.Utilities.Threading.AsyncResult.SetAsCompleted*"></a>
-              <h4 id="WebApplications_Utilities_Threading_AsyncResult_SetAsCompleted_System_Exception_System_Boolean_" data-uid="WebApplications.Utilities.Threading.AsyncResult.SetAsCompleted(System.Exception,System.Boolean)">SetAsCompleted(Exception, Boolean)</h4>
-              <div class="markdown level1 summary"><p>Set the status of the asynchronous operation to completed.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SetAsCancelled()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Threading/AsyncResult.cs/#L272">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Threading_AsyncResult_SetAsCompleted_" data-uid="WebApplications.Utilities.Threading.AsyncResult.SetAsCompleted*"></a>
+  <h4 id="WebApplications_Utilities_Threading_AsyncResult_SetAsCompleted_System_Exception_System_Boolean_" data-uid="WebApplications.Utilities.Threading.AsyncResult.SetAsCompleted(System.Exception,System.Boolean)">SetAsCompleted(Exception, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Set the status of the asynchronous operation to completed.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void SetAsCompleted(Exception exception = null, bool completedSynchronously = false)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.exception(v=vs.110).aspx">Exception</a></td>
-                    <td><span class="parametername">exception</span></td>
-                    <td><p>If non-null then this identifies the exception that occurred while processing the asynchronous operation.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SetAsCompleted(Exception exception = null, bool completedSynchronously = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.exception(v=vs.110).aspx">Exception</a></td>
+        <td><span class="parametername">exception</span></td>
+        <td><p>If non-null then this identifies the exception that occurred while processing the asynchronous operation.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><span class="parametername">completedSynchronously</span></td>
-                    <td><p>Indicates whether the operation completed synchronously or asynchronously.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><span class="parametername">completedSynchronously</span></td>
+        <td><p>Indicates whether the operation completed synchronously or asynchronously.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.invalidoperationexception(v=vs.110).aspx">InvalidOperationException</a></td>
-                    <td><p>The operation result has already been set previously.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.invalidoperationexception(v=vs.110).aspx">InvalidOperationException</a></td>
+        <td><p>The operation result has already been set previously.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.TaskExtensions.html#WebApplications_Utilities_TaskExtensions_FromAsync__1_System_IAsyncResult_System_Func_System_IAsyncResult___0__System_Action_System_IAsyncResult__System_Threading_Tasks_TaskCreationOptions_System_Threading_Tasks_TaskScheduler_System_Threading_CancellationToken_">TaskExtensions.FromAsync&lt;TResult&gt;(IAsyncResult, Func&lt;IAsyncResult, TResult&gt;, Action&lt;IAsyncResult&gt;, TaskCreationOptions, TaskScheduler, CancellationToken)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Wrap__1_System_IAsyncResult___0_">UtilityExtensions.Wrap&lt;T&gt;(IAsyncResult, T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Unwrap__1_System_IAsyncResult_">UtilityExtensions.Unwrap&lt;T&gt;(IAsyncResult)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Unwrap__1_System_IAsyncResult_System_IAsyncResult__">UtilityExtensions.Unwrap&lt;T&gt;(IAsyncResult, out IAsyncResult)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.TaskExtensions.html#WebApplications_Utilities_TaskExtensions_FromAsync__1_System_IAsyncResult_System_Func_System_IAsyncResult___0__System_Action_System_IAsyncResult__System_Threading_Tasks_TaskCreationOptions_System_Threading_Tasks_TaskScheduler_System_Threading_CancellationToken_">TaskExtensions.FromAsync&lt;TResult&gt;(IAsyncResult, Func&lt;IAsyncResult, TResult&gt;, Action&lt;IAsyncResult&gt;, TaskCreationOptions, TaskScheduler, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Wrap__1_System_IAsyncResult___0_">UtilityExtensions.Wrap&lt;T&gt;(IAsyncResult, T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Unwrap__1_System_IAsyncResult_">UtilityExtensions.Unwrap&lt;T&gt;(IAsyncResult)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Unwrap__1_System_IAsyncResult_System_IAsyncResult__">UtilityExtensions.Unwrap&lt;T&gt;(IAsyncResult, out IAsyncResult)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

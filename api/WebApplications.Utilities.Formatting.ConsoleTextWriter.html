@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ConsoleTextWriter
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,601 +76,609 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Formatting_ConsoleTextWriter" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter">Class ConsoleTextWriter
-              </h1>
-              <div class="markdown level0 summary"><p>Implements a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a> for writing to the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.console(v=vs.110).aspx">Console</a>, with write calls synchronized.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter">
+  
+  
+  <h1 id="WebApplications_Utilities_Formatting_ConsoleTextWriter" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter" class="text-break">Class ConsoleTextWriter
+  </h1>
+  <div class="markdown level0 summary"><p>Implements a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a> for writing to the <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.console(v=vs.110).aspx">Console</a>, with write calls synchronized.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritance">
-                <h5>Inheritance</h5>
-                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
-                  <div class="level1"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.marshalbyrefobject(v=vs.110).aspx">MarshalByRefObject</a></div>
-                  <div class="level2"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></div>
-                  <div class="level3"><a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html">SerialTextWriter</a></div>
-                  <div class="level4"><span class="xref">ConsoleTextWriter</span></div>
-              </div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Writer">SerialTextWriter.Writer</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Context">SerialTextWriter.Context</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Encoding">SerialTextWriter.Encoding</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_FormatProvider">SerialTextWriter.FormatProvider</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_NewLine">SerialTextWriter.NewLine</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Close">SerialTextWriter.Close()</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Dispose_System_Boolean_">SerialTextWriter.Dispose(Boolean)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Flush">SerialTextWriter.Flush()</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Char_">SerialTextWriter.Write(Char)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Char___">SerialTextWriter.Write(Char[])</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Char___System_Int32_System_Int32_">SerialTextWriter.Write(Char[], Int32, Int32)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Boolean_">SerialTextWriter.Write(Boolean)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Int32_">SerialTextWriter.Write(Int32)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_UInt32_">SerialTextWriter.Write(UInt32)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Int64_">SerialTextWriter.Write(Int64)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_UInt64_">SerialTextWriter.Write(UInt64)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Single_">SerialTextWriter.Write(Single)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Double_">SerialTextWriter.Write(Double)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Decimal_">SerialTextWriter.Write(Decimal)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_String_">SerialTextWriter.Write(String)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Object_">SerialTextWriter.Write(Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_String_System_Object_">SerialTextWriter.Write(String, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_String_System_Object_System_Object_">SerialTextWriter.Write(String, Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_String_System_Object_System_Object_System_Object_">SerialTextWriter.Write(String, Object, Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_String_System_Object___">SerialTextWriter.Write(String, Object[])</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine">SerialTextWriter.WriteLine()</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Char_">SerialTextWriter.WriteLine(Char)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Decimal_">SerialTextWriter.WriteLine(Decimal)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Char___">SerialTextWriter.WriteLine(Char[])</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Char___System_Int32_System_Int32_">SerialTextWriter.WriteLine(Char[], Int32, Int32)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Boolean_">SerialTextWriter.WriteLine(Boolean)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Int32_">SerialTextWriter.WriteLine(Int32)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_UInt32_">SerialTextWriter.WriteLine(UInt32)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Int64_">SerialTextWriter.WriteLine(Int64)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_UInt64_">SerialTextWriter.WriteLine(UInt64)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Single_">SerialTextWriter.WriteLine(Single)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Double_">SerialTextWriter.WriteLine(Double)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_String_">SerialTextWriter.WriteLine(String)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Object_">SerialTextWriter.WriteLine(Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_String_System_Object_">SerialTextWriter.WriteLine(String, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_String_System_Object_System_Object_">SerialTextWriter.WriteLine(String, Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_String_System_Object_System_Object_System_Object_">SerialTextWriter.WriteLine(String, Object, Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_String_System_Object___">SerialTextWriter.WriteLine(String, Object[])</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteAsync_System_Char_">SerialTextWriter.WriteAsync(Char)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteAsync_System_String_">SerialTextWriter.WriteAsync(String)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteAsync_System_Char___System_Int32_System_Int32_">SerialTextWriter.WriteAsync(Char[], Int32, Int32)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLineAsync_System_Char_">SerialTextWriter.WriteLineAsync(Char)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLineAsync_System_String_">SerialTextWriter.WriteLineAsync(String)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLineAsync_System_Char___System_Int32_System_Int32_">SerialTextWriter.WriteLineAsync(Char[], Int32, Int32)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_FlushAsync">SerialTextWriter.FlushAsync()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/3ekdfwth(v=vs.110).aspx">TextWriter.Null</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/520fa308(v=vs.110).aspx">TextWriter.CoreNewLine</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms227564(v=vs.110).aspx">TextWriter.Dispose()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bc5fhd5(v=vs.110).aspx">TextWriter.Synchronized(TextWriter)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hh193390(v=vs.110).aspx">TextWriter.WriteAsync(Char[])</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hh159086(v=vs.110).aspx">TextWriter.WriteLineAsync(Char[])</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hh137800(v=vs.110).aspx">TextWriter.WriteLineAsync()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131262(v=vs.110).aspx">MarshalByRefObject.MemberwiseClone(Boolean)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/c6y7316f(v=vs.110).aspx">MarshalByRefObject.GetLifetimeService()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zwt5tzck(v=vs.110).aspx">MarshalByRefObject.InitializeLifetimeService()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/2ch65xad(v=vs.110).aspx">MarshalByRefObject.CreateObjRef(Type)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities.Formatting</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
-              <h5 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[PublicAPI]
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+    <div class="level1"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.marshalbyrefobject(v=vs.110).aspx">MarshalByRefObject</a></div>
+    <div class="level2"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></div>
+    <div class="level3"><a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html">SerialTextWriter</a></div>
+    <div class="level4"><span class="xref">ConsoleTextWriter</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="WebApplications.Utilities.Formatting.ISerialTextWriter.html">ISerialTextWriter</a></div>
+    <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html">IColoredTextWriter</a></div>
+    <div><a class="xref" href="WebApplications.Utilities.Formatting.ILayoutTextWriter.html">ILayoutTextWriter</a></div>
+    <div><a class="xref" href="WebApplications.Utilities.Formatting.ITextWriter.html">ITextWriter</a></div>
+    <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.idisposable(v=vs.110).aspx">IDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Writer">SerialTextWriter.Writer</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Context">SerialTextWriter.Context</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Encoding">SerialTextWriter.Encoding</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_FormatProvider">SerialTextWriter.FormatProvider</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_NewLine">SerialTextWriter.NewLine</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Close">SerialTextWriter.Close()</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Dispose_System_Boolean_">SerialTextWriter.Dispose(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Flush">SerialTextWriter.Flush()</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Char_">SerialTextWriter.Write(Char)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Char___">SerialTextWriter.Write(Char[])</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Char___System_Int32_System_Int32_">SerialTextWriter.Write(Char[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Boolean_">SerialTextWriter.Write(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Int32_">SerialTextWriter.Write(Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_UInt32_">SerialTextWriter.Write(UInt32)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Int64_">SerialTextWriter.Write(Int64)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_UInt64_">SerialTextWriter.Write(UInt64)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Single_">SerialTextWriter.Write(Single)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Double_">SerialTextWriter.Write(Double)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Decimal_">SerialTextWriter.Write(Decimal)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_String_">SerialTextWriter.Write(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_Object_">SerialTextWriter.Write(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_String_System_Object_">SerialTextWriter.Write(String, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_String_System_Object_System_Object_">SerialTextWriter.Write(String, Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_String_System_Object_System_Object_System_Object_">SerialTextWriter.Write(String, Object, Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_Write_System_String_System_Object___">SerialTextWriter.Write(String, Object[])</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine">SerialTextWriter.WriteLine()</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Char_">SerialTextWriter.WriteLine(Char)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Decimal_">SerialTextWriter.WriteLine(Decimal)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Char___">SerialTextWriter.WriteLine(Char[])</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Char___System_Int32_System_Int32_">SerialTextWriter.WriteLine(Char[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Boolean_">SerialTextWriter.WriteLine(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Int32_">SerialTextWriter.WriteLine(Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_UInt32_">SerialTextWriter.WriteLine(UInt32)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Int64_">SerialTextWriter.WriteLine(Int64)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_UInt64_">SerialTextWriter.WriteLine(UInt64)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Single_">SerialTextWriter.WriteLine(Single)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Double_">SerialTextWriter.WriteLine(Double)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_String_">SerialTextWriter.WriteLine(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_Object_">SerialTextWriter.WriteLine(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_String_System_Object_">SerialTextWriter.WriteLine(String, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_String_System_Object_System_Object_">SerialTextWriter.WriteLine(String, Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_String_System_Object_System_Object_System_Object_">SerialTextWriter.WriteLine(String, Object, Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLine_System_String_System_Object___">SerialTextWriter.WriteLine(String, Object[])</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteAsync_System_Char_">SerialTextWriter.WriteAsync(Char)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteAsync_System_String_">SerialTextWriter.WriteAsync(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteAsync_System_Char___System_Int32_System_Int32_">SerialTextWriter.WriteAsync(Char[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLineAsync_System_Char_">SerialTextWriter.WriteLineAsync(Char)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLineAsync_System_String_">SerialTextWriter.WriteLineAsync(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_WriteLineAsync_System_Char___System_Int32_System_Int32_">SerialTextWriter.WriteLineAsync(Char[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.SerialTextWriter.html#WebApplications_Utilities_Formatting_SerialTextWriter_FlushAsync">SerialTextWriter.FlushAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/3ekdfwth(v=vs.110).aspx">TextWriter.Null</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/520fa308(v=vs.110).aspx">TextWriter.CoreNewLine</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms227564(v=vs.110).aspx">TextWriter.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bc5fhd5(v=vs.110).aspx">TextWriter.Synchronized(TextWriter)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hh193390(v=vs.110).aspx">TextWriter.WriteAsync(Char[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hh159086(v=vs.110).aspx">TextWriter.WriteLineAsync(Char[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hh137800(v=vs.110).aspx">TextWriter.WriteLineAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131262(v=vs.110).aspx">MarshalByRefObject.MemberwiseClone(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/c6y7316f(v=vs.110).aspx">MarshalByRefObject.GetLifetimeService()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/zwt5tzck(v=vs.110).aspx">MarshalByRefObject.InitializeLifetimeService()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/2ch65xad(v=vs.110).aspx">MarshalByRefObject.CreateObjRef(Type)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.Formatting.html">WebApplications.Utilities.Formatting</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.dll</h6>
+  <h5 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[PublicAPI]
 public class ConsoleTextWriter : SerialTextWriter, ISerialTextWriter, IColoredTextWriter, ILayoutTextWriter, ITextWriter, IDisposable</code></pre>
-              </div>
-              <h3 id="fields">Fields
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L46">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_Default" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.Default">Default</h4>
-              <div class="markdown level1 summary"><p>The default <a class="xref" href="WebApplications.Utilities.Formatting.ConsoleTextWriter.html">ConsoleTextWriter</a> (there can be only one).</p>
+  </div>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L46">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_Default" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.Default">Default</h4>
+  <div class="markdown level1 summary"><p>The default <a class="xref" href="WebApplications.Utilities.Formatting.ConsoleTextWriter.html">ConsoleTextWriter</a> (there can be only one).</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static readonly ConsoleTextWriter Default</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.ConsoleTextWriter.html">ConsoleTextWriter</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="properties">Properties
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L127">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_AutoWraps_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.AutoWraps*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_AutoWraps" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.AutoWraps">AutoWraps</h4>
-              <div class="markdown level1 summary"><p>Gets a value indicating whether the writer automatically wraps on reaching <a class="xref" href="WebApplications.Utilities.Formatting.ConsoleTextWriter.html#WebApplications_Utilities_Formatting_ConsoleTextWriter_Width">Width</a>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static readonly ConsoleTextWriter Default</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.ConsoleTextWriter.html">ConsoleTextWriter</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L127">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_AutoWraps_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.AutoWraps*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_AutoWraps" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.AutoWraps">AutoWraps</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the writer automatically wraps on reaching <a class="xref" href="WebApplications.Utilities.Formatting.ConsoleTextWriter.html#WebApplications_Utilities_Formatting_ConsoleTextWriter_Width">Width</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool AutoWraps { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p><span class="xref">true</span> if the writer automatically wraps; otherwise, <span class="xref">false</span>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool AutoWraps { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the writer automatically wraps; otherwise, <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Formatting.ILayoutTextWriter.html#WebApplications_Utilities_Formatting_ILayoutTextWriter_AutoWraps">ILayoutTextWriter.AutoWraps</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L66">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_DefaultBackColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.DefaultBackColor*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_DefaultBackColor" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.DefaultBackColor">DefaultBackColor</h4>
-              <div class="markdown level1 summary"><p>The default background color.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Formatting.ILayoutTextWriter.html#WebApplications_Utilities_Formatting_ILayoutTextWriter_AutoWraps">ILayoutTextWriter.AutoWraps</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L66">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_DefaultBackColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.DefaultBackColor*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_DefaultBackColor" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.DefaultBackColor">DefaultBackColor</h4>
+  <div class="markdown level1 summary"><p>The default background color.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static ConsoleColor DefaultBackColor { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.consolecolor(v=vs.110).aspx">ConsoleColor</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L61">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_DefaultForeColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.DefaultForeColor*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_DefaultForeColor" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.DefaultForeColor">DefaultForeColor</h4>
-              <div class="markdown level1 summary"><p>The default foreground color.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ConsoleColor DefaultBackColor { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.consolecolor(v=vs.110).aspx">ConsoleColor</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L61">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_DefaultForeColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.DefaultForeColor*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_DefaultForeColor" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.DefaultForeColor">DefaultForeColor</h4>
+  <div class="markdown level1 summary"><p>The default foreground color.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static ConsoleColor DefaultForeColor { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.consolecolor(v=vs.110).aspx">ConsoleColor</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L109">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_Position_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.Position*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_Position" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.Position">Position</h4>
-              <div class="markdown level1 summary"><p>Gets or sets the current horizontal position.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ConsoleColor DefaultForeColor { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.consolecolor(v=vs.110).aspx">ConsoleColor</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L109">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_Position_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.Position*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_Position" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.Position">Position</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the current horizontal position.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public int Position { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><p>The position.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Position { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><p>The position.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Formatting.ILayoutTextWriter.html#WebApplications_Utilities_Formatting_ILayoutTextWriter_Position">ILayoutTextWriter.Position</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L91">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_Width_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.Width*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_Width" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.Width">Width</h4>
-              <div class="markdown level1 summary"><p>Gets the width of the console.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Formatting.ILayoutTextWriter.html#WebApplications_Utilities_Formatting_ILayoutTextWriter_Position">ILayoutTextWriter.Position</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L91">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_Width_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.Width*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_Width" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.Width">Width</h4>
+  <div class="markdown level1 summary"><p>Gets the width of the console.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public int Width { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><p>The width of the console.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Width { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><p>The width of the console.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Formatting.ILayoutTextWriter.html#WebApplications_Utilities_Formatting_ILayoutTextWriter_Width">ILayoutTextWriter.Width</a></div>
-              <h3 id="methods">Methods
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L183">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetBackgroundColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetBackgroundColor*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetBackgroundColor" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetBackgroundColor">ResetBackgroundColor()</h4>
-              <div class="markdown level1 summary"><p>Sets the background color of the writer.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Formatting.ILayoutTextWriter.html#WebApplications_Utilities_Formatting_ILayoutTextWriter_Width">ILayoutTextWriter.Width</a></div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L183">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetBackgroundColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetBackgroundColor*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetBackgroundColor" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetBackgroundColor">ResetBackgroundColor()</h4>
+  <div class="markdown level1 summary"><p>Sets the background color of the writer.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void ResetBackgroundColor()</code></pre>
-              </div>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html#WebApplications_Utilities_Formatting_IColoredTextWriter_ResetBackgroundColor">IColoredTextWriter.ResetBackgroundColor()</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L141">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetColors_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetColors*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetColors" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetColors">ResetColors()</h4>
-              <div class="markdown level1 summary"><p>Resets the foreground and background colors of the writer.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ResetBackgroundColor()</code></pre>
+  </div>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html#WebApplications_Utilities_Formatting_IColoredTextWriter_ResetBackgroundColor">IColoredTextWriter.ResetBackgroundColor()</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L141">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetColors_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetColors*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetColors" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetColors">ResetColors()</h4>
+  <div class="markdown level1 summary"><p>Resets the foreground and background colors of the writer.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void ResetColors()</code></pre>
-              </div>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html#WebApplications_Utilities_Formatting_IColoredTextWriter_ResetColors">IColoredTextWriter.ResetColors()</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L156">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetForegroundColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetForegroundColor*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetForegroundColor" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetForegroundColor">ResetForegroundColor()</h4>
-              <div class="markdown level1 summary"><p>Resets the foreground color of the writer.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ResetColors()</code></pre>
+  </div>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html#WebApplications_Utilities_Formatting_IColoredTextWriter_ResetColors">IColoredTextWriter.ResetColors()</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L156">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetForegroundColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetForegroundColor*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_ResetForegroundColor" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.ResetForegroundColor">ResetForegroundColor()</h4>
+  <div class="markdown level1 summary"><p>Resets the foreground color of the writer.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void ResetForegroundColor()</code></pre>
-              </div>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html#WebApplications_Utilities_Formatting_IColoredTextWriter_ResetForegroundColor">IColoredTextWriter.ResetForegroundColor()</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L201">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_SetBackgroundColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.SetBackgroundColor*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_SetBackgroundColor_System_Drawing_Color_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.SetBackgroundColor(System.Drawing.Color)">SetBackgroundColor(Color)</h4>
-              <div class="markdown level1 summary"><p>Sets the background color of the writer.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ResetForegroundColor()</code></pre>
+  </div>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html#WebApplications_Utilities_Formatting_IColoredTextWriter_ResetForegroundColor">IColoredTextWriter.ResetForegroundColor()</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L201">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_SetBackgroundColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.SetBackgroundColor*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_SetBackgroundColor_System_Drawing_Color_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.SetBackgroundColor(System.Drawing.Color)">SetBackgroundColor(Color)</h4>
+  <div class="markdown level1 summary"><p>Sets the background color of the writer.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void SetBackgroundColor(Color color)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.drawing.color(v=vs.110).aspx">Color</a></td>
-                    <td><span class="parametername">color</span></td>
-                    <td><p>The color.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SetBackgroundColor(Color color)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.drawing.color(v=vs.110).aspx">Color</a></td>
+        <td><span class="parametername">color</span></td>
+        <td><p>The color.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html#WebApplications_Utilities_Formatting_IColoredTextWriter_SetBackgroundColor_System_Drawing_Color_">IColoredTextWriter.SetBackgroundColor(Color)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L174">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_SetForegroundColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.SetForegroundColor*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_SetForegroundColor_System_Drawing_Color_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.SetForegroundColor(System.Drawing.Color)">SetForegroundColor(Color)</h4>
-              <div class="markdown level1 summary"><p>Sets the foreground color of the writer.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html#WebApplications_Utilities_Formatting_IColoredTextWriter_SetBackgroundColor_System_Drawing_Color_">IColoredTextWriter.SetBackgroundColor(Color)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/ConsoleTextWriter.cs/#L174">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_ConsoleTextWriter_SetForegroundColor_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.SetForegroundColor*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_ConsoleTextWriter_SetForegroundColor_System_Drawing_Color_" data-uid="WebApplications.Utilities.Formatting.ConsoleTextWriter.SetForegroundColor(System.Drawing.Color)">SetForegroundColor(Color)</h4>
+  <div class="markdown level1 summary"><p>Sets the foreground color of the writer.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void SetForegroundColor(Color color)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.drawing.color(v=vs.110).aspx">Color</a></td>
-                    <td><span class="parametername">color</span></td>
-                    <td><p>The color.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SetForegroundColor(Color color)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.drawing.color(v=vs.110).aspx">Color</a></td>
+        <td><span class="parametername">color</span></td>
+        <td><p>The color.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html#WebApplications_Utilities_Formatting_IColoredTextWriter_SetForegroundColor_System_Drawing_Color_">IColoredTextWriter.SetForegroundColor(Color)</a></div>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_WriteEnglish_System_IO_TextWriter_System_Double_">UtilityExtensions.WriteEnglish(TextWriter, Double)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_WriteEnglish_System_IO_TextWriter_System_Int64_">UtilityExtensions.WriteEnglish(TextWriter, Int64)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.FormatExtensions.html#WebApplications_Utilities_Formatting_FormatExtensions_Serialize_System_IO_TextWriter_">FormatExtensions.Serialize(TextWriter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.FormatExtensions.html#WebApplications_Utilities_Formatting_FormatExtensions_Format_System_IO_TextWriter_WebApplications_Utilities_Formatting_Layout_System_UInt16_">FormatExtensions.Format(TextWriter, Layout, UInt16)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Formatting.FormatExtensions.html#WebApplications_Utilities_Formatting_FormatExtensions_Format_System_IO_TextWriter_WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Collections_Generic_IEnumerable_System_Int32___WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_Alignment__WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Boolean__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_LayoutWrapMode__System_UInt16_">FormatExtensions.Format(TextWriter, Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Char&gt;, Optional&lt;Int32&gt;, Optional&lt;IEnumerable&lt;Int32&gt;&gt;, Optional&lt;Byte&gt;, Optional&lt;Char&gt;, Optional&lt;Alignment&gt;, Optional&lt;Byte&gt;, Optional&lt;Boolean&gt;, Optional&lt;Char&gt;, Optional&lt;LayoutWrapMode&gt;, UInt16)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Formatting.IColoredTextWriter.html#WebApplications_Utilities_Formatting_IColoredTextWriter_SetForegroundColor_System_Drawing_Color_">IColoredTextWriter.SetForegroundColor(Color)</a></div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_WriteEnglish_System_IO_TextWriter_System_Double_">UtilityExtensions.WriteEnglish(TextWriter, Double)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_WriteEnglish_System_IO_TextWriter_System_Int64_">UtilityExtensions.WriteEnglish(TextWriter, Int64)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.FormatExtensions.html#WebApplications_Utilities_Formatting_FormatExtensions_Serialize_System_IO_TextWriter_">FormatExtensions.Serialize(TextWriter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.FormatExtensions.html#WebApplications_Utilities_Formatting_FormatExtensions_Format_System_IO_TextWriter_WebApplications_Utilities_Formatting_Layout_System_UInt16_">FormatExtensions.Format(TextWriter, Layout, UInt16)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Formatting.FormatExtensions.html#WebApplications_Utilities_Formatting_FormatExtensions_Format_System_IO_TextWriter_WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_System_Int32__WebApplications_Utilities_Optional_System_Collections_Generic_IEnumerable_System_Int32___WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_Alignment__WebApplications_Utilities_Optional_System_Byte__WebApplications_Utilities_Optional_System_Boolean__WebApplications_Utilities_Optional_System_Char__WebApplications_Utilities_Optional_WebApplications_Utilities_Formatting_LayoutWrapMode__System_UInt16_">FormatExtensions.Format(TextWriter, Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Int32&gt;, Optional&lt;Char&gt;, Optional&lt;Int32&gt;, Optional&lt;IEnumerable&lt;Int32&gt;&gt;, Optional&lt;Byte&gt;, Optional&lt;Char&gt;, Optional&lt;Alignment&gt;, Optional&lt;Byte&gt;, Optional&lt;Boolean&gt;, Optional&lt;Char&gt;, Optional&lt;LayoutWrapMode&gt;, UInt16)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

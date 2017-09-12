@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ProgramElement
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,684 +76,688 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Database_Configuration_ProgramElement" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement">Class ProgramElement
-              </h1>
-              <div class="markdown level0 summary"><p>Allows specifying of a <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a> in a configuration.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement">
+  
+  
+  <h1 id="WebApplications_Utilities_Database_Configuration_ProgramElement" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement" class="text-break">Class ProgramElement
+  </h1>
+  <div class="markdown level0 summary"><p>Allows specifying of a <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a> in a configuration.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritance">
-                <h5>Inheritance</h5>
-                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
-                  <div class="level1"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationelement(v=vs.110).aspx">ConfigurationElement</a></div>
-                  <div class="level2"><a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html">ConfigurationElement</a></div>
-                  <div class="level3"><span class="xref">ProgramElement</span></div>
-              </div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Init">ConfigurationElement.Init()</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Parent">ConfigurationElement.Parent</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Section">ConfigurationElement.Section</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_FullPath">ConfigurationElement.FullPath</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ConfigurationElementName">ConfigurationElement.ConfigurationElementName</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Children">ConfigurationElement.Children</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_GetProperty__1_System_String_">ConfigurationElement.GetProperty&lt;T&gt;(String)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_SetProperty__1_System_String___0_">ConfigurationElement.SetProperty&lt;T&gt;(String, T)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Properties">ConfigurationElement.Properties</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Keys">ConfigurationElement.Keys</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Values">ConfigurationElement.Values</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_PropertyValues">ConfigurationElement.PropertyValues</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_GetElement_System_Xml_Linq_XName_">ConfigurationElement.GetElement(XName)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_SetElement_System_Xml_Linq_XName_System_Xml_Linq_XElement_">ConfigurationElement.SetElement(XName, XElement)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_OnDeserializeUnrecognizedElement_System_String_System_Xml_XmlReader_">ConfigurationElement.OnDeserializeUnrecognizedElement(String, XmlReader)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_SerializeElement_System_Xml_XmlWriter_System_Boolean_">ConfigurationElement.SerializeElement(XmlWriter, Boolean)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Unmerge_System_Configuration_ConfigurationElement_System_Configuration_ConfigurationElement_System_Configuration_ConfigurationSaveMode_">ConfigurationElement.Unmerge(ConfigurationElement, ConfigurationElement, ConfigurationSaveMode)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_IsModified">ConfigurationElement.IsModified()</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Reset_System_Configuration_ConfigurationElement_">ConfigurationElement.Reset(ConfigurationElement)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ResetModified">ConfigurationElement.ResetModified()</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ElementNames">ConfigurationElement.ElementNames</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Elements">ConfigurationElement.Elements</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ElementDictionary">ConfigurationElement.ElementDictionary</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ElementsClone">ConfigurationElement.ElementsClone</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ToString">ConfigurationElement.ToString()</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Create__1">ConfigurationElement.Create&lt;T&gt;()</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_IsDisposed">ConfigurationElement.IsDisposed</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134129(v=vs.110).aspx">ConfigurationElement.IsReadOnly()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134139(v=vs.110).aspx">ConfigurationElement.SetReadOnly()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134130(v=vs.110).aspx">ConfigurationElement.ListErrors(IList)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/9kaww10k(v=vs.110).aspx">ConfigurationElement.InitializeDefault()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/cy9e8hzc(v=vs.110).aspx">ConfigurationElement.Equals(Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/x2t3yh5a(v=vs.110).aspx">ConfigurationElement.GetHashCode()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms224426(v=vs.110).aspx">ConfigurationElement.SetPropertyValue(ConfigurationProperty, Object, Boolean)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/yxcx3y27(v=vs.110).aspx">ConfigurationElement.SerializeToXmlElement(XmlWriter, String)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134126(v=vs.110).aspx">ConfigurationElement.DeserializeElement(XmlReader, Boolean)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134133(v=vs.110).aspx">ConfigurationElement.OnRequiredPropertyNotFound(String)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134134(v=vs.110).aspx">ConfigurationElement.PostDeserialize()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134135(v=vs.110).aspx">ConfigurationElement.PreSerialize(XmlWriter)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134131(v=vs.110).aspx">ConfigurationElement.OnDeserializeUnrecognizedAttribute(String, String)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd642039(v=vs.110).aspx">ConfigurationElement.GetTransformedTypeString(String)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd642109(v=vs.110).aspx">ConfigurationElement.GetTransformedAssemblyString(String)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134148(v=vs.110).aspx">ConfigurationElement.LockAttributes</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134146(v=vs.110).aspx">ConfigurationElement.LockAllAttributesExcept</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134149(v=vs.110).aspx">ConfigurationElement.LockElements</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134147(v=vs.110).aspx">ConfigurationElement.LockAllElementsExcept</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134150(v=vs.110).aspx">ConfigurationElement.LockItem</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/es150ftc(v=vs.110).aspx">ConfigurationElement.Item[ConfigurationProperty]</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/c8693ks1(v=vs.110).aspx">ConfigurationElement.Item[String]</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134142(v=vs.110).aspx">ConfigurationElement.ElementInformation</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134144(v=vs.110).aspx">ConfigurationElement.EvaluationContext</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134143(v=vs.110).aspx">ConfigurationElement.ElementProperty</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hh136640(v=vs.110).aspx">ConfigurationElement.HasContext</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd412601(v=vs.110).aspx">ConfigurationElement.CurrentConfiguration</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities.Database.Configuration</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.Database.dll</h6>
-              <h5 id="WebApplications_Utilities_Database_Configuration_ProgramElement_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public class ProgramElement : ConfigurationElement, IInternalConfigurationElement, IConfigurationElement</code></pre>
-              </div>
-              <h3 id="properties">Properties
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L137">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_CheckOrder_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.CheckOrder*"></a>
-              <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_CheckOrder" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.CheckOrder">CheckOrder</h4>
-              <div class="markdown level1 summary"><p>Gets or sets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value indicating whether parameter order should be ignored.</p>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+    <div class="level1"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationelement(v=vs.110).aspx">ConfigurationElement</a></div>
+    <div class="level2"><a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html">ConfigurationElement</a></div>
+    <div class="level3"><span class="xref">ProgramElement</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="WebApplications.Utilities.Configuration.IConfigurationElement.html">IConfigurationElement</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Init">ConfigurationElement.Init()</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Parent">ConfigurationElement.Parent</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Section">ConfigurationElement.Section</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_FullPath">ConfigurationElement.FullPath</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ConfigurationElementName">ConfigurationElement.ConfigurationElementName</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Children">ConfigurationElement.Children</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_GetProperty__1_System_String_">ConfigurationElement.GetProperty&lt;T&gt;(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_SetProperty__1_System_String___0_">ConfigurationElement.SetProperty&lt;T&gt;(String, T)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Properties">ConfigurationElement.Properties</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Keys">ConfigurationElement.Keys</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Values">ConfigurationElement.Values</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_PropertyValues">ConfigurationElement.PropertyValues</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_GetElement_System_Xml_Linq_XName_">ConfigurationElement.GetElement(XName)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_SetElement_System_Xml_Linq_XName_System_Xml_Linq_XElement_">ConfigurationElement.SetElement(XName, XElement)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_OnDeserializeUnrecognizedElement_System_String_System_Xml_XmlReader_">ConfigurationElement.OnDeserializeUnrecognizedElement(String, XmlReader)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_SerializeElement_System_Xml_XmlWriter_System_Boolean_">ConfigurationElement.SerializeElement(XmlWriter, Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Unmerge_System_Configuration_ConfigurationElement_System_Configuration_ConfigurationElement_System_Configuration_ConfigurationSaveMode_">ConfigurationElement.Unmerge(ConfigurationElement, ConfigurationElement, ConfigurationSaveMode)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_IsModified">ConfigurationElement.IsModified()</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Reset_System_Configuration_ConfigurationElement_">ConfigurationElement.Reset(ConfigurationElement)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ResetModified">ConfigurationElement.ResetModified()</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ElementNames">ConfigurationElement.ElementNames</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Elements">ConfigurationElement.Elements</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ElementDictionary">ConfigurationElement.ElementDictionary</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ElementsClone">ConfigurationElement.ElementsClone</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_ToString">ConfigurationElement.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_Create__1">ConfigurationElement.Create&lt;T&gt;()</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Configuration.ConfigurationElement.html#WebApplications_Utilities_Configuration_ConfigurationElement_IsDisposed">ConfigurationElement.IsDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134129(v=vs.110).aspx">ConfigurationElement.IsReadOnly()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134139(v=vs.110).aspx">ConfigurationElement.SetReadOnly()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134130(v=vs.110).aspx">ConfigurationElement.ListErrors(IList)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/9kaww10k(v=vs.110).aspx">ConfigurationElement.InitializeDefault()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/cy9e8hzc(v=vs.110).aspx">ConfigurationElement.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/x2t3yh5a(v=vs.110).aspx">ConfigurationElement.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms224426(v=vs.110).aspx">ConfigurationElement.SetPropertyValue(ConfigurationProperty, Object, Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/yxcx3y27(v=vs.110).aspx">ConfigurationElement.SerializeToXmlElement(XmlWriter, String)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134126(v=vs.110).aspx">ConfigurationElement.DeserializeElement(XmlReader, Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134133(v=vs.110).aspx">ConfigurationElement.OnRequiredPropertyNotFound(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134134(v=vs.110).aspx">ConfigurationElement.PostDeserialize()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134135(v=vs.110).aspx">ConfigurationElement.PreSerialize(XmlWriter)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134131(v=vs.110).aspx">ConfigurationElement.OnDeserializeUnrecognizedAttribute(String, String)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd642039(v=vs.110).aspx">ConfigurationElement.GetTransformedTypeString(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd642109(v=vs.110).aspx">ConfigurationElement.GetTransformedAssemblyString(String)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134148(v=vs.110).aspx">ConfigurationElement.LockAttributes</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134146(v=vs.110).aspx">ConfigurationElement.LockAllAttributesExcept</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134149(v=vs.110).aspx">ConfigurationElement.LockElements</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134147(v=vs.110).aspx">ConfigurationElement.LockAllElementsExcept</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134150(v=vs.110).aspx">ConfigurationElement.LockItem</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/es150ftc(v=vs.110).aspx">ConfigurationElement.Item[ConfigurationProperty]</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/c8693ks1(v=vs.110).aspx">ConfigurationElement.Item[String]</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134142(v=vs.110).aspx">ConfigurationElement.ElementInformation</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134144(v=vs.110).aspx">ConfigurationElement.EvaluationContext</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/ms134143(v=vs.110).aspx">ConfigurationElement.ElementProperty</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hh136640(v=vs.110).aspx">ConfigurationElement.HasContext</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dd412601(v=vs.110).aspx">ConfigurationElement.CurrentConfiguration</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.Database.Configuration.html">WebApplications.Utilities.Database.Configuration</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.Database.dll</h6>
+  <h5 id="WebApplications_Utilities_Database_Configuration_ProgramElement_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class ProgramElement : ConfigurationElement, IInternalConfigurationElement, IConfigurationElement</code></pre>
+  </div>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L137">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_CheckOrder_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.CheckOrder*"></a>
+  <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_CheckOrder" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.CheckOrder">CheckOrder</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value indicating whether parameter order should be ignored.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;checkOrder&quot;, DefaultValue = false, IsRequired = false)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;checkOrder&quot;, DefaultValue = false, IsRequired = false)]
 public bool CheckOrder { get; set; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p><span class="xref">true</span> if the parameter order should be ignored; otherwise <span class="xref">false</span>.</p>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the parameter order should be ignored; otherwise <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
-                    <td><p>The property is read-only or locked.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+        <td><p>The property is read-only or locked.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L83">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_Connection_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Connection*"></a>
-              <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_Connection" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Connection">Connection</h4>
-              <div class="markdown level1 summary"><p>Gets the name of the connection element to use.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L83">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_Connection_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Connection*"></a>
+  <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_Connection" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Connection">Connection</h4>
+  <div class="markdown level1 summary"><p>Gets the name of the connection element to use.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;connection&quot;, DefaultValue = null, IsRequired = false)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;connection&quot;, DefaultValue = null, IsRequired = false)]
 public string Connection { get; set; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><p>The name of the connection element to use.</p>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><p>The name of the connection element to use.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
-                    <td><p>The property is read-only or locked.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+        <td><p>The property is read-only or locked.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L170">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_ConstraintMode_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.ConstraintMode*"></a>
-              <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_ConstraintMode" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.ConstraintMode">ConstraintMode</h4>
-              <div class="markdown level1 summary"><p>Gets the <a class="xref" href="WebApplications.Utilities.Database.Schema.TypeConstraintMode.html">TypeConstraintMode</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L170">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_ConstraintMode_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.ConstraintMode*"></a>
+  <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_ConstraintMode" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.ConstraintMode">ConstraintMode</h4>
+  <div class="markdown level1 summary"><p>Gets the <a class="xref" href="WebApplications.Utilities.Database.Schema.TypeConstraintMode.html">TypeConstraintMode</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;constraintMode&quot;, DefaultValue = TypeConstraintMode.Warn, IsRequired = false)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;constraintMode&quot;, DefaultValue = TypeConstraintMode.Warn, IsRequired = false)]
 public TypeConstraintMode ConstraintMode { get; set; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Database.Schema.TypeConstraintMode.html">TypeConstraintMode</a></td>
-                    <td><p>The <a class="xref" href="WebApplications.Utilities.Database.Schema.TypeConstraintMode.html">TypeConstraintMode</a>.</p>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Database.Schema.TypeConstraintMode.html">TypeConstraintMode</a></td>
+        <td><p>The <a class="xref" href="WebApplications.Utilities.Database.Schema.TypeConstraintMode.html">TypeConstraintMode</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
-                    <td><p>The property is read-only or locked.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+        <td><p>The property is read-only or locked.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L153">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_DefaultCommandTimeout_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.DefaultCommandTimeout*"></a>
-              <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_DefaultCommandTimeout" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.DefaultCommandTimeout">DefaultCommandTimeout</h4>
-              <div class="markdown level1 summary"><p>Gets the default command timeout.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L153">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_DefaultCommandTimeout_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.DefaultCommandTimeout*"></a>
+  <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_DefaultCommandTimeout" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.DefaultCommandTimeout">DefaultCommandTimeout</h4>
+  <div class="markdown level1 summary"><p>Gets the default command timeout.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;defaultCommandTimeout&quot;, DefaultValue = &quot;00:00:30&quot;, IsRequired = false)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;defaultCommandTimeout&quot;, DefaultValue = &quot;00:00:30&quot;, IsRequired = false)]
 [TimeSpanValidator(MinValueString = &quot;00:00:00.5&quot;, MaxValueString = &quot;00:10:00&quot;)]
 public TimeSpan DefaultCommandTimeout { get; set; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
-                    <td><p>The time to wait before terminating the command.</p>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.timespan(v=vs.110).aspx">TimeSpan</a></td>
+        <td><p>The time to wait before terminating the command.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
-                    <td><p>The property is read-only or locked.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+        <td><p>The property is read-only or locked.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L121">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_IgnoreValidationErrors_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.IgnoreValidationErrors*"></a>
-              <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_IgnoreValidationErrors" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.IgnoreValidationErrors">IgnoreValidationErrors</h4>
-              <div class="markdown level1 summary"><p>Gets or sets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value indicating whether validation errors should be ignored.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L121">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_IgnoreValidationErrors_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.IgnoreValidationErrors*"></a>
+  <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_IgnoreValidationErrors" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.IgnoreValidationErrors">IgnoreValidationErrors</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a> value indicating whether validation errors should be ignored.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;ignoreValidationErrors&quot;, DefaultValue = false, IsRequired = false)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;ignoreValidationErrors&quot;, DefaultValue = false, IsRequired = false)]
 public bool IgnoreValidationErrors { get; set; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p><span class="xref">true</span> if validation errors should be ignored; otherwise <span class="xref">false</span>.</p>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p><span class="xref">true</span> if validation errors should be ignored; otherwise <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
-                    <td><p>The property is read-only or locked.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+        <td><p>The property is read-only or locked.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L66">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_MapTo_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.MapTo*"></a>
-              <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_MapTo" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.MapTo">MapTo</h4>
-              <div class="markdown level1 summary"><p>Gets or sets the mapTo property, which maps the element to the
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L66">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_MapTo_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.MapTo*"></a>
+  <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_MapTo" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.MapTo">MapTo</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the mapTo property, which maps the element to the
 <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a> it represents.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;mapTo&quot;, DefaultValue = null, IsRequired = false)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;mapTo&quot;, DefaultValue = null, IsRequired = false)]
 public string MapTo { get; set; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
-                    <td><p>The property is read-only or locked.</p>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+        <td><p>The property is read-only or locked.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L187">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_MaximumConcurrency_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.MaximumConcurrency*"></a>
-              <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_MaximumConcurrency" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.MaximumConcurrency">MaximumConcurrency</h4>
-              <div class="markdown level1 summary"><p>Gets or sets the maximum number of concurrent executions that are allowed for this program.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L187">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_MaximumConcurrency_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.MaximumConcurrency*"></a>
+  <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_MaximumConcurrency" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.MaximumConcurrency">MaximumConcurrency</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the maximum number of concurrent executions that are allowed for this program.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;maxConcurrency&quot;, DefaultValue = -1, IsRequired = false)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;maxConcurrency&quot;, DefaultValue = -1, IsRequired = false)]
 public int MaximumConcurrency { get; set; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><p>The maximum concurrency.</p>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><p>The maximum concurrency.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 id="WebApplications_Utilities_Database_Configuration_ProgramElement_MaximumConcurrency_remarks">Remarks</h5>
-              <div class="markdown level1 remarks"><p>A negative value indicates no limit.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="WebApplications_Utilities_Database_Configuration_ProgramElement_MaximumConcurrency_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>A negative value indicates no limit.</p>
 </div>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
-                    <td><p>The property is read-only or locked.</p>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+        <td><p>The property is read-only or locked.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L50">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_Name_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Name*"></a>
-              <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_Name" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Name">Name</h4>
-              <div class="markdown level1 summary"><p>Gets a name for the <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L50">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_Name_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Name*"></a>
+  <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_Name" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Name">Name</h4>
+  <div class="markdown level1 summary"><p>Gets a name for the <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;name&quot;, IsRequired = true, IsKey = true)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;name&quot;, IsRequired = true, IsKey = true)]
 public string Name { get; set; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><p>The name of the <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a>.</p>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><p>The name of the <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
-                    <td><p>The property is read-only or locked.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+        <td><p>The property is read-only or locked.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L100">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_Parameters_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Parameters*"></a>
-              <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_Parameters" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Parameters">Parameters</h4>
-              <div class="markdown level1 summary"><p>Gets or sets the parameters for the <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Database/Configuration/ProgramElement.cs/#L100">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Database_Configuration_ProgramElement_Parameters_" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Parameters*"></a>
+  <h4 id="WebApplications_Utilities_Database_Configuration_ProgramElement_Parameters" data-uid="WebApplications.Utilities.Database.Configuration.ProgramElement.Parameters">Parameters</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the parameters for the <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;&quot;, IsRequired = false, IsDefaultCollection = true)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[ConfigurationProperty(&quot;&quot;, IsRequired = false, IsDefaultCollection = true)]
 [ConfigurationCollection(typeof (ParameterCollection), CollectionType = ConfigurationElementCollectionType.BasicMapAlternate)]
 public ParameterCollection Parameters { get; set; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Database.Configuration.ParameterCollection.html">ParameterCollection</a></td>
-                    <td><p>The parameters for the <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a>.</p>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Database.Configuration.ParameterCollection.html">ParameterCollection</a></td>
+        <td><p>The parameters for the <a class="xref" href="WebApplications.Utilities.Database.SqlProgram.html">SqlProgram</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
-                    <td><p>The property is read-only or locked.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.configuration.configurationerrorsexception(v=vs.110).aspx">ConfigurationErrorsException</a></td>
+        <td><p>The property is read-only or locked.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

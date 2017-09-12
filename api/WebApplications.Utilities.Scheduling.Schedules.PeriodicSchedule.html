@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class PeriodicSchedule
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,822 +76,829 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule">Class PeriodicSchedule
-              </h1>
-              <div class="markdown level0 summary"><p>Defines a schedule.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule">
+  
+  
+  <h1 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule" class="text-break">Class PeriodicSchedule
+  </h1>
+  <div class="markdown level0 summary"><p>Defines a schedule.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritance">
-                <h5>Inheritance</h5>
-                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
-                  <div class="level1"><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html">FunctionalSchedule</a></div>
-                  <div class="level2"><span class="xref">PeriodicSchedule</span></div>
-              </div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Name">FunctionalSchedule.Name</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Next_NodaTime_Instant_">FunctionalSchedule.Next(Instant)</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Options">FunctionalSchedule.Options</a>
-                </div>
-                <div>
-                  <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_ToString">FunctionalSchedule.ToString()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities.Scheduling.Schedules</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.Scheduling.dll</h6>
-              <h5 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[PublicAPI]
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+    <div class="level1"><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html">FunctionalSchedule</a></div>
+    <div class="level2"><span class="xref">PeriodicSchedule</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></div>
+    <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131187(v=vs.110).aspx">IEquatable</a>&lt;<a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a>&gt;</div>
+    <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131187(v=vs.110).aspx">IEquatable</a>&lt;<a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html">FunctionalSchedule</a>&gt;</div>
+    <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131187(v=vs.110).aspx">IEquatable</a>&lt;<a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.html">PeriodicSchedule</a>&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Name">FunctionalSchedule.Name</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Next_NodaTime_Instant_">FunctionalSchedule.Next(Instant)</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Options">FunctionalSchedule.Options</a>
+    </div>
+    <div>
+      <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_ToString">FunctionalSchedule.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.html">WebApplications.Utilities.Scheduling.Schedules</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.Scheduling.dll</h6>
+  <h5 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[PublicAPI]
 public class PeriodicSchedule : FunctionalSchedule, ISchedule, IEquatable&lt;ISchedule&gt;, IEquatable&lt;FunctionalSchedule&gt;, IEquatable&lt;PeriodicSchedule&gt;</code></pre>
-              </div>
-              <h3 id="constructors">Constructors
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L156">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule__ctor_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule__ctor_System_String_WebApplications_Utilities_Scheduling_Schedules_Month_WebApplications_Utilities_Scheduling_Schedules_Week_WebApplications_Utilities_Scheduling_Schedules_Day_WebApplications_Utilities_Scheduling_Schedules_WeekDay_WebApplications_Utilities_Scheduling_Schedules_Hour_WebApplications_Utilities_Scheduling_Schedules_Minute_WebApplications_Utilities_Scheduling_Schedules_Second_NodaTime_Duration_NodaTime_CalendarSystem_NodaTime_DateTimeZone_WebApplications_Utilities_Scheduling_ScheduleOptions_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.#ctor(System.String,WebApplications.Utilities.Scheduling.Schedules.Month,WebApplications.Utilities.Scheduling.Schedules.Week,WebApplications.Utilities.Scheduling.Schedules.Day,WebApplications.Utilities.Scheduling.Schedules.WeekDay,WebApplications.Utilities.Scheduling.Schedules.Hour,WebApplications.Utilities.Scheduling.Schedules.Minute,WebApplications.Utilities.Scheduling.Schedules.Second,NodaTime.Duration,NodaTime.CalendarSystem,NodaTime.DateTimeZone,WebApplications.Utilities.Scheduling.ScheduleOptions)">PeriodicSchedule(String, Month, Week, Day, WeekDay, Hour, Minute, Second, Duration, CalendarSystem, DateTimeZone, ScheduleOptions)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.html">PeriodicSchedule</a> class.</p>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L156">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule__ctor_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule__ctor_System_String_WebApplications_Utilities_Scheduling_Schedules_Month_WebApplications_Utilities_Scheduling_Schedules_Week_WebApplications_Utilities_Scheduling_Schedules_Day_WebApplications_Utilities_Scheduling_Schedules_WeekDay_WebApplications_Utilities_Scheduling_Schedules_Hour_WebApplications_Utilities_Scheduling_Schedules_Minute_WebApplications_Utilities_Scheduling_Schedules_Second_NodaTime_Duration_NodaTime_CalendarSystem_NodaTime_DateTimeZone_WebApplications_Utilities_Scheduling_ScheduleOptions_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.#ctor(System.String,WebApplications.Utilities.Scheduling.Schedules.Month,WebApplications.Utilities.Scheduling.Schedules.Week,WebApplications.Utilities.Scheduling.Schedules.Day,WebApplications.Utilities.Scheduling.Schedules.WeekDay,WebApplications.Utilities.Scheduling.Schedules.Hour,WebApplications.Utilities.Scheduling.Schedules.Minute,WebApplications.Utilities.Scheduling.Schedules.Second,NodaTime.Duration,NodaTime.CalendarSystem,NodaTime.DateTimeZone,WebApplications.Utilities.Scheduling.ScheduleOptions)">PeriodicSchedule(String, Month, Week, Day, WeekDay, Hour, Minute, Second, Duration, CalendarSystem, DateTimeZone, ScheduleOptions)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.html">PeriodicSchedule</a> class.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public PeriodicSchedule(string name, Month month = Month.January | Month.February | Month.March | Month.April | Month.May | Month.June | Month.July | Month.August | Month.September | Month.October | Month.November | Month.December | Month.TwiceAYear | Month.FourTimesAYear | Month.ThreeTimesAYear | Month.EveryTwoMonths | Month.EveryOtherMonth | Month.Every, Week week = Week.Zeroth | Week.First | Week.Second | Week.Third | Week.Fourth | Week.Fifth | Week.Sixth | Week.Seventh | Week.Eighth | Week.Ninth | Week.Tenth | Week.Eleventh | Week.Twelfth | Week.Thirteenth | Week.Fourteenth | Week.Fifteenth | Week.Sixteenth | Week.Seventeenth | Week.Eighteenth | Week.Nineteenth | Week.Twentieth | Week.TwentyFirst | Week.TwentySecond | Week.TwentyThird | Week.TwentyFourth | Week.TwentyFifth | Week.TwentySixth | Week.TwentySeventh | Week.TwentyEighth | Week.TwentyNinth | Week.Thirtieth | Week.ThirtyFirst | Week.ThirtySecond | Week.ThirtyThird | Week.ThirtyFourth | Week.ThirtyFifth | Week.ThirtySixth | Week.ThirtySeventh | Week.ThirtyEighth | Week.ThirtyNinth | Week.Fortieth | Week.FortyFirst | Week.FortySecond | Week.FortyThird | Week.FortyForth | Week.FortyFifth | Week.FortySixth | Week.FortySeventh | Week.FortyEighth | Week.FortyNinth | Week.Fiftieth | Week.FiftyFirst | Week.FiftySecond | Week.EveryFourWeeks | Week.EveryTwoWeeks | Week.EveryOtherWeek | Week.Every, Day day = Day.First | Day.Second | Day.Third | Day.Fourth | Day.Fifth | Day.Sixth | Day.Seventh | Day.Eighth | Day.Ninth | Day.Tenth | Day.Eleventh | Day.Twelfth | Day.Thirteenth | Day.Fourteenth | Day.Fifteenth | Day.Sixteenth | Day.Seventeenth | Day.Eighteenth | Day.Nineteenth | Day.Twentieth | Day.TwentyFirst | Day.TwentySecond | Day.TwentyThird | Day.TwentyFourth | Day.TwentyFifth | Day.TwentySixth | Day.TwentySeventh | Day.TwentyEighth | Day.TwentyNinth | Day.Thirtieth | Day.ThirtyFirst | Day.Every, WeekDay weekDay = WeekDay.Sunday | WeekDay.Monday | WeekDay.Tuesday | WeekDay.Wednesday | WeekDay.Thursday | WeekDay.Friday | WeekDay.Saturday | WeekDay.Weekend | WeekDay.WeekDay | WeekDay.Every, Hour hour = Hour.Zeroth | Hour.TwentyFourth, Minute minute = Minute.Zeroth | Minute.Sixtyth, Second second = Second.Zeroth | Second.Sixtyth, Duration minimumGap = null, CalendarSystem calendar = null, DateTimeZone timeZone = null, ScheduleOptions options = ScheduleOptions.None)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">name</span></td>
-                    <td><p>The name.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PeriodicSchedule(string name, Month month = Month.January | Month.February | Month.March | Month.April | Month.May | Month.June | Month.July | Month.August | Month.September | Month.October | Month.November | Month.December | Month.TwiceAYear | Month.FourTimesAYear | Month.ThreeTimesAYear | Month.EveryTwoMonths | Month.EveryOtherMonth | Month.Every, Week week = Week.Zeroth | Week.First | Week.Second | Week.Third | Week.Fourth | Week.Fifth | Week.Sixth | Week.Seventh | Week.Eighth | Week.Ninth | Week.Tenth | Week.Eleventh | Week.Twelfth | Week.Thirteenth | Week.Fourteenth | Week.Fifteenth | Week.Sixteenth | Week.Seventeenth | Week.Eighteenth | Week.Nineteenth | Week.Twentieth | Week.TwentyFirst | Week.TwentySecond | Week.TwentyThird | Week.TwentyFourth | Week.TwentyFifth | Week.TwentySixth | Week.TwentySeventh | Week.TwentyEighth | Week.TwentyNinth | Week.Thirtieth | Week.ThirtyFirst | Week.ThirtySecond | Week.ThirtyThird | Week.ThirtyFourth | Week.ThirtyFifth | Week.ThirtySixth | Week.ThirtySeventh | Week.ThirtyEighth | Week.ThirtyNinth | Week.Fortieth | Week.FortyFirst | Week.FortySecond | Week.FortyThird | Week.FortyForth | Week.FortyFifth | Week.FortySixth | Week.FortySeventh | Week.FortyEighth | Week.FortyNinth | Week.Fiftieth | Week.FiftyFirst | Week.FiftySecond | Week.EveryFourWeeks | Week.EveryTwoWeeks | Week.EveryOtherWeek | Week.Every, Day day = Day.First | Day.Second | Day.Third | Day.Fourth | Day.Fifth | Day.Sixth | Day.Seventh | Day.Eighth | Day.Ninth | Day.Tenth | Day.Eleventh | Day.Twelfth | Day.Thirteenth | Day.Fourteenth | Day.Fifteenth | Day.Sixteenth | Day.Seventeenth | Day.Eighteenth | Day.Nineteenth | Day.Twentieth | Day.TwentyFirst | Day.TwentySecond | Day.TwentyThird | Day.TwentyFourth | Day.TwentyFifth | Day.TwentySixth | Day.TwentySeventh | Day.TwentyEighth | Day.TwentyNinth | Day.Thirtieth | Day.ThirtyFirst | Day.Every, WeekDay weekDay = WeekDay.Sunday | WeekDay.Monday | WeekDay.Tuesday | WeekDay.Wednesday | WeekDay.Thursday | WeekDay.Friday | WeekDay.Saturday | WeekDay.Weekend | WeekDay.WeekDay | WeekDay.Every, Hour hour = Hour.Zeroth | Hour.TwentyFourth, Minute minute = Minute.Zeroth | Minute.Sixtyth, Second second = Second.Zeroth | Second.Sixtyth, Duration minimumGap = default (Duration), CalendarSystem calendar = null, DateTimeZone timeZone = null, ScheduleOptions options = ScheduleOptions.None)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">name</span></td>
+        <td><p>The name.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Month.html">Month</a></td>
-                    <td><span class="parametername">month</span></td>
-                    <td><p>The month.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Month.html">Month</a></td>
+        <td><span class="parametername">month</span></td>
+        <td><p>The month.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Week.html">Week</a></td>
-                    <td><span class="parametername">week</span></td>
-                    <td><p>The week.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Week.html">Week</a></td>
+        <td><span class="parametername">week</span></td>
+        <td><p>The week.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Day.html">Day</a></td>
-                    <td><span class="parametername">day</span></td>
-                    <td><p>The day.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Day.html">Day</a></td>
+        <td><span class="parametername">day</span></td>
+        <td><p>The day.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.WeekDay.html">WeekDay</a></td>
-                    <td><span class="parametername">weekDay</span></td>
-                    <td><p>The week day.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.WeekDay.html">WeekDay</a></td>
+        <td><span class="parametername">weekDay</span></td>
+        <td><p>The week day.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Hour.html">Hour</a></td>
-                    <td><span class="parametername">hour</span></td>
-                    <td><p>The hour.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Hour.html">Hour</a></td>
+        <td><span class="parametername">hour</span></td>
+        <td><p>The hour.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Minute.html">Minute</a></td>
-                    <td><span class="parametername">minute</span></td>
-                    <td><p>The minute.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Minute.html">Minute</a></td>
+        <td><span class="parametername">minute</span></td>
+        <td><p>The minute.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Second.html">Second</a></td>
-                    <td><span class="parametername">second</span></td>
-                    <td><p>The second.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Second.html">Second</a></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
-                    <td><span class="parametername">minimumGap</span></td>
-                    <td><p>The minimum gap.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+        <td><span class="parametername">minimumGap</span></td>
+        <td><p>The minimum gap.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.CalendarSystem.html">CalendarSystem</a></td>
-                    <td><span class="parametername">calendar</span></td>
-                    <td><p>The calendar.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.CalendarSystem.html">CalendarSystem</a></td>
+        <td><span class="parametername">calendar</span></td>
+        <td><p>The calendar.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.DateTimeZone.html">DateTimeZone</a></td>
-                    <td><span class="parametername">timeZone</span></td>
-                    <td><p>The time zone.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.DateTimeZone.html">DateTimeZone</a></td>
+        <td><span class="parametername">timeZone</span></td>
+        <td><p>The time zone.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ScheduleOptions.html">ScheduleOptions</a></td>
-                    <td><span class="parametername">options</span></td>
-                    <td><p>The options.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.ScheduleOptions.html">ScheduleOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>The options.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L111">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule__ctor_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule__ctor_WebApplications_Utilities_Scheduling_Schedules_Month_WebApplications_Utilities_Scheduling_Schedules_Week_WebApplications_Utilities_Scheduling_Schedules_Day_WebApplications_Utilities_Scheduling_Schedules_WeekDay_WebApplications_Utilities_Scheduling_Schedules_Hour_WebApplications_Utilities_Scheduling_Schedules_Minute_WebApplications_Utilities_Scheduling_Schedules_Second_NodaTime_Duration_NodaTime_CalendarSystem_NodaTime_DateTimeZone_WebApplications_Utilities_Scheduling_ScheduleOptions_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.#ctor(WebApplications.Utilities.Scheduling.Schedules.Month,WebApplications.Utilities.Scheduling.Schedules.Week,WebApplications.Utilities.Scheduling.Schedules.Day,WebApplications.Utilities.Scheduling.Schedules.WeekDay,WebApplications.Utilities.Scheduling.Schedules.Hour,WebApplications.Utilities.Scheduling.Schedules.Minute,WebApplications.Utilities.Scheduling.Schedules.Second,NodaTime.Duration,NodaTime.CalendarSystem,NodaTime.DateTimeZone,WebApplications.Utilities.Scheduling.ScheduleOptions)">PeriodicSchedule(Month, Week, Day, WeekDay, Hour, Minute, Second, Duration, CalendarSystem, DateTimeZone, ScheduleOptions)</h4>
-              <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.html">PeriodicSchedule</a> class.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L111">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule__ctor_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule__ctor_WebApplications_Utilities_Scheduling_Schedules_Month_WebApplications_Utilities_Scheduling_Schedules_Week_WebApplications_Utilities_Scheduling_Schedules_Day_WebApplications_Utilities_Scheduling_Schedules_WeekDay_WebApplications_Utilities_Scheduling_Schedules_Hour_WebApplications_Utilities_Scheduling_Schedules_Minute_WebApplications_Utilities_Scheduling_Schedules_Second_NodaTime_Duration_NodaTime_CalendarSystem_NodaTime_DateTimeZone_WebApplications_Utilities_Scheduling_ScheduleOptions_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.#ctor(WebApplications.Utilities.Scheduling.Schedules.Month,WebApplications.Utilities.Scheduling.Schedules.Week,WebApplications.Utilities.Scheduling.Schedules.Day,WebApplications.Utilities.Scheduling.Schedules.WeekDay,WebApplications.Utilities.Scheduling.Schedules.Hour,WebApplications.Utilities.Scheduling.Schedules.Minute,WebApplications.Utilities.Scheduling.Schedules.Second,NodaTime.Duration,NodaTime.CalendarSystem,NodaTime.DateTimeZone,WebApplications.Utilities.Scheduling.ScheduleOptions)">PeriodicSchedule(Month, Week, Day, WeekDay, Hour, Minute, Second, Duration, CalendarSystem, DateTimeZone, ScheduleOptions)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.html">PeriodicSchedule</a> class.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public PeriodicSchedule(Month month = Month.January | Month.February | Month.March | Month.April | Month.May | Month.June | Month.July | Month.August | Month.September | Month.October | Month.November | Month.December | Month.TwiceAYear | Month.FourTimesAYear | Month.ThreeTimesAYear | Month.EveryTwoMonths | Month.EveryOtherMonth | Month.Every, Week week = Week.Zeroth | Week.First | Week.Second | Week.Third | Week.Fourth | Week.Fifth | Week.Sixth | Week.Seventh | Week.Eighth | Week.Ninth | Week.Tenth | Week.Eleventh | Week.Twelfth | Week.Thirteenth | Week.Fourteenth | Week.Fifteenth | Week.Sixteenth | Week.Seventeenth | Week.Eighteenth | Week.Nineteenth | Week.Twentieth | Week.TwentyFirst | Week.TwentySecond | Week.TwentyThird | Week.TwentyFourth | Week.TwentyFifth | Week.TwentySixth | Week.TwentySeventh | Week.TwentyEighth | Week.TwentyNinth | Week.Thirtieth | Week.ThirtyFirst | Week.ThirtySecond | Week.ThirtyThird | Week.ThirtyFourth | Week.ThirtyFifth | Week.ThirtySixth | Week.ThirtySeventh | Week.ThirtyEighth | Week.ThirtyNinth | Week.Fortieth | Week.FortyFirst | Week.FortySecond | Week.FortyThird | Week.FortyForth | Week.FortyFifth | Week.FortySixth | Week.FortySeventh | Week.FortyEighth | Week.FortyNinth | Week.Fiftieth | Week.FiftyFirst | Week.FiftySecond | Week.EveryFourWeeks | Week.EveryTwoWeeks | Week.EveryOtherWeek | Week.Every, Day day = Day.First | Day.Second | Day.Third | Day.Fourth | Day.Fifth | Day.Sixth | Day.Seventh | Day.Eighth | Day.Ninth | Day.Tenth | Day.Eleventh | Day.Twelfth | Day.Thirteenth | Day.Fourteenth | Day.Fifteenth | Day.Sixteenth | Day.Seventeenth | Day.Eighteenth | Day.Nineteenth | Day.Twentieth | Day.TwentyFirst | Day.TwentySecond | Day.TwentyThird | Day.TwentyFourth | Day.TwentyFifth | Day.TwentySixth | Day.TwentySeventh | Day.TwentyEighth | Day.TwentyNinth | Day.Thirtieth | Day.ThirtyFirst | Day.Every, WeekDay weekDay = WeekDay.Sunday | WeekDay.Monday | WeekDay.Tuesday | WeekDay.Wednesday | WeekDay.Thursday | WeekDay.Friday | WeekDay.Saturday | WeekDay.Weekend | WeekDay.WeekDay | WeekDay.Every, Hour hour = Hour.Zeroth | Hour.TwentyFourth, Minute minute = Minute.Zeroth | Minute.Sixtyth, Second second = Second.Zeroth | Second.Sixtyth, Duration minimumGap = null, CalendarSystem calendar = null, DateTimeZone timeZone = null, ScheduleOptions options = ScheduleOptions.None)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Month.html">Month</a></td>
-                    <td><span class="parametername">month</span></td>
-                    <td><p>The month.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public PeriodicSchedule(Month month = Month.January | Month.February | Month.March | Month.April | Month.May | Month.June | Month.July | Month.August | Month.September | Month.October | Month.November | Month.December | Month.TwiceAYear | Month.FourTimesAYear | Month.ThreeTimesAYear | Month.EveryTwoMonths | Month.EveryOtherMonth | Month.Every, Week week = Week.Zeroth | Week.First | Week.Second | Week.Third | Week.Fourth | Week.Fifth | Week.Sixth | Week.Seventh | Week.Eighth | Week.Ninth | Week.Tenth | Week.Eleventh | Week.Twelfth | Week.Thirteenth | Week.Fourteenth | Week.Fifteenth | Week.Sixteenth | Week.Seventeenth | Week.Eighteenth | Week.Nineteenth | Week.Twentieth | Week.TwentyFirst | Week.TwentySecond | Week.TwentyThird | Week.TwentyFourth | Week.TwentyFifth | Week.TwentySixth | Week.TwentySeventh | Week.TwentyEighth | Week.TwentyNinth | Week.Thirtieth | Week.ThirtyFirst | Week.ThirtySecond | Week.ThirtyThird | Week.ThirtyFourth | Week.ThirtyFifth | Week.ThirtySixth | Week.ThirtySeventh | Week.ThirtyEighth | Week.ThirtyNinth | Week.Fortieth | Week.FortyFirst | Week.FortySecond | Week.FortyThird | Week.FortyForth | Week.FortyFifth | Week.FortySixth | Week.FortySeventh | Week.FortyEighth | Week.FortyNinth | Week.Fiftieth | Week.FiftyFirst | Week.FiftySecond | Week.EveryFourWeeks | Week.EveryTwoWeeks | Week.EveryOtherWeek | Week.Every, Day day = Day.First | Day.Second | Day.Third | Day.Fourth | Day.Fifth | Day.Sixth | Day.Seventh | Day.Eighth | Day.Ninth | Day.Tenth | Day.Eleventh | Day.Twelfth | Day.Thirteenth | Day.Fourteenth | Day.Fifteenth | Day.Sixteenth | Day.Seventeenth | Day.Eighteenth | Day.Nineteenth | Day.Twentieth | Day.TwentyFirst | Day.TwentySecond | Day.TwentyThird | Day.TwentyFourth | Day.TwentyFifth | Day.TwentySixth | Day.TwentySeventh | Day.TwentyEighth | Day.TwentyNinth | Day.Thirtieth | Day.ThirtyFirst | Day.Every, WeekDay weekDay = WeekDay.Sunday | WeekDay.Monday | WeekDay.Tuesday | WeekDay.Wednesday | WeekDay.Thursday | WeekDay.Friday | WeekDay.Saturday | WeekDay.Weekend | WeekDay.WeekDay | WeekDay.Every, Hour hour = Hour.Zeroth | Hour.TwentyFourth, Minute minute = Minute.Zeroth | Minute.Sixtyth, Second second = Second.Zeroth | Second.Sixtyth, Duration minimumGap = default (Duration), CalendarSystem calendar = null, DateTimeZone timeZone = null, ScheduleOptions options = ScheduleOptions.None)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Month.html">Month</a></td>
+        <td><span class="parametername">month</span></td>
+        <td><p>The month.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Week.html">Week</a></td>
-                    <td><span class="parametername">week</span></td>
-                    <td><p>The week.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Week.html">Week</a></td>
+        <td><span class="parametername">week</span></td>
+        <td><p>The week.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Day.html">Day</a></td>
-                    <td><span class="parametername">day</span></td>
-                    <td><p>The day.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Day.html">Day</a></td>
+        <td><span class="parametername">day</span></td>
+        <td><p>The day.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.WeekDay.html">WeekDay</a></td>
-                    <td><span class="parametername">weekDay</span></td>
-                    <td><p>The week day.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.WeekDay.html">WeekDay</a></td>
+        <td><span class="parametername">weekDay</span></td>
+        <td><p>The week day.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Hour.html">Hour</a></td>
-                    <td><span class="parametername">hour</span></td>
-                    <td><p>The hour.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Hour.html">Hour</a></td>
+        <td><span class="parametername">hour</span></td>
+        <td><p>The hour.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Minute.html">Minute</a></td>
-                    <td><span class="parametername">minute</span></td>
-                    <td><p>The minute.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Minute.html">Minute</a></td>
+        <td><span class="parametername">minute</span></td>
+        <td><p>The minute.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Second.html">Second</a></td>
-                    <td><span class="parametername">second</span></td>
-                    <td><p>The second.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Second.html">Second</a></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
-                    <td><span class="parametername">minimumGap</span></td>
-                    <td><p>The minimum gap.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+        <td><span class="parametername">minimumGap</span></td>
+        <td><p>The minimum gap.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.CalendarSystem.html">CalendarSystem</a></td>
-                    <td><span class="parametername">calendar</span></td>
-                    <td><p>The calendar.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.CalendarSystem.html">CalendarSystem</a></td>
+        <td><span class="parametername">calendar</span></td>
+        <td><p>The calendar.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.DateTimeZone.html">DateTimeZone</a></td>
-                    <td><span class="parametername">timeZone</span></td>
-                    <td><p>The time zone.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.DateTimeZone.html">DateTimeZone</a></td>
+        <td><span class="parametername">timeZone</span></td>
+        <td><p>The time zone.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ScheduleOptions.html">ScheduleOptions</a></td>
-                    <td><span class="parametername">options</span></td>
-                    <td><p>The options.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.ScheduleOptions.html">ScheduleOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>The options.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="fields">Fields
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L44">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_CalendarSystem" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.CalendarSystem">CalendarSystem</h4>
-              <div class="markdown level1 summary"><p>The calendar.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L44">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_CalendarSystem" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.CalendarSystem">CalendarSystem</h4>
+  <div class="markdown level1 summary"><p>The calendar.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly CalendarSystem CalendarSystem</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.CalendarSystem.html">CalendarSystem</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L50">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_DateTimeZone" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.DateTimeZone">DateTimeZone</h4>
-              <div class="markdown level1 summary"><p>The time zone.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly CalendarSystem CalendarSystem</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.CalendarSystem.html">CalendarSystem</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L50">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_DateTimeZone" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.DateTimeZone">DateTimeZone</h4>
+  <div class="markdown level1 summary"><p>The time zone.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly DateTimeZone DateTimeZone</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.DateTimeZone.html">DateTimeZone</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L55">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Day" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Day">Day</h4>
-              <div class="markdown level1 summary"><p>The day.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly DateTimeZone DateTimeZone</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.DateTimeZone.html">DateTimeZone</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L55">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Day" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Day">Day</h4>
+  <div class="markdown level1 summary"><p>The day.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Day Day</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Day.html">Day</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L60">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_FirstDayOfWeek" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.FirstDayOfWeek">FirstDayOfWeek</h4>
-              <div class="markdown level1 summary"><p>The day of the week.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Day Day</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Day.html">Day</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L60">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_FirstDayOfWeek" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.FirstDayOfWeek">FirstDayOfWeek</h4>
+  <div class="markdown level1 summary"><p>The day of the week.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly DayOfWeek FirstDayOfWeek</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.dayofweek(v=vs.110).aspx">DayOfWeek</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L65">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Hour" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Hour">Hour</h4>
-              <div class="markdown level1 summary"><p>The hour.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly DayOfWeek FirstDayOfWeek</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.dayofweek(v=vs.110).aspx">DayOfWeek</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L65">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Hour" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Hour">Hour</h4>
+  <div class="markdown level1 summary"><p>The hour.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Hour Hour</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Hour.html">Hour</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L70">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_MinimumGap" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.MinimumGap">MinimumGap</h4>
-              <div class="markdown level1 summary"><p>The minimum gap, added to all supplied date times.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Hour Hour</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Hour.html">Hour</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L70">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_MinimumGap" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.MinimumGap">MinimumGap</h4>
+  <div class="markdown level1 summary"><p>The minimum gap, added to all supplied date times.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Duration MinimumGap</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L75">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Minute" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Minute">Minute</h4>
-              <div class="markdown level1 summary"><p>The minute.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Duration MinimumGap</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="http://nodatime.org/1.3.x/api/NodaTime.Duration.html">Duration</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L75">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Minute" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Minute">Minute</h4>
+  <div class="markdown level1 summary"><p>The minute.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Minute Minute</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Minute.html">Minute</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L80">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Month" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Month">Month</h4>
-              <div class="markdown level1 summary"><p>The month.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Minute Minute</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Minute.html">Minute</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L80">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Month" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Month">Month</h4>
+  <div class="markdown level1 summary"><p>The month.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Month Month</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Month.html">Month</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L85">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Second" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Second">Second</h4>
-              <div class="markdown level1 summary"><p>The second.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Month Month</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Month.html">Month</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L85">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Second" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Second">Second</h4>
+  <div class="markdown level1 summary"><p>The second.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Second Second</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Second.html">Second</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L90">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Week" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Week">Week</h4>
-              <div class="markdown level1 summary"><p>The week.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Second Second</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Second.html">Second</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L90">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Week" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Week">Week</h4>
+  <div class="markdown level1 summary"><p>The week.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly Week Week</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Week.html">Week</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L95">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_WeekDay" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.WeekDay">WeekDay</h4>
-              <div class="markdown level1 summary"><p>The weekday.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly Week Week</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.Week.html">Week</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L95">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_WeekDay" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.WeekDay">WeekDay</h4>
+  <div class="markdown level1 summary"><p>The weekday.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly WeekDay WeekDay</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.WeekDay.html">WeekDay</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="methods">Methods
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L388">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals*"></a>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_System_Object_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals(System.Object)">Equals(Object)</h4>
-              <div class="markdown level1 summary"><p>Determines whether the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a>, is equal to this instance.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly WeekDay WeekDay</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.WeekDay.html">WeekDay</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L388">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals*"></a>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_System_Object_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals(System.Object)">Equals(Object)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a>, is equal to this instance.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public override bool Equals(object obj)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
-                    <td><span class="parametername">obj</span></td>
-                    <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> to compare with this instance.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(object obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> to compare with this instance.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p><span class="xref">true</span> if the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> is equal to this instance; otherwise, <span class="xref">false</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the specified <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a> is equal to this instance; otherwise, <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="overrides">Overrides</h5>
-              <div><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Equals_System_Object_">FunctionalSchedule.Equals(Object)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L376">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals*"></a>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_WebApplications_Utilities_Scheduling_ISchedule_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals(WebApplications.Utilities.Scheduling.ISchedule)">Equals(ISchedule)</h4>
-              <div class="markdown level1 summary"><p>Indicates whether the current object is equal to another object of type <a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Equals_System_Object_">FunctionalSchedule.Equals(Object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L376">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals*"></a>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_WebApplications_Utilities_Scheduling_ISchedule_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals(WebApplications.Utilities.Scheduling.ISchedule)">Equals(ISchedule)</h4>
+  <div class="markdown level1 summary"><p>Indicates whether the current object is equal to another object of type <a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public override bool Equals(ISchedule other)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
-                    <td><span class="parametername">other</span></td>
-                    <td><p>An object to compare with this object.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(ISchedule other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.ISchedule.html">ISchedule</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>An object to compare with this object.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p>true if the current object is equal to the <span class="paramref">other</span> parameter; otherwise, false.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p>true if the current object is equal to the <code data-dev-comment-type="paramref" class="paramref">other</code> parameter; otherwise, false.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="overrides">Overrides</h5>
-              <div><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Equals_WebApplications_Utilities_Scheduling_ISchedule_">FunctionalSchedule.Equals(ISchedule)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L364">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals*"></a>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals(WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule)">Equals(FunctionalSchedule)</h4>
-              <div class="markdown level1 summary"><p>Indicates whether the current object is equal to another object of type <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html">FunctionalSchedule</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Equals_WebApplications_Utilities_Scheduling_ISchedule_">FunctionalSchedule.Equals(ISchedule)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L364">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals*"></a>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals(WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule)">Equals(FunctionalSchedule)</h4>
+  <div class="markdown level1 summary"><p>Indicates whether the current object is equal to another object of type <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html">FunctionalSchedule</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public override bool Equals(FunctionalSchedule other)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html">FunctionalSchedule</a></td>
-                    <td><span class="parametername">other</span></td>
-                    <td><p>An object to compare with this object.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool Equals(FunctionalSchedule other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html">FunctionalSchedule</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>An object to compare with this object.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p>true if the current object is equal to the <span class="paramref">other</span> parameter; otherwise, false.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p>true if the current object is equal to the <code data-dev-comment-type="paramref" class="paramref">other</code> parameter; otherwise, false.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="overrides">Overrides</h5>
-              <div><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Equals_WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_">FunctionalSchedule.Equals(FunctionalSchedule)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L337">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals*"></a>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals(WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule)">Equals(PeriodicSchedule)</h4>
-              <div class="markdown level1 summary"><p>Indicates whether the current object is equal to another object of type <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.html">PeriodicSchedule</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_Equals_WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_">FunctionalSchedule.Equals(FunctionalSchedule)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L337">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals*"></a>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_Equals_WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.Equals(WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule)">Equals(PeriodicSchedule)</h4>
+  <div class="markdown level1 summary"><p>Indicates whether the current object is equal to another object of type <a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.html">PeriodicSchedule</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public bool Equals(PeriodicSchedule other)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.html">PeriodicSchedule</a></td>
-                    <td><span class="parametername">other</span></td>
-                    <td><p>An object to compare with this object.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool Equals(PeriodicSchedule other)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.html">PeriodicSchedule</a></td>
+        <td><span class="parametername">other</span></td>
+        <td><p>An object to compare with this object.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p>true if the current object is equal to the <span class="paramref">other</span> parameter; otherwise, false.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p>true if the current object is equal to the <code data-dev-comment-type="paramref" class="paramref">other</code> parameter; otherwise, false.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131190(v=vs.110).aspx">IEquatable&lt;T&gt;.Equals(T)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L399">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_GetHashCode_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.GetHashCode*"></a>
-              <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_GetHashCode" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.GetHashCode">GetHashCode()</h4>
-              <div class="markdown level1 summary"><p>Returns a hash code for this instance.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/ms131190(v=vs.110).aspx">IEquatable&lt;T&gt;.Equals(T)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Scheduling/Schedules/PeriodicSchedule.cs/#L399">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_GetHashCode_" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.GetHashCode*"></a>
+  <h4 id="WebApplications_Utilities_Scheduling_Schedules_PeriodicSchedule_GetHashCode" data-uid="WebApplications.Utilities.Scheduling.Schedules.PeriodicSchedule.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"><p>Returns a hash code for this instance.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
-              </div>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td><p>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. </p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td><p>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. </p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="overrides">Overrides</h5>
-              <div><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_GetHashCode">FunctionalSchedule.GetHashCode()</a></div>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="WebApplications.Utilities.Scheduling.Schedules.FunctionalSchedule.html#WebApplications_Utilities_Scheduling_Schedules_FunctionalSchedule_GetHashCode">FunctionalSchedule.GetHashCode()</a></div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class FormatChunk
    | Web Applications UK Core Libraries Documentation ">
-    <meta name="generator" content="docfx 2.14.1.0">
+    <meta name="generator" content="docfx 2.24.0.0">
     
     <link rel="shortcut icon" href="../images/favicon.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <meta property="docfx:navrel" content="../toc.html">
     <meta property="docfx:tocrel" content="toc.html">
+    
     <meta property="docfx:rel" content="../">
     
   </head>
@@ -57,7 +58,7 @@
           </div>
         </div>
       </header>
-      <div role="main" class="container body-content">
+      <div class="container body-content">
         
         <div id="search-results">
           <div class="search-list"></div>
@@ -75,621 +76,626 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content">
-              
-              
-              <h1 id="WebApplications_Utilities_Formatting_FormatChunk" data-uid="WebApplications.Utilities.Formatting.FormatChunk">Class FormatChunk
-              </h1>
-              <div class="markdown level0 summary"><p>A format chunk, holds information about a chunk of formatted Value.</p>
+            <article class="content wrap" id="_content" data-uid="WebApplications.Utilities.Formatting.FormatChunk">
+  
+  
+  <h1 id="WebApplications_Utilities_Formatting_FormatChunk" data-uid="WebApplications.Utilities.Formatting.FormatChunk" class="text-break">Class FormatChunk
+  </h1>
+  <div class="markdown level0 summary"><p>A format chunk, holds information about a chunk of formatted Value.</p>
 </div>
-              <div class="markdown level0 conceptual"></div>
-              <div class="inheritance">
-                <h5>Inheritance</h5>
-                  <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
-                  <div class="level1"><span class="xref">FormatChunk</span></div>
-              </div>
-              <div class="inheritedMembers">
-                <h5>Inherited Members</h5>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
-                </div>
-                <div>
-                  <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
-                </div>
-              </div>
-              <h6><strong>Namespace</strong>:WebApplications.Utilities.Formatting</h6>
-              <h6><strong>Assembly</strong>:WebApplications.Utilities.dll</h6>
-              <h5 id="WebApplications_Utilities_Formatting_FormatChunk_syntax">Syntax</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[PublicAPI]
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></div>
+    <div class="level1"><span class="xref">FormatChunk</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformattable(v=vs.110).aspx">IFormattable</a></div>
+    <div><a class="xref" href="WebApplications.Utilities.Formatting.IWriteable.html">IWriteable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/bsc2ak47(v=vs.110).aspx">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/w4hkze5k(v=vs.110).aspx">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/hz2a0b8x(v=vs.110).aspx">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/zdee4b3y(v=vs.110).aspx">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/dfwy45w9(v=vs.110).aspx">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://msdn.microsoft.com/en-us/library/57ctke0a(v=vs.110).aspx">Object.MemberwiseClone()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="WebApplications.Utilities.Formatting.html">WebApplications.Utilities.Formatting</a></h6>
+  <h6><strong>Assembly</strong>: WebApplications.Utilities.dll</h6>
+  <h5 id="WebApplications_Utilities_Formatting_FormatChunk_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[PublicAPI]
 public class FormatChunk : IFormattable, IWriteable</code></pre>
-              </div>
-              <h3 id="constructors">Constructors
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L180">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_FormatChunk__ctor_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk__ctor_WebApplications_Utilities_Formatting_FormatChunk_WebApplications_Utilities_Optional_System_Object__" data-uid="WebApplications.Utilities.Formatting.FormatChunk.#ctor(WebApplications.Utilities.Formatting.FormatChunk,WebApplications.Utilities.Optional{System.Object})">FormatChunk(FormatChunk, Optional&lt;Object&gt;)</h4>
-              <div class="markdown level1 summary"><p>Creates a clone of the <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>, changing the resolved value.</p>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L180">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_FormatChunk__ctor_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk__ctor_WebApplications_Utilities_Formatting_FormatChunk_WebApplications_Utilities_Optional_System_Object__" data-uid="WebApplications.Utilities.Formatting.FormatChunk.#ctor(WebApplications.Utilities.Formatting.FormatChunk,WebApplications.Utilities.Optional{System.Object})">FormatChunk(FormatChunk, Optional&lt;Object&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a clone of the <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>, changing the resolved value.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public FormatChunk(FormatChunk chunk, Optional&lt;object&gt; value)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a></td>
-                    <td><span class="parametername">chunk</span></td>
-                    <td><p>The chunk.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public FormatChunk(FormatChunk chunk, Optional&lt;object&gt; value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a></td>
+        <td><span class="parametername">chunk</span></td>
+        <td><p>The chunk.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a>&gt;</td>
-                    <td><span class="parametername">value</span></td>
-                    <td><p>The value.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a>&gt;</td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L167">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_FormatChunk__ctor_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.#ctor*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk__ctor_WebApplications_Utilities_Optional_System_Object__" data-uid="WebApplications.Utilities.Formatting.FormatChunk.#ctor(WebApplications.Utilities.Optional{System.Object})">FormatChunk(Optional&lt;Object&gt;)</h4>
-              <div class="markdown level1 summary"><p>Creates a non-fill point chunk.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L167">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_FormatChunk__ctor_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.#ctor*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk__ctor_WebApplications_Utilities_Optional_System_Object__" data-uid="WebApplications.Utilities.Formatting.FormatChunk.#ctor(WebApplications.Utilities.Optional{System.Object})">FormatChunk(Optional&lt;Object&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a non-fill point chunk.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public FormatChunk(Optional&lt;object&gt; value = null)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a>&gt;</td>
-                    <td><span class="parametername">value</span></td>
-                    <td><p>The value.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public FormatChunk(Optional&lt;object&gt; value = default (Optional&lt;object&gt;))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Optional-1.html">Optional</a>&lt;<a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a>&gt;</td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="fields">Fields
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L77">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Alignment" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Alignment">Alignment</h4>
-              <div class="markdown level1 summary"><p>The alignment, if any; otherwise 0. (e.g. -3 for &#39;{0,-3:G}&#39;</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="fields">Fields
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L77">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Alignment" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Alignment">Alignment</h4>
+  <div class="markdown level1 summary"><p>The alignment, if any; otherwise 0. (e.g. -3 for &apos;{0,-3:G}&apos;</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly int Alignment</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L83">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Format" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Format">Format</h4>
-              <div class="markdown level1 summary"><p>The format, if this is a formatting chunk and a format was specified, if any; otherwise <span class="xref">null</span>. (e.g. &#39;G&#39; for &#39;{0,-3:G}&#39;)</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly int Alignment</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.int32(v=vs.110).aspx">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L83">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Format" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Format">Format</h4>
+  <div class="markdown level1 summary"><p>The format, if this is a formatting chunk and a format was specified, if any; otherwise <span class="xref">null</span>. (e.g. &apos;G&apos; for &apos;{0,-3:G}&apos;)</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly string Format</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L66">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_IsControl" data-uid="WebApplications.Utilities.Formatting.FormatChunk.IsControl">IsControl</h4>
-              <div class="markdown level1 summary"><p>Control chunks are never written out when you call <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html#WebApplications_Utilities_Formatting_FormatChunk_ToString">ToString()</a>, but can be used by consumers of a <a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a> to
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly string Format</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L66">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_IsControl" data-uid="WebApplications.Utilities.Formatting.FormatChunk.IsControl">IsControl</h4>
+  <div class="markdown level1 summary"><p>Control chunks are never written out when you call <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html#WebApplications_Utilities_Formatting_FormatChunk_ToString">ToString()</a>, but can be used by consumers of a <a class="xref" href="WebApplications.Utilities.Formatting.FormatBuilder.html">FormatBuilder</a> to
 extend functionality.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly bool IsControl</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L95">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_IsResolved" data-uid="WebApplications.Utilities.Formatting.FormatChunk.IsResolved">IsResolved</h4>
-              <div class="markdown level1 summary"><p>Gets a value indicating whether this instance is resolved.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool IsControl</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L95">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_IsResolved" data-uid="WebApplications.Utilities.Formatting.FormatChunk.IsResolved">IsResolved</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether this instance is resolved.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly bool IsResolved</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
-                    <td><p><span class="xref">true</span> if this instance is resolved; otherwise, <span class="xref">false</span>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly bool IsResolved</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.boolean(v=vs.110).aspx">Boolean</a></td>
+        <td><p><span class="xref">true</span> if this instance is resolved; otherwise, <span class="xref">false</span>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L60">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Resolver" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Resolver">Resolver</h4>
-              <div class="markdown level1 summary"><p>Any resolver that should be used to resolve this chunk (and any nested chunks).</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L60">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Resolver" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Resolver">Resolver</h4>
+  <div class="markdown level1 summary"><p>Any resolver that should be used to resolve this chunk (and any nested chunks).</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly IResolvable Resolver</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.IResolvable.html">IResolvable</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L72">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Tag" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Tag">Tag</h4>
-              <div class="markdown level1 summary"><p>The tag, if this is a formatting chunk, if any; otherwise <span class="xref">null</span>. (e.g. &#39;0&#39; for &#39;{0,-3:G}&#39;)</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly IResolvable Resolver</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.IResolvable.html">IResolvable</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L72">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Tag" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Tag">Tag</h4>
+  <div class="markdown level1 summary"><p>The tag, if this is a formatting chunk, if any; otherwise <span class="xref">null</span>. (e.g. &apos;0&apos; for &apos;{0,-3:G}&apos;)</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly string Tag</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L89">View Source</a>
-              </span>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Value" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Value">Value</h4>
-              <div class="markdown level1 summary"><p>The chunk Value, if any (will always be <span class="xref">null</span> if <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html#WebApplications_Utilities_Formatting_FormatChunk_IsResolved">IsResolved</a> is <span class="xref">true</span>).</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly string Tag</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L89">View Source</a>
+  </span>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Value" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Value">Value</h4>
+  <div class="markdown level1 summary"><p>The chunk Value, if any (will always be <span class="xref">null</span> if <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html#WebApplications_Utilities_Formatting_FormatChunk_IsResolved">IsResolved</a> is <span class="xref">true</span>).</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public readonly object Value</code></pre>
-              </div>
-              <h5 class="fieldValue">Field Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="properties">Properties
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L695">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_FormatChunk_AllChildren_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.AllChildren*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_AllChildren" data-uid="WebApplications.Utilities.Formatting.FormatChunk.AllChildren">AllChildren</h4>
-              <div class="markdown level1 summary"><p>Returns all children of this <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly object Value</code></pre>
+  </div>
+  <h5 class="fieldValue">Field Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.object(v=vs.110).aspx">Object</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L695">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_FormatChunk_AllChildren_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.AllChildren*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_AllChildren" data-uid="WebApplications.Utilities.Formatting.FormatChunk.AllChildren">AllChildren</h4>
+  <div class="markdown level1 summary"><p>Returns all children of this <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public IEnumerable&lt;FormatChunk&gt; AllChildren { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>&gt;</td>
-                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/78dfe2yb(v=vs.110).aspx">IEnumerator&lt;T&gt;</a> that can be used to iterate through the collection.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;FormatChunk&gt; AllChildren { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>&gt;</td>
+        <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/78dfe2yb(v=vs.110).aspx">IEnumerator&lt;T&gt;</a> that can be used to iterate through the collection.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L107">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_FormatChunk_Children_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Children*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Children" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Children">Children</h4>
-              <div class="markdown level1 summary"><p>Gets the children (if any).</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L107">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_FormatChunk_Children_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Children*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Children" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Children">Children</h4>
+  <div class="markdown level1 summary"><p>Gets the children (if any).</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public IEnumerable&lt;FormatChunk&gt; Children { get; }</code></pre>
-              </div>
-              <h5 class="propertyValue">Property Value</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>&gt;</td>
-                    <td><p>The children.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;FormatChunk&gt; Children { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>&gt;</td>
+        <td><p>The children.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="methods">Methods
-              </h3>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L285">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_FormatChunk_Parse_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Parse*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Parse_System_String_WebApplications_Utilities_Formatting_IResolvable_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Parse(System.String,WebApplications.Utilities.Formatting.IResolvable)">Parse(String, IResolvable)</h4>
-              <div class="markdown level1 summary"><p>Parses a string into an enumeartion of <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L285">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_FormatChunk_Parse_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Parse*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_Parse_System_String_WebApplications_Utilities_Formatting_IResolvable_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.Parse(System.String,WebApplications.Utilities.Formatting.IResolvable)">Parse(String, IResolvable)</h4>
+  <div class="markdown level1 summary"><p>Parses a string into an enumeartion of <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public static IEnumerable&lt;FormatChunk&gt; Parse(string value, IResolvable resolver = null)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">value</span></td>
-                    <td><p>The value.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IEnumerable&lt;FormatChunk&gt; Parse(string value, IResolvable resolver = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="WebApplications.Utilities.Formatting.IResolvable.html">IResolvable</a></td>
-                    <td><span class="parametername">resolver</span></td>
-                    <td><p>The resolver.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="WebApplications.Utilities.Formatting.IResolvable.html">IResolvable</a></td>
+        <td><span class="parametername">resolver</span></td>
+        <td><p>The resolver.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>&gt;</td>
-                    <td><p>An enumeration of <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/9eekhta0(v=vs.110).aspx">IEnumerable</a>&lt;<a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>&gt;</td>
+        <td><p>An enumeration of <a class="xref" href="WebApplications.Utilities.Formatting.FormatChunk.html">FormatChunk</a>.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L518">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_FormatChunk_ToString_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.ToString*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_ToString" data-uid="WebApplications.Utilities.Formatting.FormatChunk.ToString">ToString()</h4>
-              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L518">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_FormatChunk_ToString_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.ToString*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_ToString" data-uid="WebApplications.Utilities.Formatting.FormatChunk.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
-              </div>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="overrides">Overrides</h5>
-              <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L533">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_FormatChunk_ToString_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.ToString*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_ToString_System_String_System_IFormatProvider_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.ToString(System.String,System.IFormatProvider)">ToString(String, IFormatProvider)</h4>
-              <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/7bxwbwt2(v=vs.110).aspx">Object.ToString()</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L533">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_FormatChunk_ToString_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.ToString*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_ToString_System_String_System_IFormatProvider_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.ToString(System.String,System.IFormatProvider)">ToString(String, IFormatProvider)</h4>
+  <div class="markdown level1 summary"><p>Returns a <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">[StringFormatMethod(&quot;format&quot;)]
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[StringFormatMethod(&quot;format&quot;)]
 public string ToString(string format, IFormatProvider formatProvider = null)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">format</span></td>
-                    <td><p>The format.</p>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">format</span></td>
+        <td><p>The format.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformatprovider(v=vs.110).aspx">IFormatProvider</a></td>
-                    <td><span class="parametername">formatProvider</span></td>
-                    <td><p>The format provider.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.iformatprovider(v=vs.110).aspx">IFormatProvider</a></td>
+        <td><span class="parametername">formatProvider</span></td>
+        <td><p>The format provider.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="returns">Returns</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><p>A <a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a> that represents this instance.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/bhf180ey(v=vs.110).aspx">IFormattable.ToString(String, IFormatProvider)</a></div>
-              <span class="small pull-right mobile-hide">
-                <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L552">View Source</a>
-              </span>
-              <a id="WebApplications_Utilities_Formatting_FormatChunk_WriteTo_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.WriteTo*"></a>
-              <h4 id="WebApplications_Utilities_Formatting_FormatChunk_WriteTo_System_IO_TextWriter_System_String_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.WriteTo(System.IO.TextWriter,System.String)">WriteTo(TextWriter, String)</h4>
-              <div class="markdown level1 summary"><p>Writes this instance to the
-<span class="paramref">writer</span>, using the optional
-<span class="paramref">format</span>.</p>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="https://msdn.microsoft.com/en-us/library/bhf180ey(v=vs.110).aspx">IFormattable.ToString(String, IFormatProvider)</a></div>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/webappsuk/CoreLibraries/blob/master/Utilities/Formatting/FormatChunk.cs/#L552">View Source</a>
+  </span>
+  <a id="WebApplications_Utilities_Formatting_FormatChunk_WriteTo_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.WriteTo*"></a>
+  <h4 id="WebApplications_Utilities_Formatting_FormatChunk_WriteTo_System_IO_TextWriter_System_String_" data-uid="WebApplications.Utilities.Formatting.FormatChunk.WriteTo(System.IO.TextWriter,System.String)">WriteTo(TextWriter, String)</h4>
+  <div class="markdown level1 summary"><p>Writes this instance to the
+<code data-dev-comment-type="paramref" class="paramref">writer</code>, using the optional
+<code data-dev-comment-type="paramref" class="paramref">format</code>.</p>
 </div>
-              <div class="markdown level1 conceptual"></div>
-              <h5 class="decalaration">Declaration</h5>
-              <div class="codewrapper">
-                <pre><code class="lang-csharp hljs">public void WriteTo(TextWriter writer, string format = null)</code></pre>
-              </div>
-              <h5 class="parameters">Parameters</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
-                    <td><span class="parametername">writer</span></td>
-                    <td><p>The writer.</p>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void WriteTo(TextWriter writer, string format = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.io.textwriter(v=vs.110).aspx">TextWriter</a></td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The writer.</p>
 </td>
-                  </tr>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
-                    <td><span class="parametername">format</span></td>
-                    <td><p>The format.</p>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.string(v=vs.110).aspx">String</a></td>
+        <td><span class="parametername">format</span></td>
+        <td><p>The format.</p>
 </td>
-                  </tr>
-                </tbody>
-              </table>
-              <h5 class="implements">Implements</h5>
-                  <div><a class="xref" href="WebApplications.Utilities.Formatting.IWriteable.html#WebApplications_Utilities_Formatting_IWriteable_WriteTo_System_IO_TextWriter_System_String_">IWriteable.WriteTo(TextWriter, String)</a></div>
-              <h5 class="exceptions">Exceptions</h5>
-              <table class="table table-bordered table-striped table-condensed">
-                <thead>
-                  <tr>
-                    <th>Type</th>
-                    <th>Condition</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.notimplementedexception(v=vs.110).aspx">NotImplementedException</a></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
-              <h3 id="extensionmethods">Extension Methods</h3>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-              <div>
-                  <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
-              </div>
-                        </article>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="implements">Implements</h5>
+      <div><a class="xref" href="WebApplications.Utilities.Formatting.IWriteable.html#WebApplications_Utilities_Formatting_IWriteable_WriteTo_System_IO_TextWriter_System_String_">IWriteable.WriteTo(TextWriter, String)</a></div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://msdn.microsoft.com/en-us/library/system.notimplementedexception(v=vs.110).aspx">NotImplementedException</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToString(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToString_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToString(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToStringBuilder(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToStringBuilder_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToStringBuilder(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Object_System_Runtime_Serialization_StreamingContextStates_">Serialize.SerializeToByteArray(Object, Object, StreamingContextStates)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Serialization.Serialize.html#WebApplications_Utilities_Serialization_Serialize_SerializeToByteArray_System_Object_System_Runtime_Serialization_IFormatter_">Serialize.SerializeToByteArray(Object, IFormatter)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Testing.Tester.html#WebApplications_Testing_Tester_IsNull_System_Object_">Tester.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_EqualsByRuntimeType_System_Object_System_Object_">UtilityExtensions.EqualsByRuntimeType(Object, Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_XmlEscape_System_Object_">UtilityExtensions.XmlEscape(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_UnionSingle__1___0_System_Collections_Generic_IEnumerable___0__System_Collections_Generic_IEqualityComparer___0__">UtilityExtensions.UnionSingle&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;, IEqualityComparer&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_PrependTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.PrependTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_AppendTo__1___0_System_Collections_Generic_IEnumerable___0__">UtilityExtensions.AppendTo&lt;TSource&gt;(TSource, IEnumerable&lt;TSource&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.UtilityExtensions.html#WebApplications_Utilities_UtilityExtensions_Yield__1___0_">UtilityExtensions.Yield&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsOptional_System_Object_">Reflection.IsOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsUnassigned_System_Object_">Reflection.IsUnassigned(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_ToOptional_System_Object_">Reflection.ToOptional(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflection.html#WebApplications_Utilities_Reflection_IsNull_System_Object_">Reflection.IsNull(Object)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__1___0_System_Linq_Expressions_Expression_System_Action___0___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance&gt;(TInstance, Expression&lt;Action&lt;TInstance&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMethodInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMethodInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetPropertyInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetPropertyInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetFieldInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetFieldInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="WebApplications.Utilities.Reflect.InfoHelper.html#WebApplications_Utilities_Reflect_InfoHelper_GetMemberInfo__2___0_System_Linq_Expressions_Expression_System_Func___0___1___System_Boolean_">InfoHelper.GetMemberInfo&lt;TInstance, TResult&gt;(TInstance, Expression&lt;Func&lt;TInstance, TResult&gt;&gt;, Boolean)</a>
+  </div>
+</article>
           </div>
           
           <div class="hidden-sm col-md-2" role="complementary">
