@@ -104,13 +104,12 @@ td { vertical-align: top; border-left: 1px solid #ccc; padding: 0 6px; }
         /// </summary>
         [NotNull]
         public static readonly FormatBuilder DefaultBodyHtml = new FormatBuilder()
+            .AppendLine($"<style>{DefaultBodyStyle}</style>")
             .AppendFormat(
                 /* language=HTML */
-                @"<style>{0}</style>
-{Logs:{<items>:{<item>:{html}}}{<join>:\r\n<hr/>\r\n}}
+                @"{Logs:{<items>:{<item>:{html}}}{<join>:
 <hr/>
-<p><span class=""Footer"">This email was automatically generated.</span><p>",
-                DefaultBodyStyle)
+}}<hr/><p><span class=""Footer"">This email was automatically generated.</span><p>")
             .MakeReadOnly();
 
         /// <summary>

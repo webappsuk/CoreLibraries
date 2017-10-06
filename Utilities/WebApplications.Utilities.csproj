@@ -61,6 +61,7 @@
     <Compile Include="Converters\DateTimeZoneConverter.cs" />
     <Compile Include="Converters\MailAddressCollectionConverter.cs" />
     <Compile Include="Converters\MailAddressConverter.cs" />
+    <Compile Include="Converters\SecureStringConverter.cs" />
     <Compile Include="Converters\XNamespaceConverter.cs" />
     <Compile Include="Converters\DurationConverter.cs" />
     <Compile Include="Converters\InstantConverter.cs" />
