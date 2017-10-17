@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebApplications.Testing;
 
@@ -157,6 +158,21 @@ namespace WebApplications.Utilities.Database.Test.TestSqlProgram
 
             Assert.IsTrue(inputOutput.All(o => o.OutputValue.Value == inputOutputVal * 2));
             Assert.IsTrue(output.All(o => o.OutputValue.Value == inputVal));
+        }
+
+        /// <summary>
+        /// Added to test the fix for issue <a href="https://github.com/webappsuk/CoreLibraries/issues/51">#51</a>.
+        /// Passes a <see langword="null"/> value to a parmeter which has no default value.
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task ExecuteNonQueryAsync_PassNullToNonOptionalParameter()
+        {
+            SqlProgram<XElement> program =
+                await SqlProgram<XElement>.Create((Connection)DifferentLocalDatabaseConnectionString, "spTakesXml");
+
+            // ReSharper disable once RedundantArgumentDefaultValue, ArgumentsStyleLiteral
+            await program.ExecuteNonQueryAsync(p1Value: null);
         }
     }
 }
