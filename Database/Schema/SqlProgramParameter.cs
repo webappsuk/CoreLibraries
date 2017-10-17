@@ -159,7 +159,7 @@ namespace WebApplications.Utilities.Database.Schema
 
             if (value == null)
             {
-                parameter.Value = null;
+                parameter.Value = Type.IsTable ? null : DBNull.Value;
                 return;
             }
 
