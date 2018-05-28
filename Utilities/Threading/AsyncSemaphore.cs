@@ -1,5 +1,5 @@
-#region � Copyright Web Applications (UK) Ltd, 2015.  All rights reserved.
-// Copyright (c) 2015, Web Applications UK Ltd
+﻿#region © Copyright Web Applications (UK) Ltd, 2018.  All rights reserved.
+// Copyright (c) 2018, Web Applications UK Ltd
 // All rights reserved.
 // 
 // Redistribution and use in source and binary forms, with or without
@@ -46,14 +46,14 @@ namespace WebApplications.Utilities.Threading
     public class AsyncSemaphore
     {
         [NotNull]
-        private readonly Queue<TaskCompletionSource<IDisposable>> _waiters = new Queue<TaskCompletionSource<IDisposable>>();
+        private readonly SemaphoreSlim _semaphore;
+
+        [NotNull]
+        private readonly object _lock = new object();
 
         private int _currentCount;
 
         private readonly IDisposable _releaser;
-
-        [NotNull]
-        private readonly Task<IDisposable> _releaserTask;
 
         /// <summary>
         /// Gets the current count.
@@ -74,26 +74,22 @@ namespace WebApplications.Utilities.Threading
         /// <exception cref="ArgumentOutOfRangeException">value</exception>
         public int MaxCount
         {
-            get { return _maxCount; }
+            get => _maxCount;
             set
             {
                 if (value < 1) throw new ArgumentOutOfRangeException(nameof(value));
-                lock (_waiters)
+                lock (_lock)
                 {
-                    _maxCount = value;
+                    if (value == _maxCount)
+                        return;
 
-                    if (_currentCount >= _maxCount) return;
-                    if (_waiters.Count < 1) return;
-
-                    // If the max count was increased and there were waiters, let them continue
-
-                    while (_currentCount < _maxCount &&
-                           _waiters.Count > 0)
+                    if (value > _maxCount)
                     {
-                        // ReSharper disable once PossibleNullReferenceException
-                        while (!_waiters.Dequeue().TrySetResult(_releaser)) { }
-                        _currentCount++;
+                        int added = value - _maxCount;
+                        _semaphore.Release(added);
                     }
+
+                    _maxCount = value;
                 }
             }
         }
@@ -106,11 +102,11 @@ namespace WebApplications.Utilities.Threading
         public AsyncSemaphore(int initialCount = 1)
         {
             if (initialCount < 1) throw new ArgumentOutOfRangeException(nameof(initialCount));
+
+            _semaphore = new SemaphoreSlim(initialCount);
             _maxCount = initialCount;
             _currentCount = 0;
             _releaser = new Releaser(this);
-            // ReSharper disable once AssignNullToNotNullAttribute
-            _releaserTask = Task.FromResult(_releaser);
         }
 
         /// <summary>
@@ -120,25 +116,12 @@ namespace WebApplications.Utilities.Threading
         /// <returns>Task.</returns>
         /// <remarks><para>This is best used with a <see langword="using"/> statement.</para></remarks>
         [NotNull]
-        public Task<IDisposable> WaitAsync(CancellationToken token = default(CancellationToken))
+        public async Task<IDisposable> WaitAsync(CancellationToken token = default(CancellationToken))
         {
-            lock (_waiters)
-            {
-                if (_currentCount < _maxCount)
-                {
-                    ++_currentCount;
-                    return _releaserTask;
-                }
-
-                TaskCompletionSource<IDisposable> waiter = new TaskCompletionSource<IDisposable>();
-                if (token.IsCancellationRequested)
-                {
-                    waiter.TrySetCanceled();
-                    return waiter.Task;
-                }
-                _waiters.Enqueue(waiter);
-                return waiter.Task.WithCancellation(token);
-            }
+            await _semaphore.WaitAsync(token).ConfigureAwait(false);
+            lock (_lock)
+                ++_currentCount;
+            return _releaser;
         }
 
         /// <summary>
@@ -148,21 +131,14 @@ namespace WebApplications.Utilities.Threading
         {
             if (_currentCount == 0) return;
 
-            TaskCompletionSource<IDisposable> toRelease;
-            do
+            lock (_lock)
             {
-                toRelease = null;
-                lock (_waiters)
-                {
-                    if (_currentCount <= _maxCount &&
-                        _waiters.Count > 0)
-                        toRelease = _waiters.Dequeue();
-                    else
-                        --_currentCount;
-                }
+                if (_currentCount == 0) return;
+
+                if (_currentCount <= _maxCount)
+                    _semaphore.Release();
+                _currentCount--;
             }
-            while (toRelease != null &&
-                   !toRelease.TrySetResult(_releaser));
         }
 
         /// <summary>
@@ -189,7 +165,7 @@ namespace WebApplications.Utilities.Threading
             CancellationToken token,
             [NotNull] params AsyncSemaphore[] semaphores)
         {
-            if (semaphores == null) throw new ArgumentNullException("semaphores");
+            if (semaphores == null) throw new ArgumentNullException(nameof(semaphores));
             token.ThrowIfCancellationRequested();
 
             List<AsyncSemaphore> sems = new List<AsyncSemaphore>(semaphores.Length);
@@ -320,8 +296,7 @@ namespace WebApplications.Utilities.Threading
                     try
                     {
                         AsyncSemaphore sem = Interlocked.Exchange(ref semaphores[i], null);
-                        if (sem != null)
-                            sem.Release();
+                        sem?.Release();
                     }
                     catch (Exception e)
                     {
