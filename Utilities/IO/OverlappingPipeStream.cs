@@ -60,6 +60,7 @@ namespace WebApplications.Utilities.IO
 
         private const int ErrorMoreData = 234;
         private const int ErrorIoPending = 997;
+        private const int ErrorNotFound = 1168;
         #endregion
 
         /// <summary>
@@ -229,7 +230,13 @@ namespace WebApplications.Utilities.IO
                                     //asked to yield
                                     //first kill that read operation
                                     if (!CancelIoEx(stream.SafePipeHandle, ref lpOverlapped))
-                                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                                    {
+                                        int lastWin32Error = Marshal.GetLastWin32Error();
+                                        // The read operation might have already completed before CancelIoEx is called,
+                                        // so there would be nothing to cancel.
+                                        if (lastWin32Error != ErrorNotFound)
+                                            throw new Win32Exception(lastWin32Error);
+                                    }
 
                                     //should hand over the pipe mutex and wait to be told to take it back
                                     _writeRequiredSignal.Reset();
@@ -241,7 +248,13 @@ namespace WebApplications.Utilities.IO
                                     //asked to die, either due to disposal or cancellation.
                                     //we are the ones responsible for cleaning up the pipe
                                     if (!CancelIoEx(stream.SafePipeHandle, ref lpOverlapped))
-                                        throw new Win32Exception(Marshal.GetLastWin32Error());
+                                    {
+                                        int lastWin32Error = Marshal.GetLastWin32Error();
+                                        // The read operation might have already completed before CancelIoEx is called,
+                                        // so there would be nothing to cancel.
+                                        if (lastWin32Error != ErrorNotFound)
+                                            throw new Win32Exception(lastWin32Error);
+                                    }
                                     //finally block will clean up the pipe and the mutex
                                     return null; //quit the thread
                             }
