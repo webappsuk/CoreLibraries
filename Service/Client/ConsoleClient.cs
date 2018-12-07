@@ -49,7 +49,7 @@ namespace WebApplications.Utilities.Service.Client
         [NotNull]
         private static readonly FormatBuilder _promptBuilder = new FormatBuilder()
             .AppendForegroundColor(ConsoleColor.Cyan)
-            .AppendFormat("[{Time:hh:mm:ss.ffff}]")
+            .AppendFormat("[{Time:HH:mm:ss.ffff '(UTC'z')'}]")
             .AppendForegroundColor(ConsoleColor.Yellow)
             .AppendFormat("{Server: {Name}}")
             .AppendResetForegroundColor()
@@ -357,7 +357,7 @@ namespace WebApplications.Utilities.Service.Client
                     switch (c.Tag.ToLowerInvariant())
                     {
                         case "time":
-                            return DateTime.UtcNow;
+                            return DateTime.Now.ToLocalTime();
                         case "server":
                             return server;
                         default:
