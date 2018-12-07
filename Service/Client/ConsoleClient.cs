@@ -56,6 +56,15 @@ namespace WebApplications.Utilities.Service.Client
             .Append(" > ")
             .MakeReadOnly();
 
+        private static readonly FormatBuilder _logFormatBuilder =
+            new FormatBuilder(
+                120,
+                33,
+                alignment: Alignment.Left,
+                tabStops: new[] { 33 },
+                format: ClientResources.ConsoleClient_LogFormat,
+                isReadOnly: true);
+
         [NotNull]
         private static readonly FormatBuilder _serverList = new FormatBuilder()
             .AppendForegroundColor(ConsoleColor.White)
@@ -141,7 +150,7 @@ namespace WebApplications.Utilities.Service.Client
             try
             {
                 Log.SetTrace(validLevels: LoggingLevels.None);
-                Log.SetConsole(Log.ShortFormat);
+                Log.SetConsole(_logFormatBuilder);
 
                 Console.Title = description;
                 NamedPipeClient client = null;
@@ -309,7 +318,7 @@ namespace WebApplications.Utilities.Service.Client
                         foreach (Log log in logResponse.Logs)
                         {
                             Debug.Assert(log != null);
-                            log.WriteTo(ConsoleTextWriter.Default, Log.ShortFormat);
+                            log.WriteTo(ConsoleTextWriter.Default, _logFormatBuilder);
                         }
                     });
 

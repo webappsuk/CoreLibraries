@@ -1909,6 +1909,11 @@ namespace WebApplications.Utilities.Logging
                         () => Resources.LogKeys_TimeStamp,
                         ((CombGuid)_guid).Created);
 
+                case FormatTagTimeStampLocal:
+                    return new LogElement(
+                        () => Resources.LogKeys_LocalTimeStamp,
+                        ((CombGuid)_guid).Created.ToLocalTime());
+
                 case FormatTagLevel:
                     return new LogElement(
                         () => Resources.LogKeys_Level,

@@ -153,4 +153,7 @@
   <data name="ConsoleClient_RunAsync_Cancelling" xml:space="preserve">
     <value>Cancelling command...</value>
   </data>
+  <data name="ConsoleClient_LogFormat" xml:space="preserve">
+    <value>{!fgcolor:Teal}{localtime:{Value:HH:mm:ss.ffff '(UTC'z')'}} {!fgcolor:LogLevel}{level:{Value}} {!fgcolor}	{message:{Value}}</value>
+  </data>
 </root>
