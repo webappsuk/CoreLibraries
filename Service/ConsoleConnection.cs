@@ -55,6 +55,15 @@ namespace WebApplications.Utilities.Service
         private static readonly FormatBuilder _promptBuilder =
             new FormatBuilder(ServiceResources.ConsoleConnection_PromptFormat, true);
 
+        private static readonly FormatBuilder _logFormatBuilder =
+            new FormatBuilder(
+                120,
+                33,
+                alignment: Alignment.Left,
+                tabStops: new[] { 33 },
+                format: ServiceResources.ConsoleConnection_LogFormat,
+                isReadOnly: true);
+
         /// <summary>
         /// The installation prompt.
         /// </summary>
@@ -129,7 +138,7 @@ namespace WebApplications.Utilities.Service
                 return;
             Console.Clear();
             Log.SetTrace(validLevels: LoggingLevels.None);
-            Log.SetConsole(defaultLogFormat ?? Log.ShortFormat, defaultLoggingLevels);
+            Log.SetConsole(defaultLogFormat ?? _logFormatBuilder, defaultLoggingLevels);
             await Log.Flush(token).ConfigureAwait(false);
 
             Impersonator impersonator = null;
@@ -620,7 +629,7 @@ namespace WebApplications.Utilities.Service
                     switch (c.Tag.ToLowerInvariant())
                     {
                         case "time":
-                            return DateTime.UtcNow;
+                            return DateTime.Now.ToLocalTime();
                         case "state":
                             return service.State;
                         default:

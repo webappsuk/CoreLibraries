@@ -61,7 +61,8 @@ namespace WebApplications.Utilities.Service.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {!fgcolor:Teal}{localtime:{Value:HH:mm:ss.ffff &apos;(UTC&apos;z&apos;)&apos;}} {!fgcolor:LogLevel}{level:{Value}} {!fgcolor}	{message:{Value}}.
+        ///   Looks up a localized string similar to {!fgcolor:Teal}{localtime:{Value:HH:mm:ss.ffff &apos;(UTC&apos;z&apos;)&apos;}} {!fgcolor:LogLevel}{level:{Value}} {!fgcolor}	{message:{Value}}
+        ///.
         /// </summary>
         public static string ConsoleClient_LogFormat {
             get {
