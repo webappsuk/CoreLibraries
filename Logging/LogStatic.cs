@@ -151,6 +151,11 @@ namespace WebApplications.Utilities.Logging
         public const string FormatTagTimeStamp = "time";
 
         /// <summary>
+        /// The local time format tag.
+        /// </summary>
+        public const string FormatTagTimeStampLocal = "localtime";
+
+        /// <summary>
         /// The level format tag.
         /// </summary>
         [NotNull]

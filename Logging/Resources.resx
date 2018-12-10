@@ -426,4 +426,7 @@
   <data name="EmailLogger_SendLogs_Error" xml:space="preserve">
     <value>An error occurred when sending a log email.</value>
   </data>
+  <data name="LogKeys_LocalTimeStamp" xml:space="preserve">
+    <value>Local Timestamp</value>
+  </data>
 </root>

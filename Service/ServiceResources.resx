@@ -578,7 +578,7 @@ Type 'perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}' for more details of a sp
 </value>
   </data>
   <data name="ConsoleConnection_PromptFormat" xml:space="preserve">
-    <value>{!fgcolor:Cyan}[{Time:hh:mm:ss.ffff}] {!fgcolor:Yellow}{State}{!fgcolor} &gt; </value>
+    <value>{!fgcolor:Cyan}[{Time:HH:mm:ss.ffff '(UTC'z')'}] {!fgcolor:Yellow}{State}{!fgcolor} &gt; </value>
   </data>
   <data name="ConsoleConnection_RunAsync_Cancelling" xml:space="preserve">
     <value>Cancelling command...</value>
@@ -595,5 +595,9 @@ Type 'perf {!fgcolor:Yellow}&lt;category&gt;{!fgcolor}' for more details of a sp
   </data>
   <data name="ServiceCommand_Generic" xml:space="preserve">
     <value>Service command method cannot be generic</value>
+  </data>
+  <data name="ConsoleConnection_LogFormat" xml:space="preserve">
+    <value>{!fgcolor:Teal}{localtime:{Value:HH:mm:ss.ffff '(UTC'z')'}} {!fgcolor:LogLevel}{level:{Value}} {!fgcolor}	{message:{Value}}
+</value>
   </data>
 </root>
