@@ -629,7 +629,7 @@ namespace WebApplications.Utilities.Service
                     switch (c.Tag.ToLowerInvariant())
                     {
                         case "time":
-                            return DateTime.Now.ToLocalTime();
+                            return DateTime.Now;
                         case "state":
                             return service.State;
                         default:

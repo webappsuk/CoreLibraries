@@ -366,7 +366,7 @@ namespace WebApplications.Utilities.Service.Client
                     switch (c.Tag.ToLowerInvariant())
                     {
                         case "time":
-                            return DateTime.Now.ToLocalTime();
+                            return DateTime.Now;
                         case "server":
                             return server;
                         default:
